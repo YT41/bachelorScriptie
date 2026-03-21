@@ -1,6 +1,6 @@
-#include "ReactionParser.h"
+#include "ReactionParser.hpp"
 
-#include "MemArena.h"
+#include "MemArena.hpp"
 
 #include <stdbool.h>
 #include <stdio.h>
@@ -11,7 +11,7 @@
 
 static inline int EOFReached(char* start, char* current, size_t fileSize)
 {
-    return ((size_t)((void*)current - (void*)start) >= fileSize);
+    return ((size_t)(current - start) >= fileSize);
 }
 
 static inline size_t GetFileSize(FILE* file)

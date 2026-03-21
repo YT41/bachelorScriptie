@@ -1,12 +1,12 @@
-#include "TrajectorySim.h"
+#include "TrajectorySim.hpp"
 
 #include <math.h>
 #include <stdint.h>
 #include <stdio.h>
 
-#include "Matrix.h"
-#include "Random.h"
-#include "SRN.h"
+#include "Matrix.hpp"
+#include "Random.hpp"
+#include "SRN.hpp"
 
 
 static double GetPropensity(const uint64_t* speciesCounts, const int32_t* reactantColumn, uint32_t speciesCount, double reactionRate)
@@ -16,7 +16,7 @@ static double GetPropensity(const uint64_t* speciesCounts, const int32_t* reacta
     {
         if((reactantColumn[j] > 0))
         {
-            if(speciesCounts[j] < reactantColumn[j])
+            if((int64_t)(speciesCounts[j]) < reactantColumn[j])
                 return 0.0;
             else
                 product *= pow((double)(speciesCounts[j]), (double)(reactantColumn[j]));

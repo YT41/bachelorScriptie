@@ -2,8 +2,8 @@
 
 #include <stdint.h>
 
-#include "MemArena.h"
-#include "Matrix.h"
+#include "MemArena.hpp"
+#include "Matrix.hpp"
 
 
 typedef struct Species

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "SRN.h"
+#include "SRN.hpp"
 
 
 SRN* ParseSRN(const char* fileName);

@@ -1,4 +1,4 @@
-#include "Random.h"
+#include "Random.hpp"
 
 #include <math.h>
 
@@ -30,7 +30,7 @@ uint64_t RandU48(void)
 
 static uint64_t RecNChooseK(uint32_t n, uint32_t k)
 {
-    static uint64_t memoisationLUT[MEMOI_COUNT - 2][MEMOI_COUNT / 2] = { 0 };
+    static uint64_t memoisationLUT[MEMOI_COUNT - 2][MEMOI_COUNT / 2] = { {0} };
 
     k = MIN(k, (n - k)); /*use symmetry*/
 

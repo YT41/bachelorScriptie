@@ -1,11 +1,11 @@
-CC=gcc
-FLAGS=-g -Wall -std=c11 -fsanitize=address
+CC=g++
+FLAGS=-g -Wall -std=c++11 -fsanitize=address
 OBJ=obj
 SRC=src
 RES=res
 
 #linux:
-ADINCL=-I headers
+ADINCL=-I headers -I dependencies
 LNK=-lm
 
 RM=find
@@ -18,8 +18,8 @@ CPYDEST=bin/$(RES)
 
 rwildcard=$(foreach d,$(wildcard $(1:=/*)),$(call rwildcard,$d,$2) $(filter $(subst *,%,$2),$d))
 
-SRCS=$(call rwildcard,$(SRC),*.c)
-OBJS=$(patsubst $(SRC)/%.c, $(OBJ)/%.o, $(SRCS))
+SRCS=$(call rwildcard,$(SRC),*.cpp)
+OBJS=$(patsubst $(SRC)/%.cpp, $(OBJ)/%.o, $(SRCS))
 BIN=bin/main.exe
 
 
@@ -35,12 +35,12 @@ cpyres:
 	$(CPY) $(CPYFLAGS) $(RES) $(CPYDEST)
 
 #normal release
-release: FLAGS=-Wall -O2 -std=c11
+release: FLAGS=-Wall -O2 -std=c++11
 release: clean
 release: $(BIN)
 
 #release but with profiler (about 15% slower)
-profile: FLAGS=-Wall -O2 -std=c11 -pg
+profile: FLAGS=-Wall -O2 -std=c++11 -pg
 profile: clean
 profile: $(BIN)
 
@@ -56,7 +56,7 @@ analyse:
 $(BIN): $(OBJS)
 	$(CC) $(FLAGS) $(OBJS) -o $(BIN) $(LNK)
 
-$(OBJ)/%.o: $(SRC)/%.c
+$(OBJ)/%.o: $(SRC)/%.cpp
 	mkdir -p "$(dir $@)"
 	$(CC) $(FLAGS) -c $< -o $@ $(ADINCL)
 

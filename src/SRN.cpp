@@ -1,5 +1,6 @@
-#include "SRN.h"
+#include "SRN.hpp"
 
+#include <stdint.h>
 #include <string.h>
 
 
@@ -10,14 +11,14 @@ Reaction* CreateReaction(double reactionRate, uint32_t speciesCount, int32_t* re
         (sizeof(int32_t) * speciesCount) +
         (sizeof(int32_t) * speciesCount)
     );
-    Reaction* reaction = MemArenaAlloc(&arena, sizeof(Reaction));
+    Reaction* reaction = (Reaction*)MemArenaAlloc(&arena, sizeof(Reaction));
 
     reaction->arena = arena;
 
-    reaction->reactantColumn = MemArenaAlloc(&(reaction->arena), (sizeof(int32_t) * speciesCount));
+    reaction->reactantColumn = (int32_t*)MemArenaAlloc(&(reaction->arena), (sizeof(int32_t) * speciesCount));
     memmove((reaction->reactantColumn), reactantColumnVals, (sizeof(int32_t) * speciesCount));
 
-    reaction->productColumn = MemArenaAlloc(&(reaction->arena), (sizeof(int32_t) * speciesCount));
+    reaction->productColumn = (int32_t*)MemArenaAlloc(&(reaction->arena), (sizeof(int32_t) * speciesCount));
     memmove((reaction->productColumn), productColumnVals, (sizeof(int32_t) * speciesCount));
 
     reaction->speciesCount = speciesCount;

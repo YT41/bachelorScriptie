@@ -1,10 +1,15 @@
 #include <time.h>
 
-#include "Matrix.h"
-#include "Random.h"
-#include "ReactionParser.h"
-#include "SRN.h"
-#include "TrajectorySim.h"
+/*iisignature*/
+//#include "iisignature/bch.hpp"
+//#include "iisignature/logsig.hpp"
+//#include "iisignature/calcSignature.hpp"
+
+#include "Matrix.hpp"
+#include "Random.hpp"
+#include "ReactionParser.hpp"
+#include "SRN.hpp"
+#include "TrajectorySim.hpp"
 
 
 int main(int argc, char** argv)
