@@ -1,6 +1,6 @@
 #pragma once
 
-#include "MemArena.h"
+#include "MemArena.hpp"
 
 
 /*abstract datatype for nxm matrices of any element type*/
