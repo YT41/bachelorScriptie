@@ -2,7 +2,7 @@
 *.d
 
 # VSCode stuff
-.json
+*.json
 
 # Object files
 *.o
