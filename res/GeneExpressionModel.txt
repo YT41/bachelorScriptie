@@ -1,0 +1,7 @@
+mRNA = 0;
+protein = 0;
+
+        --0.1->     mRNA;
+mRNA    --0.1->     mRNA + protein;
+mRNA    --0.1->     ;
+protein --0.002->   ;
