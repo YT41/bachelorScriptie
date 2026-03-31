@@ -20,60 +20,59 @@ int main(int argc, char** argv)
 {
     SetSeedRandU48(time(NULL));
 
-    SRN* srn = ParseSRN("res/GeneExpressionModel.txt");
+    // SRN* srn = ParseSRN("res/GeneExpressionModel.txt");
 
-    PrintIntMatrix((srn->stoichiometricMatrix));
+    // PrintIntMatrix((srn->stoichiometricMatrix));
 
-    GillespieSRNTrajectorySim(3600.0, 20, srn, "res/trajectory.data");
+    // GillespieSRNTrajectorySim(3600.0, 20, srn, "res/trajectory.data");
 
-    uint32_t neuronsHiddenLayer = 32;
-    ActivationFnID activationFnPerLayer[] = { TANH, IDENTITY };
-    SigNN* sigNN = CreateSigNN(srn, &neuronsHiddenLayer, activationFnPerLayer, 1, 0.05, 3);
-
-    uint32_t n[2] = {1, 2};
-    SigNNPredict(sigNN, n, 0.0);
-
-    DeleteSigNN(sigNN);
-    DeleteSRN(srn);
-
-    // uint32_t neuronsPerLayer[] = { 1, 1, 1 };
+    // uint32_t neuronsHiddenLayer = 32;
     // ActivationFnID activationFnPerLayer[] = { TANH, IDENTITY };
-    // NeuralNetwork* nn = NNCreate(neuronsPerLayer, activationFnPerLayer, 1, 0.05);
+    // SigNN* sigNN = CreateSigNN(srn, &neuronsHiddenLayer, activationFnPerLayer, 1, 0.05, 3);
 
-    // MemArena arena = CreateMemArena(GetMatrixAllocSize(1, 1) * 2);
+    // uint32_t n[2] = {1, 2};
+    // SigNNPredict(sigNN, n, 0.0);
 
-    // FILE* file1 = fopen("res/NNTestLoss.txt", "w");
+    // DeleteSigNN(sigNN);
+    // DeleteSRN(srn);
 
-    // MatrixNxM x = CreateMatrix(&arena, 1, 1, NULL);
-    // MatrixNxM y = CreateMatrix(&arena, 1, 1, NULL);
-    // for(uint64_t i = 0; i < 1000000; i++)
-    // {
-    //     double r1 = UniformSim(-2.0, 2.0, true, true);
+    uint32_t neuronsPerLayer[] = { 1, 64, 1 };
+    ActivationFnID activationFnPerLayer[] = { TANH, IDENTITY };
+    NeuralNetwork* nn = NNCreate(neuronsPerLayer, activationFnPerLayer, 1, 0.01);
 
-    //     /*TODO: voor negatieve x waarden gaat het fout*/
-    //     SetValueMatrix(x, r1, 0, 0);
-    //     SetValueMatrix(y, sin(r1), 0, 0);
+    MemArena arena = CreateMemArena(GetMatrixAllocSize(1, 1) * 2);
 
-    //     double loss = NNTrain(nn, x, y);
-    //     fprintf(file1, "%lu %f \n", i, loss);
-    // }
-    // fclose(file1);
+    FILE* file1 = fopen("res/NNTestLoss.txt", "w");
 
-    // FILE* file2 = fopen("res/NNTest.txt", "w");
-    // for(double input = -2.0; input < 2.0; input += 0.01)
-    // {
-    //     SetValueMatrix(x, input, 0, 0);
+    Matrix x = CreateMatrix(&arena, 1, 1, NULL);
+    Matrix y = CreateMatrix(&arena, 1, 1, NULL);
+    for(uint64_t i = 0; i < 1000000; i++)
+    {
+        double r1 = UniformSim(-10.0, 10.0, true, true);
 
-    //     NNPredict(nn, x);
+        SetValueMatrix(x, r1, 0, 0);
+        SetValueMatrix(y, sin(r1), 0, 0);
 
-    //     fprintf(file2, "%f %f %f\n", input, sin(input), (nn->layerVectors[1].matrixData[0]));
-    // }
-    // fclose(file2);
+        double loss = NNTrain(nn, x, y);
+        fprintf(file1, "%lu %f \n", i, loss);
+    }
+    fclose(file1);
+
+    FILE* file2 = fopen("res/NNTest.txt", "w");
+    for(double input = -10.0; input < 10.0; input += 0.01)
+    {
+        SetValueMatrix(x, input, 0, 0);
+
+        NNPredict(nn, x);
+
+        fprintf(file2, "%f %f %f\n", input, sin(input), (nn->layerVectors[(nn->hiddenLayerCount) + 1].data[0]));
+    }
+    fclose(file2);
 
 
-    // DeleteMemArena(&arena);
+    DeleteMemArena(&arena);
 
-    // NNDelete(nn);
+    NNDelete(nn);
 
     return 0;
 }

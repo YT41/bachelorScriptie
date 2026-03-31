@@ -58,7 +58,7 @@ double SigNNPredict(SigNN* sigNN, uint32_t* n, double t)
     /*TODO: dit werkt zo niet, het moet een pad zijn voor een signature, prima voor trainen, maar wat als ik gewoon P(n, t) wil hebben?*/
     CalcSignature::Signature sig;
     CalcSignature::calcSignature((M + 1), (sigNN->truncationOrder), 1, path, sig);
-    sig.writeOut((sigNN->signatureInput.matrixData));
+    sig.writeOut((sigNN->signatureInput.data));
     PrintMatrix((sigNN->signatureInput));
 
     NNPredict((sigNN->nn), (sigNN->signatureInput));

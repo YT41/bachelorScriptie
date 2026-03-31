@@ -58,20 +58,13 @@ static inline void UpdateBiasVectorGradientDescent(NeuralNetwork* network, uint3
 {
     uint32_t d = (network->biasVectors[l].rowCount);
     for(uint32_t i = 0; i < d; i++)
-        (network->biasVectors[l].matrixData[GetIndex(i, 0, d)]) -= GetValueMatrix((network->layerVectors[l+1]), i, 0) * (network->learningRate);
+        (network->biasVectors[l].data[GetIndex(i, 0, d)]) -= GetValueMatrix((network->layerVectors[l+1]), i, 0) * (network->learningRate);
 }
 
-/*W_l -= lr * a_{l+1}(a_l)^T*/
+/*W_l -= lr * a_{l+1} (a_l)^T*/
+/*a_l = (f')_l (W_l)^T a_{l+1}*/
 static inline void UpdateWeightMatrixGradientDescent(NeuralNetwork* network, uint32_t l)
 {
-    // uint32_t n = (network->weightMatrices[l].rowCount);
-    // uint32_t m = (network->weightMatrices[l].columnCount);
-    // for(uint32_t i = 0; i < n; i++)
-    // {
-    //     for(uint32_t j = 0; j < m; j++)
-    //         (network->weightMatrices[l].matrixData[GetIndex(i, j, n)]) -= GetValueMatrix((network->layerVectors[l+1]), i, 0) * GetValueMatrix((network->layerVectors[l]), j, 0) * (network->learningRate);
-    // }
-
     uint32_t m = (network->layerVectors[l].rowCount);
     uint32_t n = (network->layerVectors[l+1].rowCount);
     for(uint32_t i = 0; i < m; i++)
@@ -82,34 +75,26 @@ static inline void UpdateWeightMatrixGradientDescent(NeuralNetwork* network, uin
             sum += GetValueMatrix((network->layerVectors[l+1]), j, 0) * GetValueMatrix((network->weightMatrices[l]), j, i);
 
             /*gradient descent for weights*/
-            (network->weightMatrices[l].matrixData[GetIndex(j, i, n)]) -= GetValueMatrix((network->layerVectors[l+1]), j, 0) * GetValueMatrix((network->layerVectors[l]), i, 0) * (network->learningRate);
+            (network->weightMatrices[l].data[GetIndex(j, i, n)]) -= GetValueMatrix((network->layerVectors[l+1]), j, 0) * GetValueMatrix((network->layerVectors[l]), i, 0) * (network->learningRate);
         }
 
         /*desired changes in the l'th layer*/
-        (network->layerVectors[l].matrixData[GetIndex(i, 0, m)]) = sum; //(network->activationFunctionDerivativeCache[l].matrixData[GetIndex(i, 0, m)]) * sum;
+        (network->layerVectors[l].data[GetIndex(i, 0, m)]) = GetValueMatrix((network->activationFunctionDerivativeCache[l]), i, 0) * sum;
     }
 }
-
-/*a_l = (f')_l (W_l)^T a_{l+1}*/
-static inline void UpdateDesiredInputGradientDescent(NeuralNetwork* network, uint32_t l)
-{
-}
-
 
 static void BackPropagation(NeuralNetwork* network, Matrix y)
 {
     /*TODO: make it work for general loss functions, right now this is squared error loss*/
     uint32_t hiddenlayerCount = (network->hiddenLayerCount);
     MatrixSubSelf((network->layerVectors[hiddenlayerCount+1]), y);
-    //MatrixHadamardSelf((network->layerVectors[hiddenlayerCount+1]), (network->activationFunctionDerivativeCache[hiddenlayerCount+1]));
+    MatrixHadamardSelf((network->layerVectors[hiddenlayerCount+1]), (network->activationFunctionDerivativeCache[hiddenlayerCount+1]));
     MatrixScaleSelf((network->layerVectors[hiddenlayerCount+1]), 2.0);
 
-    /*start from back*/
     for(int32_t l = hiddenlayerCount; l >= 0; l--)
     {
-        UpdateBiasVectorGradientDescent(network, l); /*gaat goed*/
-        UpdateWeightMatrixGradientDescent(network, l); /*gaat denk ik niet goed*/
-        //UpdateDesiredInputGradientDescent(network, l);
+        UpdateBiasVectorGradientDescent(network, l);
+        UpdateWeightMatrixGradientDescent(network, l);
     }
 }
 
