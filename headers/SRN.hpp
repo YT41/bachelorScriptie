@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cstdint>
 #include <stdint.h>
 
 #include "MemArena.hpp"
@@ -8,8 +9,9 @@
 
 typedef struct Species
 {
-    uint64_t initialCount;
     char name[32];
+    uint32_t initialCount;
+    uint32_t maxCount;
 } Species;
 
 typedef struct Reaction
@@ -42,5 +44,6 @@ void DeleteReaction(Reaction* reaction);
 SRN* CreateSRN(uint32_t reactionCount, Reaction** reactions, Species* species);
 void DeleteSRN(SRN* srn);
 
-uint32_t SRNGetReactionCount(const SRN* srn);
-uint32_t SRNGetSpeciesCount(const SRN* srn);
+static inline uint32_t SRNGetReactionCount(const SRN* srn) { return (srn->stoichiometricMatrix.columnCount); }
+static inline uint32_t SRNGetSpeciesCount(const SRN* srn) { return (srn->stoichiometricMatrix.rowCount); }
+

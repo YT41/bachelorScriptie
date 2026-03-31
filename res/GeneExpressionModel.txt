@@ -1,5 +1,5 @@
-mRNA = 0;
-protein = 0;
+mRNA = 0 < 100;
+protein = 0 < 100;
 
         --0.1->     mRNA;
 mRNA    --0.1->     mRNA + protein;

@@ -46,7 +46,7 @@ profile: $(BIN)
 
 #plot the data
 plot:
-	cd res && gnuplot -persist plotTrajectoriesGeneExpression.gp
+	cd res && gnuplot -persist nnplot.gp
 
 #for outputting the profiling results as a text file in the profiling folder
 analyse:
