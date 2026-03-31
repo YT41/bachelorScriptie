@@ -2,6 +2,7 @@
 
 #include "MemArena.hpp"
 
+#include <cstdint>
 #include <stdbool.h>
 #include <stdio.h>
 #include <string.h>
@@ -122,6 +123,8 @@ static inline void GetSpecies(char** speciesLineArr, Species* speciesArr, uint32
 
         nameEnd++;
         speciesArr[i].initialCount = ReadUint32(&nameEnd);
+        nameEnd++;
+        speciesArr[i].maxCount = ReadUint32(&nameEnd);
     }
 }
 
@@ -197,8 +200,6 @@ SRN* ParseSRN(const char* fileName)
     uint32_t reactionCount = 0;
     size_t reducedTextBufferSize = ReduceTextBuffer(textBuffer, fileSize, reducedTextBuffer, &speciesCount, &reactionCount);
     reducedTextBuffer[reducedTextBufferSize] = '\0';
-
-    printf("%s\nspecies count = %u\nreaction count = %u\n", reducedTextBuffer, speciesCount, reactionCount);
 
     char* speciesLineArr[speciesCount];
     char* reactionLineArr[reactionCount];

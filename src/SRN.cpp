@@ -60,11 +60,11 @@ SRN* CreateSRN(uint32_t reactionCount, Reaction** reactions, Species* species)
 
     for(uint32_t i = 0; i < reactionCount; i++)
     {
-        SetColumnMatrix((srn->reactantMatrix), (reactions[i]->reactantColumn), i);
-        SetColumnMatrix((srn->productMatrix), (reactions[i]->productColumn), i);
+        SetColumnIntMatrix((srn->reactantMatrix), (reactions[i]->reactantColumn), i);
+        SetColumnIntMatrix((srn->productMatrix), (reactions[i]->productColumn), i);
 
         for(uint32_t j = 0; j < speciesCount; j++)
-            SetValueMatrix((srn->stoichiometricMatrix), ((reactions[i]->productColumn[j]) - (reactions[i]->reactantColumn[j])), j, i);
+            SetValueIntMatrix((srn->stoichiometricMatrix), ((reactions[i]->productColumn[j]) - (reactions[i]->reactantColumn[j])), j, i);
 
         srn->reactionRates[i] = reactions[i]->reactionRate;
     }
@@ -77,14 +77,4 @@ SRN* CreateSRN(uint32_t reactionCount, Reaction** reactions, Species* species)
 void DeleteSRN(SRN* srn)
 {
     DeleteMemArena(&(srn->arena));
-}
-
-uint32_t SRNGetReactionCount(const SRN* srn)
-{
-    return (srn->stoichiometricMatrix.ColumnCount);
-}
-
-uint32_t SRNGetSpeciesCount(const SRN* srn)
-{
-    return (srn->stoichiometricMatrix.RowCount);
 }

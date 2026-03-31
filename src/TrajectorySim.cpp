@@ -31,7 +31,7 @@ static void GetReactionPropensities(double* propensities, const uint64_t* specie
     int32_t reactantColumn[speciesCount];
     for(uint32_t k = 0; k < SRNGetReactionCount(srn); k++)
     {
-        GetColumnMatrix((srn->reactantMatrix), reactantColumn, k);
+        GetColumnIntMatrix((srn->reactantMatrix), reactantColumn, k);
         propensities[k] = GetPropensity(speciesCounts, reactantColumn, speciesCount, (srn->reactionRates[k]));
     }
 }
@@ -69,7 +69,7 @@ void NaiveSRNTrajectorySim(double deltaT, uint64_t timeStepCount, uint32_t epoch
             {   
                 if(BernoulliDistributionSim(propensities[k] * deltaT))
                 {
-                    GetColumnMatrix((srn->stoichiometricMatrix), stoichiometricColumn, k);
+                    GetColumnIntMatrix((srn->stoichiometricMatrix), stoichiometricColumn, k);
 
                     for(uint32_t j = 0; j < speciesCount; j++)
                         currentSpeciesCounts[j] += stoichiometricColumn[j];
@@ -119,7 +119,7 @@ void GillespieSRNTrajectorySim(double time, uint32_t epochs, const SRN* srn, con
                 propensityComparisonSum += propensities[activeReactionIndex];
             }
             
-            GetColumnMatrix((srn->stoichiometricMatrix), stoichiometricColumn, activeReactionIndex);
+            GetColumnIntMatrix((srn->stoichiometricMatrix), stoichiometricColumn, activeReactionIndex);
             for(uint32_t j = 0; j < speciesCount; j++)
                 currentSpeciesCounts[j] += stoichiometricColumn[j];
 
