@@ -20,15 +20,17 @@ typedef struct NeuralNetwork
 {
     MemArena arena;
 
-    /*a*/
+    /*a_0, ..., a_{l+1}*/
     Matrix layerVectors[MAX_HIDDEN_LAYER_COUNT + 2]; /*from input at index 0, to output layer*/
 
     /*saved on forward pass, used in backpropagation algorithm*/
-    /*sigma'*/
+    /*(f')_0, ..., (f')_{l+1}*/
     Matrix activationFunctionDerivativeCache[MAX_HIDDEN_LAYER_COUNT + 2]; /*from input at index 0, to output layer*/
 
     /*parameters*/
+    /*W_0, ..., W_l*/
     Matrix weightMatrices[MAX_HIDDEN_LAYER_COUNT + 1]; /*from before first hidden layer at index 0, to before output layer*/
+    /*b_0, ..., b_l*/
     Matrix biasVectors[MAX_HIDDEN_LAYER_COUNT + 1]; /*from first hidden layer at index 0, to output layer*/
 
     double learningRate; //this determines how fast the backpropagation strides towards the local minimum, in a gradient descent sense

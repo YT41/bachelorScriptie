@@ -159,8 +159,8 @@ void MatrixMultiply(Matrix* dest, Matrix A, Matrix B)
         {
             double val = 0.0;
             for(uint32_t k = 0; k < A.columnCount; k++)
-                val += (A.matrixData[GetIndex(i, k, A.rowCount)] * B.matrixData[GetIndex(k, j, B.rowCount)]);
-            dest->matrixData[GetIndex(i, j, (dest->rowCount))] = val;
+                val += (A.data[GetIndex(i, k, A.rowCount)] * B.data[GetIndex(k, j, B.rowCount)]);
+            dest->data[GetIndex(i, j, (dest->rowCount))] = val;
         }
     }
 }
@@ -170,7 +170,7 @@ void MatrixAdd(Matrix* dest, Matrix A, Matrix B)
     for(uint32_t i = 0; i < A.rowCount; i++)
     {
         for(uint32_t j = 0; j < A.columnCount; j++)
-            dest->matrixData[GetIndex(i, j, (dest->rowCount))] = (A.matrixData[GetIndex(i, j, A.rowCount)] + B.matrixData[GetIndex(i, j, B.rowCount)]);
+            dest->data[GetIndex(i, j, (dest->rowCount))] = (A.data[GetIndex(i, j, A.rowCount)] + B.data[GetIndex(i, j, B.rowCount)]);
     }
 }
 
@@ -179,7 +179,7 @@ void MatrixSub(Matrix* dest, Matrix A, Matrix B)
     for(uint32_t i = 0; i < A.rowCount; i++)
     {
         for(uint32_t j = 0; j < A.columnCount; j++)
-            dest->matrixData[GetIndex(i, j, (dest->rowCount))] = (A.matrixData[GetIndex(i, j, A.rowCount)] - B.matrixData[GetIndex(i, j, B.rowCount)]);
+            dest->data[GetIndex(i, j, (dest->rowCount))] = (A.data[GetIndex(i, j, A.rowCount)] - B.data[GetIndex(i, j, B.rowCount)]);
     }
 }
 
@@ -188,7 +188,7 @@ void MatrixScale(Matrix* dest, Matrix A, double lambda)
     for(uint32_t i = 0; i < A.rowCount; i++)
     {
         for(uint32_t j = 0; j < A.columnCount; j++)
-            dest->matrixData[GetIndex(i, j, (dest->rowCount))] = lambda * A.matrixData[GetIndex(i, j, A.rowCount)];
+            dest->data[GetIndex(i, j, (dest->rowCount))] = lambda * A.data[GetIndex(i, j, A.rowCount)];
     }
 }
 
@@ -197,7 +197,7 @@ void MatrixTransform(Matrix* dest, Matrix A, RealFn sigma)
     for(uint32_t i = 0; i < A.rowCount; i++)
     {
         for(uint32_t j = 0; j < A.columnCount; j++)
-            dest->matrixData[GetIndex(i, j, (dest->rowCount))] = sigma(A.matrixData[GetIndex(i, j, A.rowCount)]);
+            dest->data[GetIndex(i, j, (dest->rowCount))] = sigma(A.data[GetIndex(i, j, A.rowCount)]);
     }
 }
 
@@ -206,7 +206,7 @@ void MatrixHadamard(Matrix* dest, Matrix A, Matrix B)
     for(uint32_t i = 0; i < A.rowCount; i++)
     {
         for(uint32_t j = 0; j < A.columnCount; j++)
-            dest->matrixData[GetIndex(i, j, (dest->rowCount))] = (A.matrixData[GetIndex(i, j, A.rowCount)] * B.matrixData[GetIndex(i, j, B.rowCount)]);
+            dest->data[GetIndex(i, j, (dest->rowCount))] = (A.data[GetIndex(i, j, A.rowCount)] * B.data[GetIndex(i, j, B.rowCount)]);
     }
 }
 
@@ -215,7 +215,7 @@ double Dot(Matrix v, Matrix w)
     uint32_t d = v.rowCount;
     double sum = 0.0;
     for(uint32_t i = 0; i < d; i++)
-        sum += (v.matrixData[GetIndex(i, 0, d)] * w.matrixData[GetIndex(i, 0, d)]);
+        sum += (v.data[GetIndex(i, 0, d)] * w.data[GetIndex(i, 0, d)]);
     return sum;
 }
 
@@ -231,13 +231,13 @@ void GetRowMatrix(Matrix matrix, double* dest, size_t row)
     if(RowWithinMatrixBounds(matrix, row))
     {
         for(uint32_t i = 0; i < matrix.columnCount; i++)
-            dest[i] = matrix.matrixData[GetIndex(row, i, matrix.rowCount)];
+            dest[i] = matrix.data[GetIndex(row, i, matrix.rowCount)];
     }
 }
 void GetColumnMatrix(Matrix matrix, double* dest, size_t column)
 {
     if(ColumnWithinMatrixBounds(matrix, column))
-        memmove(dest, (matrix.matrixData + (column * matrix.rowCount)), (matrix.rowCount * sizeof(double)));
+        memmove(dest, (matrix.data + (column * matrix.rowCount)), (matrix.rowCount * sizeof(double)));
 }
 
 void SetRowMatrix(Matrix matrix, const double* src, size_t row)
@@ -245,19 +245,19 @@ void SetRowMatrix(Matrix matrix, const double* src, size_t row)
     if(RowWithinMatrixBounds(matrix, row))
     {
         for(uint32_t i = 0; i < matrix.columnCount; i++)
-            matrix.matrixData[GetIndex(row, i, matrix.rowCount)] = src[i];
+            matrix.data[GetIndex(row, i, matrix.rowCount)] = src[i];
     }
 }
 void SetColumnMatrix(Matrix matrix, const double* src, size_t column)
 {
     if(ColumnWithinMatrixBounds(matrix, column))
-        memmove((matrix.matrixData + (column * matrix.rowCount)), src, (matrix.rowCount * sizeof(double)));
+        memmove((matrix.data + (column * matrix.rowCount)), src, (matrix.rowCount * sizeof(double)));
 }
 
 void SetValueMatrix(Matrix matrix, double val, size_t row, size_t column)
 {
     if(RowWithinMatrixBounds(matrix, row) && ColumnWithinMatrixBounds(matrix, column))
-        matrix.matrixData[GetIndex(row, column, matrix.rowCount)] = val;
+        matrix.data[GetIndex(row, column, matrix.rowCount)] = val;
 }
 
 void SetMatrix(Matrix matrix, double val)
@@ -271,12 +271,12 @@ void SetMatrix(Matrix matrix, double val)
 
 void SetMatrixData(Matrix matrix, double* vals)
 {
-    memmove((void*)(matrix.matrixData), (void*)vals, GetMatrixAllocSize(matrix.rowCount, matrix.columnCount));
+    memmove((void*)(matrix.data), (void*)vals, GetMatrixAllocSize(matrix.rowCount, matrix.columnCount));
 }
 
 void CopyMatrixData(Matrix dest, Matrix src)
 {
-    memmove((void*)(dest.matrixData), (void*)(src.matrixData), GetMatrixAllocSize(src.rowCount, src.columnCount));
+    memmove((void*)(dest.data), (void*)(src.data), GetMatrixAllocSize(src.rowCount, src.columnCount));
 }
 
 

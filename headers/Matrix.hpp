@@ -12,7 +12,7 @@ typedef struct IntMatrixNxM
 
 typedef struct Matrix
 {
-    double* matrixData; /*ordered in column-major order, must have (rows * columns * elementByteSize) bytes available*/
+    double* data; /*ordered in column-major order, must have (rows * columns * elementByteSize) bytes available*/
     size_t rowCount;
     size_t columnCount;
 } Matrix;
@@ -21,7 +21,6 @@ typedef struct Matrix
 /*======================== general matrix functions ========================*/
 
 static inline uint32_t GetIndex(uint32_t row, uint32_t column, uint32_t rowCount) { return (column * rowCount) + row; }
-static inline double GetValueMatrix(Matrix matrix, size_t row, size_t column) { return (matrix.matrixData[GetIndex(row, column, matrix.rowCount)]); }
 
 
 /*======================== Int matrix functions ========================*/
@@ -69,6 +68,7 @@ static inline void MatrixScaleSelf(Matrix A, double lambda) { MatrixScale(&A, A,
 static inline void MatrixTransformSelf(Matrix A, RealFn sigma) { MatrixTransform(&A, A, sigma); } /*A_ij = sigma(A_ij)*/
 static inline void MatrixHadamardSelf(Matrix A, Matrix B) { MatrixHadamard(&A, A, B); } /*A_ij = A_ij * B_ij*/
 
+static inline double GetValueMatrix(Matrix matrix, size_t row, size_t column) { return (matrix.data[GetIndex(row, column, matrix.rowCount)]); }
 double GetValueMatrixSafe(Matrix matrix, size_t row, size_t column);
 
 void GetRowMatrix(Matrix matrix, double* dest, size_t row);
