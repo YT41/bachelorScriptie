@@ -3,8 +3,6 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-/*this is something I made earlier for a different use case, it comes in handy now*/
-
 #define UINT48_MAX  0x0000FFFFFFFFFFFFULL
 
 #define MEMOI_COUNT     67 /*this will be the maximum for n and k, otherwise n choose n/2 wont fit in 64-bit uint*/
@@ -55,7 +53,7 @@ static inline uint8_t BernoulliDistributionSim(double p)
 static inline double SelectRandomDouble(double x, double y) { return BernoulliDistributionSim(0.5) ? x : y; }
 static inline uint64_t SelectRandomUint64(uint64_t x, uint64_t y) { return BernoulliDistributionSim(0.5) ? x : y; }
 
-/*expects (count - 1) probabilities, as the last one is just (1 minus the sum of the others)*/
+/*expects at least (count - 1) probabilities, as the last one is just (1 minus the sum of the others)*/
 static inline uint32_t PickUintWithChances(const double* probabilities, uint32_t count)
 {
     double standardSim = StandardClosedUniformSim();

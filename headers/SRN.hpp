@@ -29,9 +29,9 @@ typedef struct SRN
 {
     MemArena arena;
 
-    IntMatrixNxM reactantMatrix; /*speciesCount x reactionCount dimensional matrix*/
-    IntMatrixNxM productMatrix; /*speciesCount x reactionCount dimensional matrix*/
-    IntMatrixNxM stoichiometricMatrix; /*speciesCount x reactionCount dimensional matrix*/
+    IntMatrix reactantMatrix; /*speciesCount x reactionCount dimensional matrix*/
+    IntMatrix productMatrix; /*speciesCount x reactionCount dimensional matrix*/
+    IntMatrix stoichiometricMatrix; /*speciesCount x reactionCount dimensional matrix*/
     double* reactionRates;
 
     Species* species;
@@ -46,4 +46,12 @@ void DeleteSRN(SRN* srn);
 
 static inline uint32_t SRNGetReactionCount(const SRN* srn) { return (srn->stoichiometricMatrix.columnCount); }
 static inline uint32_t SRNGetSpeciesCount(const SRN* srn) { return (srn->stoichiometricMatrix.rowCount); }
+uint32_t SRNGetMaxSpeciesCount(const SRN* srn);
 
+
+double GetPropensity(const SRN* srn, IntMatrix n, uint32_t reactionIndex);
+void GetReactionPropensities(const SRN* srn, IntMatrix n, double* propensities);
+double GetEscapeRate(const SRN* srn, IntMatrix n);
+
+/*returns propensity of previous state with respects to reaction, previous state is set into previousState*/
+double GetPreviousConnectedState(const SRN* srn, IntMatrix currentState, IntMatrix previousState, uint32_t reactionIndex);
