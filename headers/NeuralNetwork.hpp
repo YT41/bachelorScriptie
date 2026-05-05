@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cstdint>
 #include <stdint.h>
 
 #include "Matrix.hpp"
@@ -12,7 +13,8 @@ typedef enum ActivationFnID
     IDENTITY = 0,
     SIGMOID = 1,
     TANH = 2,
-    RELU = 3
+    RELU = 3,
+    SOFTMAX = 4
 } ActivationFnID;
 
 
@@ -45,7 +47,15 @@ void NNDelete(NeuralNetwork* network);
 // void NNSaveToFile(const NeuralNetwork* network, const char* fileName);
 // void NNLoadFromFile(NeuralNetwork* network, const char* fileName);
 
-//double NNLoss(const NeuralNetwork* network, const unsigned int correctOutputIndex);
+void NNSetLastLayer(NeuralNetwork* network, Matrix y); /*can be used to set cost gradient with respects to last layer*/
+void NNBackPropagation(NeuralNetwork* network);
+Matrix NNPredict(NeuralNetwork* network, Matrix x);
+double NNTrain(NeuralNetwork* network, Matrix x, Matrix y); /*just for batch size 1*/
 
-void NNPredict(NeuralNetwork* network, Matrix x);
-double NNTrain(NeuralNetwork* network, Matrix x, Matrix y);
+static inline uint32_t NNGetOutputDimension(const NeuralNetwork* network) { return (network->layerVectors[(network->hiddenLayerCount)].rowCount); };
+
+
+/*========================== NN testing ==========================*/
+
+void TestSimpleSinNN(void); /*handy for debugging*/
+void TestProbabilisticNN(void);

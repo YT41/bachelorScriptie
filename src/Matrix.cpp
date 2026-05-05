@@ -8,66 +8,81 @@
 #include <stdio.h>
 
 
-static inline bool RowWithinIntMatrixBounds(IntMatrixNxM matrix, size_t row)
+static inline bool RowWithinIntMatrixBounds(IntMatrix matrix, size_t row)
 {
     return (row < (matrix.rowCount));
 }
 
-static inline bool ColumnWithinIntMatrixBounds(IntMatrixNxM matrix, size_t column)
+static inline bool ColumnWithinIntMatrixBounds(IntMatrix matrix, size_t column)
 {
     return (column < (matrix.columnCount));
 }
 
 
-IntMatrixNxM CreateBlankIntMatrix(MemArena* arena, size_t rows, size_t columns)
+IntMatrix CreateBlankIntMatrix(MemArena* arena, size_t rows, size_t columns)
 {
-    return  (IntMatrixNxM){ (int32_t*)MemArenaAlloc(arena, GetIntMatrixAllocSize(rows, columns)), rows, columns };
+    return  (IntMatrix){ (int32_t*)MemArenaAlloc(arena, GetIntMatrixAllocSize(rows, columns)), rows, columns };
 }
 
-int32_t GetValueIntMatrix(IntMatrixNxM matrix, size_t row, size_t column)
+void IntMatrixAdd(IntMatrix* dest, IntMatrix A, IntMatrix B)
+{
+    for(uint32_t i = 0; i < A.rowCount; i++)
+    {
+        for(uint32_t j = 0; j < A.columnCount; j++)
+            dest->data[GetIndex(i, j, (dest->rowCount))] = (A.data[GetIndex(i, j, A.rowCount)] + B.data[GetIndex(i, j, B.rowCount)]);
+    }   
+}
+
+int32_t GetValueIntMatrix(IntMatrix matrix, size_t row, size_t column)
 {
     if(RowWithinIntMatrixBounds(matrix, row) && ColumnWithinIntMatrixBounds(matrix, column))
-        return (matrix.matrixData[GetIndex(row, column, matrix.rowCount)]);
+        return (matrix.data[GetIndex(row, column, matrix.rowCount)]);
     return INT32_MAX;
 }
 
-void GetRowIntMatrix(IntMatrixNxM matrix, int32_t* dest, size_t row)
+void GetRowIntMatrix(IntMatrix matrix, int32_t* dest, size_t row)
 {
     if(RowWithinIntMatrixBounds(matrix, row))
     {
         for(uint32_t i = 0; i < matrix.columnCount; i++)
-            dest[i] = matrix.matrixData[GetIndex(row, i, matrix.rowCount)];
+            dest[i] = matrix.data[GetIndex(row, i, matrix.rowCount)];
     }
 }
 
-void GetColumnIntMatrix(IntMatrixNxM matrix, int32_t* dest, size_t column)
+void GetColumnDataIntMatrix(IntMatrix matrix, int32_t* dest, size_t column)
 {
     if(ColumnWithinIntMatrixBounds(matrix, column))
-        memmove(dest, (matrix.matrixData + (column * matrix.rowCount)), (matrix.rowCount * sizeof(int32_t)));
+        memmove(dest, (matrix.data + (column * matrix.rowCount)), (matrix.rowCount * sizeof(int32_t)));
 }
 
-void SetRowIntMatrix(IntMatrixNxM matrix, const int32_t* src, size_t row)
+void GetColumnVectorIntMatrix(IntMatrix matrix, IntMatrix dest, size_t column)
+{
+    if(ColumnWithinIntMatrixBounds(matrix, column))
+        memmove((dest.data), (matrix.data + (column * matrix.rowCount)), (matrix.rowCount * sizeof(int32_t)));
+}
+
+void SetRowIntMatrix(IntMatrix matrix, const int32_t* src, size_t row)
 {
     if(RowWithinIntMatrixBounds(matrix, row))
     {
         for(uint32_t i = 0; i < matrix.columnCount; i++)
-            matrix.matrixData[GetIndex(row, i, matrix.rowCount)] = src[i];
+            matrix.data[GetIndex(row, i, matrix.rowCount)] = src[i];
     }
 }
 
-void SetColumnIntMatrix(IntMatrixNxM matrix, const int32_t* src, size_t column)
+void SetColumnIntMatrix(IntMatrix matrix, const int32_t* src, size_t column)
 {
     if(ColumnWithinIntMatrixBounds(matrix, column))
-        memmove((matrix.matrixData + (column * matrix.rowCount)), src, (matrix.rowCount * sizeof(int32_t)));
+        memmove((matrix.data + (column * matrix.rowCount)), src, (matrix.rowCount * sizeof(int32_t)));
 }
 
-void SetValueIntMatrix(IntMatrixNxM matrix, int32_t val, size_t row, size_t column)
+void SetValueIntMatrix(IntMatrix matrix, int32_t val, size_t row, size_t column)
 {
     if(RowWithinIntMatrixBounds(matrix, row) && ColumnWithinIntMatrixBounds(matrix, column))
-        matrix.matrixData[GetIndex(row, column, matrix.rowCount)] = val;
+        matrix.data[GetIndex(row, column, matrix.rowCount)] = val;
 }
 
-void SetIntMatrix(IntMatrixNxM matrix, int32_t val)
+void SetIntMatrix(IntMatrix matrix, int32_t val)
 {
     for(uint32_t x = 0; x < matrix.rowCount; x++)
     {
@@ -89,8 +104,13 @@ static inline bool ColumnWithinMatrixBounds(Matrix matrix, size_t column)
     return (column < (matrix.columnCount));
 }
 
+static inline bool IsSquareMatrix(Matrix A)
+{
+    return ((A.rowCount) == (A.columnCount));
+}
 
-Matrix CreateMatrix(MemArena* arena, size_t rows, size_t columns, double* vals)
+
+Matrix CreateMatrix(MemArena* arena, size_t rows, size_t columns, const double* vals)
 {
     Matrix ret = { (double*)MemArenaAlloc(arena, GetMatrixAllocSize(rows, columns)), rows, columns };
 
@@ -100,21 +120,10 @@ Matrix CreateMatrix(MemArena* arena, size_t rows, size_t columns, double* vals)
     return ret;
 }
 
-Matrix CreateDiagonalMatrix(MemArena* arena, size_t rows, double* diagVals)
+Matrix CreateDiagonalMatrix(MemArena* arena, size_t rows, const double* diagVals)
 {
     Matrix ret = CreateMatrix(arena, rows, rows, NULL);
-
-    SetMatrix(ret, 0.0);
-    if(diagVals != NULL)
-    {
-        for(uint32_t i = 0; i < rows; i++)
-            SetValueMatrix(ret, diagVals[i], i, i);
-    }
-    else 
-    {
-        for(uint32_t i = 0; i < rows; i++)
-            SetValueMatrix(ret, 1.0, i, i);
-    }
+    SetMatrixDiagonal(ret, diagVals);
 
     return ret;
 }
@@ -159,8 +168,25 @@ void MatrixMultiply(Matrix* dest, Matrix A, Matrix B)
         {
             double val = 0.0;
             for(uint32_t k = 0; k < A.columnCount; k++)
-                val += (A.data[GetIndex(i, k, A.rowCount)] * B.data[GetIndex(k, j, B.rowCount)]);
+                val += (GetValueMatrix(A, i, k) * GetValueMatrix(B, k, j));
             dest->data[GetIndex(i, j, (dest->rowCount))] = val;
+        }
+    }
+}
+
+void MatrixAffineTransform(Matrix* dest, Matrix A, Matrix B, Matrix C)
+{
+    if(A.columnCount != B.rowCount) 
+        return;
+
+    for(uint32_t i = 0; i < A.rowCount; i++)
+    {
+        for(uint32_t j = 0; j < B.columnCount; j++)
+        {
+            double val = 0.0;
+            for(uint32_t k = 0; k < A.columnCount; k++)
+                val += (GetValueMatrix(A, i, k) * GetValueMatrix(B, k, j));
+            dest->data[GetIndex(i, j, (dest->rowCount))] = val + GetValueMatrix(C, i, j);
         }
     }
 }
@@ -198,6 +224,15 @@ void MatrixTransform(Matrix* dest, Matrix A, RealFn sigma)
     {
         for(uint32_t j = 0; j < A.columnCount; j++)
             dest->data[GetIndex(i, j, (dest->rowCount))] = sigma(A.data[GetIndex(i, j, A.rowCount)]);
+    }
+}
+
+void MatrixTransformDiagonal(Matrix* dest, Matrix A, RealFn sigma)
+{
+    if(IsSquareMatrix(A))
+    {
+        for(uint32_t i = 0; i < A.rowCount; i++)
+            SetValueMatrix(*dest, sigma(GetValueMatrix(A, i, i)), i, i);
     }
 }
 
@@ -269,7 +304,7 @@ void SetMatrix(Matrix matrix, double val)
     }
 }
 
-void SetMatrixData(Matrix matrix, double* vals)
+void SetMatrixData(Matrix matrix, const double* vals)
 {
     memmove((void*)(matrix.data), (void*)vals, GetMatrixAllocSize(matrix.rowCount, matrix.columnCount));
 }
@@ -279,10 +314,30 @@ void CopyMatrixData(Matrix dest, Matrix src)
     memmove((void*)(dest.data), (void*)(src.data), GetMatrixAllocSize(src.rowCount, src.columnCount));
 }
 
+void SetMatrixIdentity(Matrix A)
+{
+    if(IsSquareMatrix(A))
+    {
+        SetMatrix(A, 0.0);
+        for(uint32_t i = 0; i < (A.rowCount); i++)
+            SetValueMatrix(A, 1.0, i, i);
+    }
+}
+
+void SetMatrixDiagonal(Matrix A, const double* diagVals)
+{
+    if(IsSquareMatrix(A))
+    {
+        SetMatrix(A, 0.0);
+        for(uint32_t i = 0; i < (A.rowCount); i++)
+            SetValueMatrix(A, diagVals[i], i, i);
+    }
+}
+
 
 /*=============== print functions (for easy debugging) ===============*/
 
-void PrintIntMatrix(IntMatrixNxM matrix)
+void PrintIntMatrix(IntMatrix matrix)
 {
     for(uint32_t r = 0; r < matrix.rowCount; r++)
     {
@@ -300,7 +355,7 @@ void PrintMatrix(Matrix matrix)
     {
         printf("( ");
         for(uint32_t c = 0; c < matrix.columnCount; c++)
-            printf("%5.1f ", GetValueMatrixSafe(matrix, r, c));
+            printf("%5.3f ", GetValueMatrixSafe(matrix, r, c));
         printf(")\n");
     }
     printf("\n");

@@ -5,105 +5,85 @@
 #include <stdio.h>
 
 #include "Matrix.hpp"
+#include "MemArena.hpp"
 #include "Random.hpp"
 #include "SRN.hpp"
 
 
-static double GetPropensity(const uint64_t* speciesCounts, const int32_t* reactantColumn, uint32_t speciesCount, double reactionRate)
-{
-    double product = 1.0;
-    for(uint32_t j = 0; j < speciesCount; j++)
-    {
-        if((reactantColumn[j] > 0))
-        {
-            if((int64_t)(speciesCounts[j]) < reactantColumn[j])
-                return 0.0;
-            else
-                product *= pow((double)(speciesCounts[j]), (double)(reactantColumn[j]));
-        }
-    }
-    return (product * reactionRate);
-}
-
-static void GetReactionPropensities(double* propensities, const uint64_t* speciesCounts, const SRN* srn)
-{
-    uint32_t speciesCount = SRNGetSpeciesCount(srn);
-    int32_t reactantColumn[speciesCount];
-    for(uint32_t k = 0; k < SRNGetReactionCount(srn); k++)
-    {
-        GetColumnIntMatrix((srn->reactantMatrix), reactantColumn, k);
-        propensities[k] = GetPropensity(speciesCounts, reactantColumn, speciesCount, (srn->reactionRates[k]));
-    }
-}
-
-static void saveSpeciesDataPoint(FILE* saveFilePointer, double time, const uint64_t* speciesCounts, uint32_t speciesCount)
+static void saveSpeciesDataPoint(FILE* saveFilePointer, double time, IntMatrix currentState, uint32_t M)
 {
     fprintf(saveFilePointer, "%f", time);
-    for(uint32_t j = 0; j < speciesCount; j++)
-        fprintf(saveFilePointer, " %lu", speciesCounts[j]);
+    for(uint32_t j = 0; j < M; j++)
+        fprintf(saveFilePointer, " %u", GetValueIntMatrix(currentState, j, 0));
     fputs("\n", saveFilePointer);
 }
 
 
+/*TODO: refactored but not tested*/
 void NaiveSRNTrajectorySim(double deltaT, uint64_t timeStepCount, uint32_t epochs, const SRN* srn, const char* saveFileName)
 {
     FILE* saveFilePointer = fopen(saveFileName, "w");
 
-    uint32_t speciesCount = SRNGetSpeciesCount(srn);
-    uint32_t reactionCount = SRNGetReactionCount(srn);
+    uint32_t M = SRNGetSpeciesCount(srn);
+    uint32_t K = SRNGetReactionCount(srn);
 
-    int32_t stoichiometricColumn[speciesCount];
-    uint64_t currentSpeciesCounts[speciesCount];
-    double propensities[reactionCount];
+    MemArena arena = CreateMemArena(GetIntMatrixAllocSize(M, 1) * 2);
+
+    IntMatrix stoichiometricColumn = CreateBlankIntMatrix(&arena, M, 1);
+    IntMatrix currentState = CreateBlankIntMatrix(&arena, M, 1);
+    double propensities[K];
     for(uint32_t e = 0; e < epochs; e++)
     {
-        for(uint32_t i = 0; i < speciesCount; i++)
-            currentSpeciesCounts[i] = (srn->species[i].initialCount);
+        for(uint32_t i = 0; i < M; i++)
+            SetValueIntMatrix(currentState, (srn->species[i].initialCount), i, 0);
 
         for(uint64_t i = 0; i < timeStepCount; i++)
         {
-            saveSpeciesDataPoint(saveFilePointer, (deltaT * (double)i), currentSpeciesCounts, speciesCount);
+            saveSpeciesDataPoint(saveFilePointer, (deltaT * (double)i), currentState, M);
 
-            GetReactionPropensities(propensities, currentSpeciesCounts, srn);
-            for(uint32_t k = 0; k < reactionCount; k++)
+            GetReactionPropensities(srn, currentState, propensities);
+            for(uint32_t k = 0; k < K; k++)
             {   
                 if(BernoulliDistributionSim(propensities[k] * deltaT))
                 {
-                    GetColumnIntMatrix((srn->stoichiometricMatrix), stoichiometricColumn, k);
-
-                    for(uint32_t j = 0; j < speciesCount; j++)
-                        currentSpeciesCounts[j] += stoichiometricColumn[j];
+                    GetColumnVectorIntMatrix((srn->stoichiometricMatrix), stoichiometricColumn, k);
+                    IntMatrixAddSelf(currentState, stoichiometricColumn);
                 }
             }
         }
         fputs("\n\n", saveFilePointer);
     }
+
+    DeleteMemArena(&arena);
     fclose(saveFilePointer);
 }
 
+/*TODO: refactored but not tested*/
 void GillespieSRNTrajectorySim(double time, uint32_t epochs, const SRN* srn, const char* saveFileName)
 {
     FILE* saveFilePointer = fopen(saveFileName, "w");
 
-    uint32_t speciesCount = SRNGetSpeciesCount(srn);
-    uint32_t reactionCount = SRNGetReactionCount(srn);
+    uint32_t M = SRNGetSpeciesCount(srn);
+    uint32_t K = SRNGetReactionCount(srn);
 
-    int32_t stoichiometricColumn[speciesCount];
-    uint64_t currentSpeciesCounts[speciesCount];
-    double propensities[reactionCount];
+    MemArena arena = CreateMemArena(GetIntMatrixAllocSize(M, 1) * 2);
+
+    IntMatrix stoichiometricColumn = CreateBlankIntMatrix(&arena, M, 1);
+    IntMatrix currentState = CreateBlankIntMatrix(&arena, M, 1);
+    double propensities[K];
     for(uint32_t e = 0; e < epochs; e++)
     {
-        for(uint32_t i = 0; i < speciesCount; i++)
-            currentSpeciesCounts[i] = (srn->species[i].initialCount);
+        for(uint32_t i = 0; i < M; i++)
+            SetValueIntMatrix(currentState, (srn->species[i].initialCount), i, 0);
 
         double currentTime = 0.0;
         while(currentTime < time)
         {
-            saveSpeciesDataPoint(saveFilePointer, currentTime, currentSpeciesCounts, speciesCount);
+            saveSpeciesDataPoint(saveFilePointer, currentTime, currentState, M);
 
-            GetReactionPropensities(propensities, currentSpeciesCounts, srn);
+            GetReactionPropensities(srn, currentState, propensities);
             double propensitySum = propensities[0];
-            for(uint32_t k = 1; k < reactionCount; k++)
+            for(uint32_t k = 1; k < K; k++)
                 propensitySum += propensities[k];
 
             double r1 = StandardUniformSim(true, false);
@@ -119,13 +99,14 @@ void GillespieSRNTrajectorySim(double time, uint32_t epochs, const SRN* srn, con
                 propensityComparisonSum += propensities[activeReactionIndex];
             }
             
-            GetColumnIntMatrix((srn->stoichiometricMatrix), stoichiometricColumn, activeReactionIndex);
-            for(uint32_t j = 0; j < speciesCount; j++)
-                currentSpeciesCounts[j] += stoichiometricColumn[j];
+            GetColumnVectorIntMatrix((srn->stoichiometricMatrix), stoichiometricColumn, activeReactionIndex);
+            IntMatrixAddSelf(currentState, stoichiometricColumn);
 
             currentTime += deltaT;
         }
         fputs("\n\n", saveFilePointer);
     }
+
+    DeleteMemArena(&arena);
     fclose(saveFilePointer);
 }

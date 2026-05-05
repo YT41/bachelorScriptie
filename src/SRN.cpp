@@ -1,5 +1,8 @@
 #include "SRN.hpp"
+#include "Matrix.hpp"
 
+#include <cmath>
+#include <cstdint>
 #include <stdint.h>
 #include <string.h>
 
@@ -77,4 +80,61 @@ SRN* CreateSRN(uint32_t reactionCount, Reaction** reactions, Species* species)
 void DeleteSRN(SRN* srn)
 {
     DeleteMemArena(&(srn->arena));
+}
+
+
+uint32_t SRNGetMaxSpeciesCount(const SRN* srn)
+{ 
+    uint32_t maxCountAllSpecies = 0;
+    for(uint32_t i = 0; i < SRNGetSpeciesCount(srn); i++)
+    {
+        if((srn->species[i].maxCount) > maxCountAllSpecies)
+            maxCountAllSpecies = (srn->species[i].maxCount);
+    }
+    return maxCountAllSpecies; 
+}
+
+double GetPropensity(const SRN* srn, IntMatrix n, uint32_t reactionIndex)
+{
+    double product = 1.0;
+    for(uint32_t i = 0; i < SRNGetSpeciesCount(srn); i++)
+    {
+        int32_t reactantCount = GetValueIntMatrix((srn->reactantMatrix), i, reactionIndex);
+        if((reactantCount > 0))
+        {
+            int32_t countJ = GetValueIntMatrix(n, i, 0);
+            if(countJ < reactantCount)
+                return 0.0;
+            else
+                product *= pow((double)countJ, (double)reactantCount);
+        }
+    }
+    return (product * (srn->reactionRates[reactionIndex]));
+}
+
+void GetReactionPropensities(const SRN* srn, IntMatrix n, double* propensities)
+{
+    for(uint32_t k = 0; k < SRNGetReactionCount(srn); k++)
+        propensities[k] = GetPropensity(srn, n, k);
+}
+
+double GetEscapeRate(const SRN* srn, IntMatrix n)
+{
+    double sum = 0.0;
+    for(uint32_t k = 0; k < SRNGetReactionCount(srn); k++)
+        sum += GetPropensity(srn, n, k); 
+    return sum;
+}
+
+double GetPreviousConnectedState(const SRN* srn, IntMatrix currentState, IntMatrix previousState, uint32_t reactionIndex)
+{
+    for(uint32_t i = 0; i < SRNGetSpeciesCount(srn); i++)
+    {
+        SetValueIntMatrix(previousState, (GetValueIntMatrix(currentState, i, 0) - GetValueIntMatrix((srn->stoichiometricMatrix), i, reactionIndex)), i, 0);
+        int32_t ni = GetValueIntMatrix(previousState, i, 0);
+        if((ni < 0) || (ni >= (int32_t)(srn->species[i].maxCount)))
+            return 0.0; /*not a valid previous state*/
+    }
+
+    return GetPropensity(srn, previousState, reactionIndex);
 }

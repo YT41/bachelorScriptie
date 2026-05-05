@@ -1,5 +1,5 @@
-B = 10 < 1000;
-B --0.05-> 2B;
-B --0.03-> ;
+B = 10 < 30;
+ --0.1-> B;
+B --0.01-> ;
 
 /*simple bacteria birth model example*/
