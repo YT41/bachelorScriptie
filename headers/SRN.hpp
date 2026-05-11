@@ -48,6 +48,8 @@ static inline uint32_t SRNGetReactionCount(const SRN* srn) { return (srn->stoich
 static inline uint32_t SRNGetSpeciesCount(const SRN* srn) { return (srn->stoichiometricMatrix.rowCount); }
 uint32_t SRNGetMaxSpeciesCount(const SRN* srn);
 
+Tensor SRNCreateStateSpaceTensor(MemArena* arena, const SRN* srn);
+void IncrementStateInStateSpace(const SRN* srn, IntMatrix n); /*iterates n through the state space*/
 
 double GetPropensity(const SRN* srn, IntMatrix n, uint32_t reactionIndex);
 void GetReactionPropensities(const SRN* srn, IntMatrix n, double* propensities);
@@ -55,3 +57,5 @@ double GetEscapeRate(const SRN* srn, IntMatrix n);
 
 /*returns propensity of previous state with respects to reaction, previous state is set into previousState*/
 double GetPreviousConnectedState(const SRN* srn, IntMatrix currentState, IntMatrix previousState, uint32_t reactionIndex);
+
+void SetInitialState(const SRN* srn, IntMatrix n);

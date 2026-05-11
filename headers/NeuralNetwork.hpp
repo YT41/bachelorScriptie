@@ -44,6 +44,8 @@ typedef struct NeuralNetwork
 NeuralNetwork* NNCreate(uint32_t* neuronsPerLayer, ActivationFnID* activationFnPerLayer, uint32_t hiddenLayerCount, double learningRate);
 void NNDelete(NeuralNetwork* network);
 
+void NNCopyParameters(NeuralNetwork* dest, const NeuralNetwork* src);
+
 // void NNSaveToFile(const NeuralNetwork* network, const char* fileName);
 // void NNLoadFromFile(NeuralNetwork* network, const char* fileName);
 

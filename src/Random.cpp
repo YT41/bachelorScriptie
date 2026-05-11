@@ -1,5 +1,6 @@
 #include "Random.hpp"
 
+#include <cmath>
 #include <math.h>
 
 
@@ -85,4 +86,15 @@ uint32_t BinomialDistributionSim(uint32_t n, double p)
     for(uint32_t i = 0; i < divisionCount; i++)
         resultSum += BinomialDistributionSimHelper(((n / divisionCount) + (uint32_t)((n % divisionCount) > i)), p);
     return resultSum;
+}
+
+
+/*======================= Distances functions =======================*/
+
+double HellingerDistance(Tensor P, Tensor Q)
+{
+    double sum = 0.0;
+    for(size_t i = 0; i < GetTensorSize(P.dimensions, P.dimensionCount); i++)
+        sum += pow((sqrt(P.data[i]) - sqrt(Q.data[i])), 2.0);
+    return sqrt(sum / 2.0);
 }

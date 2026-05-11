@@ -1,6 +1,7 @@
 #pragma once
 
 #include "MemArena.hpp"
+#include <cstddef>
 
 
 typedef struct IntMatrix
@@ -17,6 +18,13 @@ typedef struct Matrix
     size_t columnCount;
 } Matrix;
 
+typedef struct Tensor
+{
+    double* data;
+    size_t* dimensions;
+    size_t dimensionCount;
+} Tensor;
+
 
 /*======================== general matrix functions ========================*/
 
@@ -30,6 +38,7 @@ IntMatrix CreateBlankIntMatrix(MemArena* arena, size_t rows, size_t columns);
 
 void IntMatrixAdd(IntMatrix* dest, IntMatrix A, IntMatrix B); /*dest = A + B*/
 static inline void IntMatrixAddSelf(IntMatrix A, IntMatrix B) { IntMatrixAdd(&A, A, B); }; /*A = A + B*/
+void IntMatrixAddValue(IntMatrix matrix, int32_t val, size_t row, size_t column); /*A_ij += val*/
 
 int32_t GetValueIntMatrix(IntMatrix matrix, size_t row, size_t column);
 
@@ -42,7 +51,9 @@ void SetColumnIntMatrix(IntMatrix matrix, const int32_t* src, size_t column);
 
 void SetValueIntMatrix(IntMatrix matrix, int32_t val, size_t row, size_t column);
 
-void SetIntMatrix(IntMatrix, int32_t val);
+void SetIntMatrix(IntMatrix matrix, int32_t val);
+
+bool IntMatrixIsZero(IntMatrix matrix);
 
 
 /*======================== matrix functions ========================*/
@@ -68,6 +79,7 @@ void MatrixTransformDiagonal(Matrix* dest, Matrix A, RealFn sigma); /*dest_ii = 
 void MatrixHadamard(Matrix* dest, Matrix A, Matrix B); /*dest_ij = A_ij * B_ij*/
 double Dot(Matrix v, Matrix w); /*<v, w>, v and w must have 1 column*/
 
+void MatrixAddValue(Matrix A, double val, size_t row, size_t column); /*A_ij += val*/
 static inline void MatrixAddSelf(Matrix A, Matrix B) { MatrixAdd(&A, A, B); } /*A += B*/
 static inline void MatrixSubSelf(Matrix A, Matrix B) { MatrixSub(&A, A, B); } /*A -= B*/
 static inline void MatrixScaleSelf(Matrix A, double lambda) { MatrixScale(&A, A, lambda); } /*A = lambda A*/
@@ -91,6 +103,22 @@ void SetMatrixData(Matrix matrix, const double* vals);
 void CopyMatrixData(Matrix dest, Matrix src);
 void SetMatrixIdentity(Matrix A); /*A = I*/
 void SetMatrixDiagonal(Matrix A, const double* diagVals);
+
+
+/*======================== Tensor functions ========================*/
+
+size_t GetTensorSize(size_t* dimensions, size_t dimensionCount);
+size_t GetTensorAllocSize(size_t* dimensions, size_t dimensionCount);
+Tensor CreateTensor(MemArena* arena, size_t* dimensions, size_t dimensionCount, const double* vals);
+
+double GetValueTensor(Tensor tensor, IntMatrix indices);
+void SetValueTensor(Tensor tensor, double val, IntMatrix indices);
+
+void TensorScaleSelf(Tensor T, double lambda);
+void TensorAddValue(Tensor T, double val, IntMatrix indices);
+
+void SetTensor(Tensor tensor, double val);
+void SetTensorData(Tensor tensor, const double* vals);
 
 
 /*=============== print functions (for easy debugging) ===============*/

@@ -198,6 +198,15 @@ void NNDelete(NeuralNetwork* network)
     DeleteMemArena(&(network->arena));
 }
 
+void NNCopyParameters(NeuralNetwork* dest, const NeuralNetwork* src)
+{
+    for(uint32_t i = 0; i < ((dest->hiddenLayerCount) + 1); i++)
+    {
+        CopyMatrixData((dest->weightMatrices[i]), (src->weightMatrices[i]));
+        CopyMatrixData((dest->biasVectors[i]), (src->biasVectors[i]));
+    }
+}
+
 
 // void NNSaveToFile(const NeuralNetwork* network, const char* fileName)
 // {
