@@ -1,7 +1,9 @@
 #include "Matrix.hpp"
+#include "MemArena.hpp"
 #include "Random.hpp"
 
 #include <cmath>
+#include <cstddef>
 #include <cstdint>
 #include <string.h>
 #include <stdbool.h>
@@ -31,6 +33,11 @@ void IntMatrixAdd(IntMatrix* dest, IntMatrix A, IntMatrix B)
         for(uint32_t j = 0; j < A.columnCount; j++)
             dest->data[GetIndex(i, j, (dest->rowCount))] = (A.data[GetIndex(i, j, A.rowCount)] + B.data[GetIndex(i, j, B.rowCount)]);
     }   
+}
+
+void IntMatrixAddValue(IntMatrix matrix, int32_t val, size_t row, size_t column)
+{
+    SetValueIntMatrix(matrix, (GetValueIntMatrix(matrix, row, column) + val), row, column);
 }
 
 int32_t GetValueIntMatrix(IntMatrix matrix, size_t row, size_t column)
@@ -89,6 +96,19 @@ void SetIntMatrix(IntMatrix matrix, int32_t val)
         for(uint32_t y = 0; y < matrix.columnCount; y++)
             SetValueIntMatrix(matrix, val, x, y);
     }
+}
+
+bool IntMatrixIsZero(IntMatrix matrix)
+{
+    for(size_t x = 0; x < matrix.rowCount; x++)
+    {
+        for(size_t y = 0; y < matrix.columnCount; y++)
+        {
+            if(GetValueIntMatrix(matrix, x, y) != 0)
+                return false;
+        }
+    }
+    return true;
 }
 
 
@@ -189,6 +209,11 @@ void MatrixAffineTransform(Matrix* dest, Matrix A, Matrix B, Matrix C)
             dest->data[GetIndex(i, j, (dest->rowCount))] = val + GetValueMatrix(C, i, j);
         }
     }
+}
+
+void MatrixAddValue(Matrix A, double val, size_t row, size_t column)
+{
+    SetValueMatrix(A, (GetValueMatrix(A, row, column) + val), row, column);
 }
 
 void MatrixAdd(Matrix* dest, Matrix A, Matrix B)
@@ -332,6 +357,87 @@ void SetMatrixDiagonal(Matrix A, const double* diagVals)
         for(uint32_t i = 0; i < (A.rowCount); i++)
             SetValueMatrix(A, diagVals[i], i, i);
     }
+}
+
+
+/*======================== Tensor functions ========================*/
+
+static inline size_t GetDataIndexTensor(Tensor tensor, IntMatrix indices)
+{ 
+    size_t sum = 0;
+    size_t product = 1;
+    for(size_t i = 0; i < tensor.dimensionCount; i++)
+    {
+        sum += (product * GetValueIntMatrix(indices, i, 0));
+        product *= tensor.dimensions[i];
+    }
+    return sum; 
+}
+
+static inline size_t GetTensorDataAllocSize(size_t* dimensions, size_t dimensionCount)
+{
+    return (GetTensorSize(dimensions, dimensionCount) * sizeof(double));
+}
+
+size_t GetTensorSize(size_t* dimensions, size_t dimensionCount)
+{
+    size_t product = 1;
+    for(size_t i = 0; i < dimensionCount; i++)
+        product *= dimensions[i];
+    return product;
+}
+
+size_t GetTensorAllocSize(size_t* dimensions, size_t dimensionCount)
+{
+    return GetTensorDataAllocSize(dimensions, dimensionCount) + (dimensionCount * sizeof(size_t));
+}
+
+Tensor CreateTensor(MemArena* arena, size_t* dimensions, size_t dimensionCount, const double* vals)
+{
+    Tensor ret = { 
+        (double*)MemArenaAlloc(arena, GetTensorDataAllocSize(dimensions, dimensionCount)), 
+        (size_t*)MemArenaAlloc(arena, (dimensionCount * sizeof(size_t))),
+        dimensionCount
+    };
+    memcpy(ret.dimensions, dimensions, (dimensionCount * sizeof(size_t)));
+
+    if(vals != NULL)
+        SetTensorData(ret, vals);
+
+    return ret;
+}
+
+double GetValueTensor(Tensor tensor, IntMatrix indices)
+{
+    return tensor.data[GetDataIndexTensor(tensor, indices)];
+}
+
+void SetValueTensor(Tensor tensor, double val, IntMatrix indices)
+{
+    tensor.data[GetDataIndexTensor(tensor, indices)] = val;
+}
+
+void TensorScaleSelf(Tensor T, double lambda)
+{
+    for(size_t i = 0; i < GetTensorSize(T.dimensions, T.dimensionCount); i++)
+        T.data[i] *= lambda;
+}
+
+void TensorAddValue(Tensor T, double val, IntMatrix indices)
+{
+    SetValueTensor(T, (GetValueTensor(T, indices) + val), indices);
+}
+
+void SetTensor(Tensor tensor, double val)
+{
+    for(size_t i = 0; i < GetTensorSize(tensor.dimensions, tensor.dimensionCount); i++)
+        tensor.data[i] = val;
+}
+
+void SetTensorData(Tensor tensor, const double* vals)
+{
+    for(size_t i = 0; i < GetTensorSize(tensor.dimensions, tensor.dimensionCount); i++)
+        tensor.data[i] = vals[i];
 }
 
 

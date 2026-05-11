@@ -2,6 +2,7 @@
 #include "Matrix.hpp"
 
 #include <cmath>
+#include <cstddef>
 #include <cstdint>
 #include <stdint.h>
 #include <string.h>
@@ -94,6 +95,30 @@ uint32_t SRNGetMaxSpeciesCount(const SRN* srn)
     return maxCountAllSpecies; 
 }
 
+Tensor SRNCreateStateSpaceTensor(MemArena* arena, const SRN* srn)
+{
+    uint32_t M = SRNGetSpeciesCount(srn);
+    size_t dimensions[M];
+    for(uint32_t i = 0; i < M; i++)
+        dimensions[i] = (srn->species[i].maxCount);
+
+    return CreateTensor(arena, dimensions, M, NULL);
+}
+
+void IncrementStateInStateSpace(const SRN* srn, IntMatrix n)
+{
+    uint32_t M = SRNGetSpeciesCount(srn);
+    for(uint32_t i = 0; i < M; i++)
+    {
+        if(GetValueIntMatrix(n, i, 0) < (int32_t)((srn->species[i].maxCount) - 1))
+        {
+            IntMatrixAddValue(n, 1, i, 0);
+            break;
+        }
+        SetValueIntMatrix(n, 0, i, 0);
+    }
+}
+
 double GetPropensity(const SRN* srn, IntMatrix n, uint32_t reactionIndex)
 {
     double product = 1.0;
@@ -137,4 +162,10 @@ double GetPreviousConnectedState(const SRN* srn, IntMatrix currentState, IntMatr
     }
 
     return GetPropensity(srn, previousState, reactionIndex);
+}
+
+void SetInitialState(const SRN* srn, IntMatrix n)
+{
+    for(uint32_t i = 0; i < SRNGetSpeciesCount(srn); i++)
+        SetValueIntMatrix(n, (srn->species[i].initialCount), i, 0);
 }

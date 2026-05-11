@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Matrix.hpp"
 #include <stdint.h>
 #include <stdbool.h>
 
@@ -71,3 +72,8 @@ static inline uint32_t PickUintWithChances(const double* probabilities, uint32_t
 uint64_t NChooseK(uint32_t n, uint32_t k);
 
 uint32_t BinomialDistributionSim(uint32_t n, double p);
+
+
+/*======================= Distances functions =======================*/
+
+double HellingerDistance(Tensor P, Tensor Q);
