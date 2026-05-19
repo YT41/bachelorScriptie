@@ -60,8 +60,9 @@ bool IntMatrixIsZero(IntMatrix matrix);
 
 typedef double RealFn(double x);
 
+static inline size_t GetMatrixSize(Matrix A) { return (A.rowCount * A.columnCount); }
 static inline size_t GetMatrixAllocSize(size_t rows, size_t columns) { return (rows * columns * sizeof(double)); }
-static inline size_t GetMatrixAllocSizeMatrix(Matrix A) { return (A.rowCount * A.columnCount * sizeof(double)); }
+static inline size_t GetMatrixAllocSizeMatrix(Matrix A) { return (GetMatrixSize(A) * sizeof(double)); }
 Matrix CreateMatrix(MemArena* arena, size_t rows, size_t columns, const double* vals);
 Matrix CreateDiagonalMatrix(MemArena* arena, size_t rows, const double* diagVals);
 Matrix CreateRandomMatrix(MemArena* arena, size_t rows, size_t columns);
@@ -110,6 +111,8 @@ void SetMatrixDiagonal(Matrix A, const double* diagVals);
 size_t GetTensorSize(size_t* dimensions, size_t dimensionCount);
 size_t GetTensorAllocSize(size_t* dimensions, size_t dimensionCount);
 Tensor CreateTensor(MemArena* arena, size_t* dimensions, size_t dimensionCount, const double* vals);
+
+void IncrementTensorIndex(Tensor tensor, IntMatrix indices);
 
 double GetValueTensor(Tensor tensor, IntMatrix indices);
 void SetValueTensor(Tensor tensor, double val, IntMatrix indices);

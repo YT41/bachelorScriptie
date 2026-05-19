@@ -4,6 +4,7 @@
 #include <cmath>
 #include <cstddef>
 #include <cstdint>
+#include <cstdio>
 #include <stdint.h>
 #include <string.h>
 
@@ -83,6 +84,58 @@ void DeleteSRN(SRN* srn)
     DeleteMemArena(&(srn->arena));
 }
 
+SRN* SRNCreateSignallingCascade(uint32_t M)
+{
+    if(M == 0) { return NULL; } /*impossible*/
+
+    Species cascadeSpecies[M];
+    for(uint32_t i = 0; i < M; i++)
+    {
+        cascadeSpecies[i].initialCount = 0;
+        cascadeSpecies[i].maxCount = 10;
+        snprintf(cascadeSpecies[i].name, 32, "X%d", (i + 1));
+    }
+
+    Reaction* cascadeReactions[2 * M];
+
+    /*synthesis reaction*/
+    int32_t synthesisReactants[M];
+    int32_t synthesisProducts[M];
+    memset(synthesisReactants, 0, (sizeof(int32_t) * M));
+    memset(synthesisProducts, 0, (sizeof(int32_t) * M));
+    synthesisProducts[0] = 1;
+    cascadeReactions[0] = CreateReaction(10.0, M, synthesisReactants, synthesisProducts);
+
+    /*decay reactions*/
+    int32_t decayReactants[M];
+    int32_t decayProducts[M];
+    memset(decayProducts, 0, (sizeof(int32_t) * M));
+    for(uint32_t i = 0; i < M; i++)
+    {
+        memset(decayReactants, 0, (sizeof(int32_t) * M));
+        decayReactants[i] = 1;
+        cascadeReactions[i + 1] = CreateReaction(1.0, M, decayReactants, decayProducts);
+    }
+
+    /*catalytic reactions*/
+    int32_t catalyticReactants[M];
+    int32_t catalyticProducts[M];
+    for(uint32_t i = 0; i < (M - 1); i++)
+    {
+        memset(catalyticReactants, 0, (sizeof(int32_t) * M));
+        memset(catalyticProducts, 0, (sizeof(int32_t) * M));
+        catalyticReactants[i] = 1;
+        catalyticProducts[i+1] = 1;
+        cascadeReactions[i + (M + 1)] = CreateReaction(5.0, M, catalyticReactants, catalyticProducts);
+    }
+
+    SRN* ret = CreateSRN((2 * M), cascadeReactions, cascadeSpecies);
+
+    for(uint32_t i = 0; i < (2 * M); i++)
+        DeleteReaction(cascadeReactions[i]);
+
+    return ret;
+}
 
 uint32_t SRNGetMaxSpeciesCount(const SRN* srn)
 { 
@@ -93,6 +146,26 @@ uint32_t SRNGetMaxSpeciesCount(const SRN* srn)
             maxCountAllSpecies = (srn->species[i].maxCount);
     }
     return maxCountAllSpecies; 
+}
+
+size_t SRNGetStateSpaceSize(const SRN* srn)
+{
+    uint32_t M = SRNGetSpeciesCount(srn);
+    size_t dimensions[M];
+    for(uint32_t i = 0; i < M; i++)
+        dimensions[i] = (srn->species[i].maxCount);
+
+    return GetTensorSize(dimensions, M);
+}
+
+size_t SRNGetStateSpaceTensorAllocSize(const SRN* srn)
+{
+    uint32_t M = SRNGetSpeciesCount(srn);
+    size_t dimensions[M];
+    for(uint32_t i = 0; i < M; i++)
+        dimensions[i] = (srn->species[i].maxCount);
+
+    return GetTensorAllocSize(dimensions, M);
 }
 
 Tensor SRNCreateStateSpaceTensor(MemArena* arena, const SRN* srn)

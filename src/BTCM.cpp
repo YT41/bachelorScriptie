@@ -2,17 +2,24 @@
 
 #include "Matrix.hpp"
 #include "MemArena.hpp"
+#include "MiscMath.hpp"
 #include "NeuralNetwork.hpp"
+#include "TrajectorySim.hpp"
 #include "Random.hpp"
+#include "ReactionParser.hpp"
 #include "SRN.hpp"
 #include <cmath>
-#include <cstdint>
 #include <cstdio>
+#include <math.h>
+#include <cstddef>
+#include <cstdint>
+#include <stdio.h>
+#include <ctime>
 
 
 /*============================ helper functions ============================*/
 
-static inline double GetInitialConditionProbability(IntMatrix n, const SRN* srn)
+static inline double GetInitialConditionProbability(const SRN* srn, IntMatrix n)
 {
     uint32_t M = SRNGetSpeciesCount(srn);
     for(uint32_t i = 0; i < M; i++)
@@ -24,7 +31,7 @@ static inline double GetInitialConditionProbability(IntMatrix n, const SRN* srn)
 }
 
 /*return probability of having picked this sample in initial distribution (its always 1)*/
-static inline double GetInitialConditionSample(IntMatrix s, const SRN* srn)
+static inline double GetInitialConditionSample(const SRN* srn, IntMatrix s)
 {
     uint32_t M = SRNGetSpeciesCount(srn);
     for(uint32_t i = 0; i < M; i++)
@@ -32,15 +39,32 @@ static inline double GetInitialConditionSample(IntMatrix s, const SRN* srn)
     return 1.0;
 }
 
+static inline void AppendValueVector(Matrix matrix, double val, size_t* size)
+{
+    SetValueMatrix(matrix, val, *size, 0);
+    (*size)++;
+}
+
 /*prepare token i: x_i^{(0)} := (i, t, n_{<i})*/
 static inline void PrepareInputToken(BTCM* m, uint32_t i, IntMatrix n, double t)
 {
-    /*prepare token i: x_i^{(0)} := (i, t, n_{<i})*/
+    uint32_t K = SRNGetReactionCount((m->srn));
+
+    size_t tokenSize = 0;
+
+    /*prepare token i: x_i^{(0)} := (i, t, \eta_i, n_{<i})*/
     SetMatrix((m->tokenCache), 0.0); /*padding is just set to 0*/
-    SetValueMatrix((m->tokenCache), (double)i, 0, 0);
-    SetValueMatrix((m->tokenCache), t, 1, 0);
+
+    AppendValueVector((m->tokenCache), (double)i, &tokenSize);
+    AppendValueVector((m->tokenCache), t, &tokenSize);
+    for(uint32_t k = 0; k < K; k++)
+    {
+        AppendValueVector((m->tokenCache), (double)GetValueIntMatrix((m->srn->reactantMatrix), i, k), &tokenSize);
+        AppendValueVector((m->tokenCache), (double)GetValueIntMatrix((m->srn->productMatrix), i, k), &tokenSize);
+        AppendValueVector((m->tokenCache), (m->srn->reactionRates[k]), &tokenSize);
+    }
     for(uint32_t j = 0; j < i; j++)
-        SetValueMatrix((m->tokenCache), GetValueIntMatrix(n, j, 0), (j + 2), 0);
+        AppendValueVector((m->tokenCache), (double)GetValueIntMatrix(n, j, 0), &tokenSize);
 }
 
 static inline double GetTargetProbability(BTCM* m, IntMatrix sample, IntMatrix previousState, double t, double deltaT)
@@ -65,8 +89,9 @@ static inline double GetTargetProbability(BTCM* m, IntMatrix sample, IntMatrix p
 BTCM* BTCMCreate(SRN* srn, uint32_t* neuronsPerHiddenLayer, uint32_t hiddenLayerCount, double learningRate)
 {
     uint32_t M = SRNGetSpeciesCount(srn);
+    uint32_t K = SRNGetReactionCount(srn);
 
-    uint32_t inputTokenDim = M + 1; /*TODO: edit this to correct count, it should be higher than M + 1 eventually*/
+    uint32_t inputTokenDim = 1 + 1 + (K * 3) + (M - 1); /*TODO: edit this to correct count, it should be higher than M + 1 eventually*/
 
     MemArena arena = CreateMemArena(sizeof(BTCM) + GetMatrixAllocSize(inputTokenDim, 1));
 
@@ -100,6 +125,11 @@ void BTCMDelete(BTCM* m)
     DeleteMemArena(&(m->arena));
 }
 
+size_t BTCMGetParamCount(const BTCM* m)
+{
+    return NNGetParamCount((m->nn));
+}
+
 BTCM* BTCMCopy(const BTCM* m)
 {
     uint32_t hiddenLayerCount = (m->nn->hiddenLayerCount);
@@ -123,8 +153,8 @@ void BTCMCopyParameters(BTCM* dest, const BTCM* src)
 /*doing it this way, it takes a sample and returns the probability of having taken this sample at the same time*/
 double BTCMTakeSample(BTCM* m, IntMatrix s, double t, Matrix desiredNudgesMLPOutput)
 {
-    // if(t == 0.0)
-    //     return GetInitialConditionSample(s, (m->srn));
+    if(t == 0.0)
+        return GetInitialConditionSample((m->srn), s);
 
     SetMatrix(desiredNudgesMLPOutput, 0.0);
 
@@ -133,7 +163,6 @@ double BTCMTakeSample(BTCM* m, IntMatrix s, double t, Matrix desiredNudgesMLPOut
     for(uint32_t i = 0; i < M; i++)
     {
         PrepareInputToken(m, i, s, t);
-
         Matrix out = NNPredict((m->nn), (m->tokenCache));
 
         /*simulate a count for species i using generated conditional probabilities*/
@@ -153,15 +182,14 @@ double BTCMTakeSample(BTCM* m, IntMatrix s, double t, Matrix desiredNudgesMLPOut
 
 double BTCMTakeSampleNoGradient(BTCM* m, IntMatrix s, double t)
 {
-    // if(t == 0.0)
-    //     return GetInitialConditionSample(s, (m->srn));
+    if(t == 0.0)
+        return GetInitialConditionSample((m->srn), s);
 
     uint32_t M = SRNGetSpeciesCount((m->srn));
     double conditionalProbabilityProduct = 1.0;
     for(uint32_t i = 0; i < M; i++)
     {
         PrepareInputToken(m, i, s, t);
-
         Matrix out = NNPredict((m->nn), (m->tokenCache));
 
         /*simulate a count for species i using generated conditional probabilities*/
@@ -177,15 +205,14 @@ double BTCMTakeSampleNoGradient(BTCM* m, IntMatrix s, double t)
 double BTCMPredict(BTCM* m, IntMatrix n, double t)
 {
     /*in this case we know the probabilities exactly*/
-    // if(t == 0.0)
-    //     return GetInitialConditionProbability(n, (m->srn));
+    if(t == 0.0)
+        return GetInitialConditionProbability((m->srn), n);
 
     uint32_t M = SRNGetSpeciesCount((m->srn));
     double conditionalProbabilityProduct = 1.0;
     for(uint32_t i = 0; i < M; i++)
     {
         PrepareInputToken(m, i, n, t);
-
         Matrix out = NNPredict((m->nn), (m->tokenCache));
         conditionalProbabilityProduct *= GetValueMatrix(out, GetValueIntMatrix(n, i, 0), 0);
     }
@@ -205,20 +232,41 @@ void BTCMGetFullProbabilityDistribution(BTCM* m, Tensor probabilities, double t)
     do
     {
         SetValueTensor(probabilities, BTCMPredict(m, n, t), n);
-        IncrementStateInStateSpace((m->srn), n);
+        IncrementTensorIndex(probabilities, n);
+        //IncrementStateInStateSpace((m->srn), n);
     }
     while(!IntMatrixIsZero(n));
 
     DeleteMemArena(&arena);
 }
 
-void BTCMTrain(BTCM* m, double T, double deltaT, double lambda, uint32_t B, uint32_t Q, uint64_t epochs)
+static inline void GetTotalGradient(uint32_t B, double rewardBaseline, const double* rewards, Matrix* desiredNudgesMLPOutput, Matrix totalDesiredNudgesMLPOutput)
 {
+    for(uint32_t b = 0; b < B; b++)
+    {
+        if(isfinite(rewards[b]) && isfinite(rewardBaseline))
+        {
+            MatrixScaleSelf(desiredNudgesMLPOutput[b], (rewards[b] - rewardBaseline));
+            MatrixAddSelf(totalDesiredNudgesMLPOutput, desiredNudgesMLPOutput[b]);
+        }
+        else if(isfinite(rewards[b]))
+        {
+            MatrixScaleSelf(desiredNudgesMLPOutput[b], rewards[b]);
+            MatrixAddSelf(totalDesiredNudgesMLPOutput, desiredNudgesMLPOutput[b]);
+        }
+    }
+}
+
+void BTCMTrain(BTCM* m, double T, double deltaT, double p, uint32_t B, uint32_t Q, uint64_t epochs, const char* fileName)
+{
+    FILE* lossFile = fopen(fileName, "w");
+
     uint32_t M = SRNGetSpeciesCount((m->srn));
 
     MemArena arena = CreateMemArena(
         (GetIntMatrixAllocSize(M, 1) * 2) + 
-        (GetMatrixAllocSize(NNGetOutputDimension((m->nn)), 1) * 3)
+        (GetMatrixAllocSize(NNGetOutputDimension((m->nn)), 1) * (1 + B)) + 
+        (B * sizeof(Matrix))
     );
 
     BTCM* targetModelCopy = BTCMCopy(m);
@@ -226,17 +274,15 @@ void BTCMTrain(BTCM* m, double T, double deltaT, double lambda, uint32_t B, uint
     IntMatrix sample = CreateBlankIntMatrix(&arena, M, 1);
     IntMatrix previousState = CreateBlankIntMatrix(&arena, M, 1);
 
-    double endT = 0.0;
-
     /*for gradient descent*/
     Matrix totalDesiredNudgesMLPOutput = CreateMatrix(&arena, NNGetOutputDimension((m->nn)), 1, NULL);
-    Matrix desiredNudgesMLPOutput = CreateMatrix(&arena, NNGetOutputDimension((m->nn)), 1, NULL);
-    Matrix zeroDesiredNudgesMLPOutput = CreateMatrix(&arena, NNGetOutputDimension((m->nn)), 1, NULL);
+    Matrix* desiredNudgesMLPOutput = (Matrix*)MemArenaAlloc(&arena, (B * sizeof(Matrix)));
+    for(uint32_t b = 0; b < B; b++)
+        desiredNudgesMLPOutput[b] = CreateMatrix(&arena, NNGetOutputDimension((m->nn)), 1, NULL);
+
     for(uint64_t e = 0; e < epochs; e++)
     {
-        double t = (StandardClosedUniformSim() * endT);
-        double deltaTSim = deltaT; //(StandardClosedUniformSim() * deltaT); /*we can also vary deltaT, this might prevent overfitting*/
-        if((e % 1000000) == 0) { endT += deltaT; } /*slowly increase interval to sample t uniformly from*/
+        double t = (BernoulliDistributionSim(p)) ? 0.0 : (StandardClosedUniformSim() * (MIN(((double)e / (double)epochs), 1.0) * (T - deltaT)));
 
         /*update parameters every Q epochs*/
         if(((e + 1) % Q) == 0) { BTCMCopyParameters(targetModelCopy, m); }
@@ -245,63 +291,55 @@ void BTCMTrain(BTCM* m, double T, double deltaT, double lambda, uint32_t B, uint
 
         SetMatrix(totalDesiredNudgesMLPOutput, 0.0);
 
-        /*take B samples*/
+        double rewards[B];
+        double rewardBaseline = 0.0;
         for(uint32_t b = 0; b < B; b++)
         {
-            double sampleProbability = BTCMTakeSample(m, sample, (t + deltaTSim), desiredNudgesMLPOutput);
-            double targetProbability = GetTargetProbability(targetModelCopy, sample, previousState, t, deltaTSim);
+            double sampleProbability = BTCMTakeSample(m, sample, (t + deltaT), desiredNudgesMLPOutput[b]);
+            double targetProbability = GetTargetProbability(targetModelCopy, sample, previousState, t, deltaT);
 
-            /*TODO: debug: checks if either one is < 0 to prevent erros, 0 is allowerd, in this case we just get -inf*/
-            if((sampleProbability < 0.0) || (targetProbability < 0.0))
-                printf("error: trying to take log of non-positive value in trying to calculate cross-entropy\n");
+            rewards[b] = (log(sampleProbability) - log(targetProbability));
+            rewardBaseline += rewards[b];
 
-            double reward = (log(sampleProbability) - log(targetProbability));
-
-            if((reward > -INFINITY) && (reward < INFINITY))
-            {
-                MatrixScaleSelf(desiredNudgesMLPOutput, reward);
-                MatrixAddSelf(totalDesiredNudgesMLPOutput, desiredNudgesMLPOutput);
-            }
-
-
-            double zeroSampleProbability = BTCMTakeSample(m, sample, 0.0, zeroDesiredNudgesMLPOutput);
-            double zeroTargetSampleProbability = GetInitialConditionProbability(sample, (m->srn));
-
-            double zeroReward = (lambda * (log(zeroSampleProbability) - log(zeroTargetSampleProbability)));
-
-            if((zeroReward > -INFINITY) && (zeroReward < INFINITY))
-            {
-                MatrixScaleSelf(zeroDesiredNudgesMLPOutput, zeroReward);
-                MatrixAddSelf(totalDesiredNudgesMLPOutput, zeroDesiredNudgesMLPOutput);
-            }
-
-            loss += (reward + zeroReward);
+            loss += rewards[b];
         }
         loss /= (double)B;
+        rewardBaseline /= (double)B;
 
+        GetTotalGradient(B, rewardBaseline, rewards, desiredNudgesMLPOutput, totalDesiredNudgesMLPOutput);
+  
         MatrixScaleSelf(totalDesiredNudgesMLPOutput, (1.0 / (double)B));
         NNSetLastLayer((m->nn), totalDesiredNudgesMLPOutput);
         NNBackPropagation((m->nn));
 
+        /*log the loss to file*/
         if((e % 1000) == 0) { printf("loss of epoch %lu: %f\n", e, loss); }
+        if(((e % 10) == 0) && isfinite(loss)) { fprintf(lossFile, "%lu %f\n", e, loss); }
+
+
+        /*TODO: debug*/
+        //if(e == 10000) { m->nn->learningRate = 1.0; }
     }
-
-
-    /*TODO: debug: for checking MLP output*/
-    PrepareInputToken(m, 0, sample, 0.0 + deltaT);
-    Matrix out = NNPredict((m->nn), (m->tokenCache));
-    for(uint32_t j = 0; j < (out.rowCount); j++)
-        printf("P(n_%u = %u | n_{<%u}, %.2f) = %f\n", 0, j, 0, 0.0 + deltaT, GetValueMatrix(out, j, 0));
-
 
     BTCMDelete(targetModelCopy);
     DeleteMemArena(&arena);
+    fclose(lossFile);
 }
 
 
 /*==================== statistics ====================*/
 
-void BTCMGetPerSpeciesMean(BTCM* m, Matrix mean, double t)
+static inline void PrintStateProbability(BTCM* m, IntMatrix n, double t)
+{
+    uint32_t M = SRNGetSpeciesCount((m->srn));
+
+    printf("P(");
+    for(uint32_t i = 0; i < (M - 1); i++)
+        printf("n_%u = %d, ", i, GetValueIntMatrix(n, i, 0));
+    printf("n_%u = %d | t = %.3f) = %f\n", (M - 1), GetValueIntMatrix(n, (M - 1), 0), t, BTCMPredict(m, n, t));
+}
+
+void BTCMGetPerSpeciesMean(BTCM* m, Matrix mean, double t, size_t sampleCount)
 {
     uint32_t M = SRNGetSpeciesCount((m->srn));
 
@@ -311,7 +349,6 @@ void BTCMGetPerSpeciesMean(BTCM* m, Matrix mean, double t)
     IntMatrix sampleSum = CreateBlankIntMatrix(&arena, M, 1);
     SetIntMatrix(sampleSum, 0);
 
-    const uint32_t sampleCount = 1000;
     for(uint32_t n = 0; n < sampleCount; n++)
     {
         BTCMTakeSampleNoGradient(m, sample, t);
@@ -324,20 +361,18 @@ void BTCMGetPerSpeciesMean(BTCM* m, Matrix mean, double t)
     DeleteMemArena(&arena);
 }
 
-void BTCMGetPerSpeciesStandardDeviation(BTCM* m, Matrix std, double t)
+void BTCMGetPerSpeciesStandardDeviation(BTCM* m, Matrix std, double t, size_t sampleCount)
 {    
     uint32_t M = SRNGetSpeciesCount((m->srn));
 
     MemArena arena = CreateMemArena(GetMatrixAllocSize(M, 1) + GetIntMatrixAllocSize(M, 1));
 
     Matrix mean = CreateMatrix(&arena, M, 1, NULL);
-    BTCMGetPerSpeciesMean(m, mean, t);
+    BTCMGetPerSpeciesMean(m, mean, t, sampleCount);
 
     IntMatrix sample = CreateBlankIntMatrix(&arena, M, 1);
 
     SetMatrix(std, 0.0);
-
-    const uint32_t sampleCount = 1000;
     for(uint32_t n = 0; n < sampleCount; n++)
     {
         BTCMTakeSampleNoGradient(m, sample, t);
@@ -350,4 +385,248 @@ void BTCMGetPerSpeciesStandardDeviation(BTCM* m, Matrix std, double t)
     MatrixTransformSelf(std, sqrt);
 
     DeleteMemArena(&arena);
+}
+
+void BTCMLogPerSpeciesMean(BTCM* m, double T, double tStep, size_t sampleCount, FILE* logFile)
+{
+    uint32_t M = SRNGetSpeciesCount((m->srn));
+
+    MemArena arena = CreateMemArena(GetMatrixAllocSize(M, 1));
+
+    size_t segmentCount = ((size_t)(T / tStep) + 1);
+    Matrix mean = CreateMatrix(&arena, M, 1, NULL);
+    for(size_t i = 0; i < segmentCount; i++)
+    {
+        BTCMGetPerSpeciesMean(m, mean, ((double)i * tStep), sampleCount);
+        LogDataPoint(((double)i * tStep), mean, logFile);
+    }
+
+    DeleteMemArena(&arena);
+}
+
+void BTCMLogPerSpeciesStandardDeviation(BTCM* m, double T, double tStep, size_t sampleCount, FILE* logFile)
+{
+    uint32_t M = SRNGetSpeciesCount((m->srn));
+
+    MemArena arena = CreateMemArena(GetMatrixAllocSize(M, 1));
+
+    size_t segmentCount = ((size_t)(T / tStep) + 1);
+    Matrix std = CreateMatrix(&arena, M, 1, NULL);
+    for(size_t i = 0; i < segmentCount; i++)
+    {
+        BTCMGetPerSpeciesStandardDeviation(m, std, ((double)i * tStep), sampleCount);
+        LogDataPoint(((double)i * tStep), std, logFile);
+    }
+
+    DeleteMemArena(&arena);
+}
+
+void BTCMPrintFullProbabilityDistribution(BTCM* m, double t)
+{
+    uint32_t M = SRNGetSpeciesCount((m->srn));
+
+    MemArena arena = CreateMemArena(GetIntMatrixAllocSize(M, 1));
+
+    IntMatrix n = CreateBlankIntMatrix(&arena, M, 1);
+    SetIntMatrix(n, 0);
+    do
+    {
+        PrintStateProbability(m, n, t);
+        IncrementStateInStateSpace((m->srn), n);
+    }
+    while(!IntMatrixIsZero(n));
+
+    DeleteMemArena(&arena);
+}
+
+void BTCMGetFullProbabilityDistribution(BTCM* m, double t, Tensor dest)
+{
+    uint32_t M = SRNGetSpeciesCount((m->srn));
+
+    MemArena arena = CreateMemArena(GetIntMatrixAllocSize(M, 1));
+
+    IntMatrix n = CreateBlankIntMatrix(&arena, M, 1);
+    SetIntMatrix(n, 0);
+    do
+    {
+        SetValueTensor(dest, BTCMPredict(m, n, t), n);
+        IncrementStateInStateSpace((m->srn), n);
+    }
+    while(!IntMatrixIsZero(n));
+
+    DeleteMemArena(&arena);
+}
+
+void BTCMLogFullProbabilityDistribution(BTCM* m, double T, double tStep, size_t sampleCount, FILE* logFile)
+{
+    size_t segmentCount = ((size_t)(T / tStep) + 1);
+
+    MemArena arena = CreateMemArena(SRNGetStateSpaceTensorAllocSize((m->srn)));
+    
+    Tensor stateSpaceProbabilities = SRNCreateStateSpaceTensor(&arena, (m->srn));
+    for(size_t i = 0; i < segmentCount; i++)
+    {
+        BTCMGetFullProbabilityDistribution(m, ((double)i * tStep), stateSpaceProbabilities);
+        LogFullDistribution(stateSpaceProbabilities, ((double)i * tStep), logFile);
+    }
+
+    DeleteMemArena(&arena);
+}
+
+
+/*==================== experiments ====================*/
+
+void BTCMSingleTimeStepExperiment(void)
+{
+    SetSeedRandU48(time(NULL));
+
+    SRN* srn = ParseSRN("res/birthDeathModel.txt");
+    uint32_t M = SRNGetSpeciesCount(srn);
+
+    uint32_t hiddenLayerNeuronCount[] = {16 };
+    BTCM* m = BTCMCreate(srn, hiddenLayerNeuronCount, (sizeof(hiddenLayerNeuronCount) / sizeof(uint32_t)), 0.5);
+
+    PrintIntMatrix((srn->stoichiometricMatrix));
+    printf("Param count: %lu\n", BTCMGetParamCount(m));
+
+    MemArena arena = CreateMemArena(
+        (GetMatrixAllocSize(M, 1) * 2) + 
+        (SRNGetStateSpaceTensorAllocSize(srn) * 2)
+    );
+
+    double T = 1.0;
+    BTCMTrain(m, T, T, 1.0, 500, 1, 50000, "res/BTCMSingleTimeStepExperiment/Loss.data");
+
+    BTCMPrintFullProbabilityDistribution(m, T);
+
+    size_t sampleCount = 10000;
+    Matrix mean = CreateMatrix(&arena, M, 1, NULL);
+    Matrix std = CreateMatrix(&arena, M, 1, NULL);
+
+    BTCMGetPerSpeciesMean(m, mean, T, sampleCount);
+    BTCMGetPerSpeciesStandardDeviation(m, std, T, sampleCount);
+
+    printf("BTCM mean: ");
+    PrintMatrix(mean);
+    printf("BTCM standard deviation: ");
+    PrintMatrix(std);
+
+    GillespieSRNTrajectorySimGetPerSpeciesMean(srn, mean, T, sampleCount);
+    GillespieSRNTrajectorySimGetPerSpeciesStandardDeviation(srn, std, T, sampleCount);
+
+    printf("Gillespie trajectory simulation mean: ");
+    PrintMatrix(mean);
+    printf("Gillespie trajectory simulation standard deviation: ");
+    PrintMatrix(std);
+
+    Tensor modelStateSpaceProbabilities = SRNCreateStateSpaceTensor(&arena, srn);
+    Tensor marginalStateSpaceProbabilities = SRNCreateStateSpaceTensor(&arena, srn);
+    BTCMGetFullProbabilityDistribution(m, modelStateSpaceProbabilities, T);
+    GillespieSRNTrajectorySimGetFullDistribution(srn, marginalStateSpaceProbabilities, T, sampleCount);
+
+    FILE* BTCMFullDistributionFile = fopen("res/BTCMSingleTimeStepExperiment/BTCMFullDistribution.data", "w");
+    FILE* TrajectorySimFullDistributionFile = fopen("res/BTCMSingleTimeStepExperiment/TrajectorySimFullDistribution.data", "w");
+
+    LogFullDistribution(modelStateSpaceProbabilities, T, BTCMFullDistributionFile);
+    LogFullDistribution(marginalStateSpaceProbabilities, T, TrajectorySimFullDistributionFile);
+
+    printf("Hellinger Distance at time %.2f: %f\n", T, HellingerDistance(modelStateSpaceProbabilities, marginalStateSpaceProbabilities));
+
+    fclose(TrajectorySimFullDistributionFile);
+    fclose(BTCMFullDistributionFile);
+    DeleteMemArena(&arena);
+    BTCMDelete(m);
+    DeleteSRN(srn);
+}
+
+void BTCMGlobalTimeExperiment(void)
+{
+    SetSeedRandU48(time(NULL));
+
+    SRN* srn = ParseSRN("res/birthDeathModel.txt");
+
+    uint32_t hiddenLayerNeuronCount[] = {16 };
+    BTCM* m = BTCMCreate(srn, hiddenLayerNeuronCount, (sizeof(hiddenLayerNeuronCount) / sizeof(uint32_t)), 1.0);
+
+    PrintIntMatrix((srn->stoichiometricMatrix));
+    printf("Param count: %lu\n", BTCMGetParamCount(m));
+
+    double deltaT = 0.01;
+    double T = 100.0;
+    BTCMTrain(m, T, deltaT, 0.1, 500, 1, 500000, "res/BTCMTimeCurriculumExperiment/Loss.data");
+
+    size_t sampleCount = 10000;
+    double sampleStep = (deltaT * 10.0);
+
+    FILE* meanFile = fopen("res/BTCMTimeCurriculumExperiment/mean.data", "w");
+    GillespieSRNTrajectorySimLogPerSpeciesMean(srn, T, sampleStep, sampleCount, meanFile);
+    fputs("\n\n", meanFile);
+    BTCMLogPerSpeciesMean(m, T, sampleStep, sampleCount, meanFile);
+    fclose(meanFile);
+
+    FILE* stdFile = fopen("res/BTCMTimeCurriculumExperiment/std.data", "w");
+    GillespieSRNTrajectorySimLogPerSpeciesStandardDeviation(srn, T, sampleStep, sampleCount, stdFile);
+    fputs("\n\n", stdFile);
+    BTCMLogPerSpeciesStandardDeviation(m, T, sampleStep, sampleCount, stdFile);
+    fclose(stdFile);
+
+    FILE* fullDistributionFile = fopen("res/BTCMTimeCurriculumExperiment/fullDistribution.data", "w");
+    GillespieSRNTrajectorySimLogFullDistribution((m->srn), T, sampleStep, sampleCount, fullDistributionFile);
+    fputs("\n", fullDistributionFile);
+    BTCMLogFullProbabilityDistribution(m, T, sampleStep, sampleCount, fullDistributionFile);
+    fclose(fullDistributionFile);
+
+    MemArena arena = CreateMemArena((SRNGetStateSpaceTensorAllocSize(srn) * 2));
+
+    FILE* hellingerDistanceFile = fopen("res/BTCMTimeCurriculumExperiment/hellingerDistance.data", "w");
+    Tensor BTCMProbabilityDistribution = SRNCreateStateSpaceTensor(&arena, srn);
+    Tensor GillespieSRNTrajectorySimDistribution = SRNCreateStateSpaceTensor(&arena, srn);
+    for(double t = 0.0; t <= T; t += sampleStep)
+    {
+        BTCMGetFullProbabilityDistribution(m, BTCMProbabilityDistribution, T);
+        GillespieSRNTrajectorySimGetFullDistribution(srn, GillespieSRNTrajectorySimDistribution, T, sampleCount);
+        fprintf(hellingerDistanceFile, "%f %f\n", t, HellingerDistance(BTCMProbabilityDistribution, GillespieSRNTrajectorySimDistribution));
+    }
+    fclose(hellingerDistanceFile);
+
+    DeleteMemArena(&arena);
+    BTCMDelete(m);
+    DeleteSRN(srn);
+}
+
+void BTCMSignallingCascadeExperiment(uint32_t M)
+{
+    SetSeedRandU48(time(NULL));
+
+    SRN* srn = SRNCreateSignallingCascade(M);
+
+    uint32_t hiddenLayerNeuronCount[] = {16 };
+    BTCM* m = BTCMCreate(srn, hiddenLayerNeuronCount, (sizeof(hiddenLayerNeuronCount) / sizeof(uint32_t)), 1.0);
+
+    PrintIntMatrix((srn->stoichiometricMatrix));
+    printf("Param count: %lu\n", BTCMGetParamCount(m));
+
+    double deltaT = 0.01;
+    double T = 10.0;
+    BTCMTrain(m, T, deltaT, 0.1, 500, 1, 500000, "res/BTCMSignallingCascadeExperiment/Loss.data");
+
+    size_t sampleCount = 10000;
+    double sampleStep = (deltaT * 10.0);
+
+    FILE* meanFile = fopen("res/BTCMSignallingCascadeExperiment/mean.data", "w");
+    GillespieSRNTrajectorySimLogPerSpeciesMean(srn, T, sampleStep, sampleCount, meanFile);
+    fputs("\n", meanFile);
+    BTCMLogPerSpeciesMean(m, T, sampleStep, sampleCount, meanFile);
+    fclose(meanFile);
+
+    FILE* stdFile = fopen("res/BTCMSignallingCascadeExperiment/std.data", "w");
+    GillespieSRNTrajectorySimLogPerSpeciesStandardDeviation(srn, T, sampleStep, sampleCount, stdFile);
+    fputs("\n", stdFile);
+    BTCMLogPerSpeciesStandardDeviation(m, T, sampleStep, sampleCount, stdFile);
+    fclose(stdFile);
+
+    // printf("Hellinger Distance at time %.2f: %f\n", T, HellingerDistance(modelStateSpaceProbabilities, marginalStateSpaceProbabilities));
+
+    BTCMDelete(m);
+    DeleteSRN(srn);
 }

@@ -1,5 +1,5 @@
 CC=g++
-FLAGS=-g -Wall -std=c++11 -fsanitize=address
+FLAGS=-g -Wall -std=c++11
 OBJ=obj
 SRC=src
 RES=res
@@ -35,12 +35,12 @@ cpyres:
 	$(CPY) $(CPYFLAGS) $(RES) $(CPYDEST)
 
 #normal release
-release: FLAGS=-Wall -O2 -std=c++11
+release: FLAGS=-Wall -O4 -std=c++11
 release: clean
 release: $(BIN)
 
 #release but with profiler (about 15% slower)
-profile: FLAGS=-Wall -O2 -std=c++11 -pg
+profile: FLAGS=-Wall -O4 -std=c++11 -pg
 profile: clean
 profile: $(BIN)
 

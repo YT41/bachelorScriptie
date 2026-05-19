@@ -1,6 +1,7 @@
 #include "NeuralNetwork.hpp"
 
 #include <cmath>
+#include <cstddef>
 #include <cstdint>
 #include <cstring>
 #include <math.h>
@@ -205,6 +206,17 @@ void NNCopyParameters(NeuralNetwork* dest, const NeuralNetwork* src)
         CopyMatrixData((dest->weightMatrices[i]), (src->weightMatrices[i]));
         CopyMatrixData((dest->biasVectors[i]), (src->biasVectors[i]));
     }
+}
+
+size_t NNGetParamCount(const NeuralNetwork* network)
+{
+    size_t paramSum = 0;
+    for(uint32_t l = 0; l < (network->hiddenLayerCount + 1); l++)
+    {
+        paramSum += GetMatrixSize(network->weightMatrices[l]);
+        paramSum += GetMatrixSize(network->biasVectors[l]);
+    }
+    return paramSum;
 }
 
 

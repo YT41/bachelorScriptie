@@ -407,6 +407,19 @@ Tensor CreateTensor(MemArena* arena, size_t* dimensions, size_t dimensionCount, 
     return ret;
 }
 
+void IncrementTensorIndex(Tensor tensor, IntMatrix indices)
+{
+    for(uint32_t i = 0; i < (tensor.dimensionCount); i++)
+    {
+        if(GetValueIntMatrix(indices, i, 0) < (int32_t)((tensor.dimensions[i]) - 1))
+        {
+            IntMatrixAddValue(indices, 1, i, 0);
+            break;
+        }
+        SetValueIntMatrix(indices, 0, i, 0);
+    }
+}
+
 double GetValueTensor(Tensor tensor, IntMatrix indices)
 {
     return tensor.data[GetDataIndexTensor(tensor, indices)];
@@ -464,5 +477,4 @@ void PrintMatrix(Matrix matrix)
             printf("%5.3f ", GetValueMatrixSafe(matrix, r, c));
         printf(")\n");
     }
-    printf("\n");
 }
