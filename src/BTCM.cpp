@@ -91,7 +91,7 @@ BTCM* BTCMCreate(SRN* srn, uint32_t* neuronsPerHiddenLayer, uint32_t hiddenLayer
     uint32_t M = SRNGetSpeciesCount(srn);
     uint32_t K = SRNGetReactionCount(srn);
 
-    uint32_t inputTokenDim = 1 + 1 + (K * 3) + (M - 1); /*TODO: edit this to correct count, it should be higher than M + 1 eventually*/
+    uint32_t inputTokenDim = 1 + 1 + (K * 3) + (M - 1);
 
     MemArena arena = CreateMemArena(sizeof(BTCM) + GetMatrixAllocSize(inputTokenDim, 1));
 
@@ -233,7 +233,6 @@ void BTCMGetFullProbabilityDistribution(BTCM* m, Tensor probabilities, double t)
     {
         SetValueTensor(probabilities, BTCMPredict(m, n, t), n);
         IncrementTensorIndex(probabilities, n);
-        //IncrementStateInStateSpace((m->srn), n);
     }
     while(!IntMatrixIsZero(n));
 
@@ -282,7 +281,8 @@ void BTCMTrain(BTCM* m, double T, double deltaT, double p, uint32_t B, uint32_t 
 
     for(uint64_t e = 0; e < epochs; e++)
     {
-        double t = (BernoulliDistributionSim(p)) ? 0.0 : (StandardClosedUniformSim() * (MIN(((double)e / (double)epochs), 1.0) * (T - deltaT)));
+        double t = (BernoulliDistributionSim(p)) ? 0.0 : (StandardClosedUniformSim() * (((double)e / (double)epochs) * (T - deltaT)));
+        //double t = (BernoulliDistributionSim(p)) ? 0.0 : (StandardClosedUniformSim() * (T - deltaT));
 
         /*update parameters every Q epochs*/
         if(((e + 1) % Q) == 0) { BTCMCopyParameters(targetModelCopy, m); }
@@ -307,8 +307,10 @@ void BTCMTrain(BTCM* m, double T, double deltaT, double p, uint32_t B, uint32_t 
         rewardBaseline /= (double)B;
 
         GetTotalGradient(B, rewardBaseline, rewards, desiredNudgesMLPOutput, totalDesiredNudgesMLPOutput);
-  
         MatrixScaleSelf(totalDesiredNudgesMLPOutput, (1.0 / (double)B));
+
+        //PrintMatrix(totalDesiredNudgesMLPOutput);
+
         NNSetLastLayer((m->nn), totalDesiredNudgesMLPOutput);
         NNBackPropagation((m->nn));
 
@@ -553,24 +555,24 @@ void BTCMGlobalTimeExperiment(void)
 
     double deltaT = 0.01;
     double T = 100.0;
-    BTCMTrain(m, T, deltaT, 0.1, 500, 1, 500000, "res/BTCMTimeCurriculumExperiment/Loss.data");
+    BTCMTrain(m, T, deltaT, 0.1, 500, 1, 500000, "res/BTCMGlobalTimeExperiment/Loss.data");
 
     size_t sampleCount = 10000;
     double sampleStep = (deltaT * 10.0);
 
-    FILE* meanFile = fopen("res/BTCMTimeCurriculumExperiment/mean.data", "w");
+    FILE* meanFile = fopen("res/BTCMGlobalTimeExperiment/mean.data", "w");
     GillespieSRNTrajectorySimLogPerSpeciesMean(srn, T, sampleStep, sampleCount, meanFile);
     fputs("\n\n", meanFile);
     BTCMLogPerSpeciesMean(m, T, sampleStep, sampleCount, meanFile);
     fclose(meanFile);
 
-    FILE* stdFile = fopen("res/BTCMTimeCurriculumExperiment/std.data", "w");
+    FILE* stdFile = fopen("res/BTCMGlobalTimeExperiment/std.data", "w");
     GillespieSRNTrajectorySimLogPerSpeciesStandardDeviation(srn, T, sampleStep, sampleCount, stdFile);
     fputs("\n\n", stdFile);
     BTCMLogPerSpeciesStandardDeviation(m, T, sampleStep, sampleCount, stdFile);
     fclose(stdFile);
 
-    FILE* fullDistributionFile = fopen("res/BTCMTimeCurriculumExperiment/fullDistribution.data", "w");
+    FILE* fullDistributionFile = fopen("res/BTCMGlobalTimeExperiment/fullDistribution.data", "w");
     GillespieSRNTrajectorySimLogFullDistribution((m->srn), T, sampleStep, sampleCount, fullDistributionFile);
     fputs("\n", fullDistributionFile);
     BTCMLogFullProbabilityDistribution(m, T, sampleStep, sampleCount, fullDistributionFile);
@@ -578,7 +580,7 @@ void BTCMGlobalTimeExperiment(void)
 
     MemArena arena = CreateMemArena((SRNGetStateSpaceTensorAllocSize(srn) * 2));
 
-    FILE* hellingerDistanceFile = fopen("res/BTCMTimeCurriculumExperiment/hellingerDistance.data", "w");
+    FILE* hellingerDistanceFile = fopen("res/BTCMGlobalTimeExperiment/hellingerDistance.data", "w");
     Tensor BTCMProbabilityDistribution = SRNCreateStateSpaceTensor(&arena, srn);
     Tensor GillespieSRNTrajectorySimDistribution = SRNCreateStateSpaceTensor(&arena, srn);
     for(double t = 0.0; t <= T; t += sampleStep)
@@ -600,28 +602,28 @@ void BTCMSignallingCascadeExperiment(uint32_t M)
 
     SRN* srn = SRNCreateSignallingCascade(M);
 
-    uint32_t hiddenLayerNeuronCount[] = {16 };
-    BTCM* m = BTCMCreate(srn, hiddenLayerNeuronCount, (sizeof(hiddenLayerNeuronCount) / sizeof(uint32_t)), 1.0);
+    uint32_t hiddenLayerNeuronCount[] = {64, 32 };
+    BTCM* m = BTCMCreate(srn, hiddenLayerNeuronCount, (sizeof(hiddenLayerNeuronCount) / sizeof(uint32_t)), 0.02);
 
     PrintIntMatrix((srn->stoichiometricMatrix));
     printf("Param count: %lu\n", BTCMGetParamCount(m));
 
     double deltaT = 0.01;
     double T = 10.0;
-    BTCMTrain(m, T, deltaT, 0.1, 500, 1, 500000, "res/BTCMSignallingCascadeExperiment/Loss.data");
+    BTCMTrain(m, T, deltaT, 0.1, 500, 1, 1000000, "res/BTCMSignallingCascadeExperiment/Loss.data");
 
     size_t sampleCount = 10000;
     double sampleStep = (deltaT * 10.0);
 
     FILE* meanFile = fopen("res/BTCMSignallingCascadeExperiment/mean.data", "w");
     GillespieSRNTrajectorySimLogPerSpeciesMean(srn, T, sampleStep, sampleCount, meanFile);
-    fputs("\n", meanFile);
+    fputs("\n\n", meanFile);
     BTCMLogPerSpeciesMean(m, T, sampleStep, sampleCount, meanFile);
     fclose(meanFile);
 
     FILE* stdFile = fopen("res/BTCMSignallingCascadeExperiment/std.data", "w");
     GillespieSRNTrajectorySimLogPerSpeciesStandardDeviation(srn, T, sampleStep, sampleCount, stdFile);
-    fputs("\n", stdFile);
+    fputs("\n\n", stdFile);
     BTCMLogPerSpeciesStandardDeviation(m, T, sampleStep, sampleCount, stdFile);
     fclose(stdFile);
 

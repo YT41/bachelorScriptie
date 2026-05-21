@@ -26,8 +26,8 @@ static inline void SimReaction(double* deltaT, uint32_t* activeReactionIndex, co
 {
     uint32_t K = SRNGetReactionCount(srn);
     double propensities[K];
-
     GetReactionPropensities(srn, n, propensities);
+
     double propensitySum = propensities[0];
     for(uint32_t k = 1; k < K; k++)
         propensitySum += propensities[k];
@@ -131,6 +131,13 @@ static inline void GillespieSRNTrajectorySimTakeSample(const SRN* srn, IntMatrix
     do
     {
         IntMatrixAddSelf(n, stoichiometricColumn);
+
+        if(!IsValidState(srn, n)) /*This should almost never happen*/
+        {
+            printf("Invalid state detected; state has been clipped to closest valid state. Consider increasing N. The invalid state:\n");
+            PrintIntMatrix(n);
+            ClipToValidState(srn, n);
+        }
 
         double deltaT;
         uint32_t activeReactionIndex;

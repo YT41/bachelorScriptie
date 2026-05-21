@@ -55,7 +55,7 @@ void NNBackPropagation(NeuralNetwork* network);
 Matrix NNPredict(NeuralNetwork* network, Matrix x);
 double NNTrain(NeuralNetwork* network, Matrix x, Matrix y); /*just for batch size 1*/
 
-static inline uint32_t NNGetOutputDimension(const NeuralNetwork* network) { return (network->layerVectors[(network->hiddenLayerCount)].rowCount); };
+static inline uint32_t NNGetOutputDimension(const NeuralNetwork* network) { return (network->layerVectors[(network->hiddenLayerCount) + 1].rowCount); };
 
 
 /*========================== NN testing ==========================*/

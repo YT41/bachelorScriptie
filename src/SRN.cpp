@@ -192,6 +192,29 @@ void IncrementStateInStateSpace(const SRN* srn, IntMatrix n)
     }
 }
 
+bool IsValidState(const SRN* srn, IntMatrix n)
+{
+    uint32_t M = SRNGetSpeciesCount(srn);
+    for(uint32_t i = 0; i < M; i++)
+    {
+        if((GetValueIntMatrix(n, i, 0) < 0) || (GetValueIntMatrix(n, i, 0) >= (int32_t)(srn->species[i].maxCount)))
+            return false;
+    }
+    return true;
+}
+
+void ClipToValidState(const SRN* srn, IntMatrix n)
+{
+    uint32_t M = SRNGetSpeciesCount(srn);
+    for(uint32_t i = 0; i < M; i++)
+    {
+        if(GetValueIntMatrix(n, i, 0) < 0)
+            SetValueIntMatrix(n, 0, i, 0);
+        else if(GetValueIntMatrix(n, i, 0) >= (int32_t)(srn->species[i].maxCount))
+            SetValueIntMatrix(n, ((srn->species[i].maxCount) - 1), i, 0);
+    }
+}
+
 double GetPropensity(const SRN* srn, IntMatrix n, uint32_t reactionIndex)
 {
     double product = 1.0;

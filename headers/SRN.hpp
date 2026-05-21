@@ -54,6 +54,8 @@ size_t SRNGetStateSpaceSize(const SRN* srn);
 size_t SRNGetStateSpaceTensorAllocSize(const SRN* srn);
 Tensor SRNCreateStateSpaceTensor(MemArena* arena, const SRN* srn);
 void IncrementStateInStateSpace(const SRN* srn, IntMatrix n); /*iterates n through the state space*/
+bool IsValidState(const SRN* srn, IntMatrix n);
+void ClipToValidState(const SRN* srn, IntMatrix n); /*does nothing whenever the state is already valid*/
 
 double GetPropensity(const SRN* srn, IntMatrix n, uint32_t reactionIndex);
 void GetReactionPropensities(const SRN* srn, IntMatrix n, double* propensities);

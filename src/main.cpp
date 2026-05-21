@@ -3,8 +3,8 @@
 int main(int argc, char** argv)
 {
     //BTCMSingleTimeStepExperiment();
-    BTCMGlobalTimeExperiment();
-    //BTCMSignallingCascadeExperiment(15);
+    //BTCMGlobalTimeExperiment();
+    BTCMSignallingCascadeExperiment(2);
 
     return 0;
 }
