@@ -161,6 +161,20 @@ Matrix CreateRandomMatrix(MemArena* arena, size_t rows, size_t columns)
     return ret;
 }
 
+Matrix CreateRandomVariancePreservingMatrix(MemArena* arena, size_t rows, size_t columns)
+{
+    Matrix ret = CreateMatrix(arena, rows, columns, NULL);
+
+    double limit = sqrt(6.0 / (double)(rows + columns));
+    for(uint32_t i = 0; i < rows; i++)
+    {
+        for(uint32_t j = 0; j < columns; j++)
+            SetValueMatrix(ret, UniformSim(-limit, limit, false, false), i, j);
+    }
+
+    return ret;
+}
+
 Matrix CreateMatrixMultiply(MemArena* arena, Matrix A, Matrix B)
 {
     Matrix ret = CreateMatrix(arena, A.rowCount, B.columnCount, NULL);
@@ -194,7 +208,7 @@ void MatrixMultiply(Matrix* dest, Matrix A, Matrix B)
     }
 }
 
-void MatrixAffineTransform(Matrix* dest, Matrix A, Matrix B, Matrix C)
+void MatrixAffineTransform(Matrix dest, Matrix A, Matrix B, Matrix C)
 {
     if(A.columnCount != B.rowCount) 
         return;
@@ -206,7 +220,24 @@ void MatrixAffineTransform(Matrix* dest, Matrix A, Matrix B, Matrix C)
             double val = 0.0;
             for(uint32_t k = 0; k < A.columnCount; k++)
                 val += (GetValueMatrix(A, i, k) * GetValueMatrix(B, k, j));
-            dest->data[GetIndex(i, j, (dest->rowCount))] = val + GetValueMatrix(C, i, j);
+            dest.data[GetIndex(i, j, (dest.rowCount))] = val + GetValueMatrix(C, i, j);
+        }
+    }
+}
+
+void MatrixAffineTransformColumnWiseC(Matrix* dest, Matrix A, Matrix B, Matrix C)
+{
+    if(A.columnCount != B.rowCount) 
+        return;
+
+    for(uint32_t i = 0; i < A.rowCount; i++)
+    {
+        for(uint32_t j = 0; j < B.columnCount; j++)
+        {
+            double val = 0.0;
+            for(uint32_t k = 0; k < A.columnCount; k++)
+                val += (GetValueMatrix(A, i, k) * GetValueMatrix(B, k, j));
+            dest->data[GetIndex(i, j, (dest->rowCount))] = val + GetValueMatrix(C, i, 0);
         }
     }
 }
@@ -252,7 +283,13 @@ void MatrixTransform(Matrix* dest, Matrix A, RealFn sigma)
     }
 }
 
-void MatrixTransformDiagonal(Matrix* dest, Matrix A, RealFn sigma)
+void MatrixColumnTransform(Matrix* dest, Matrix A, size_t column, RealFn sigma)
+{
+    for(uint32_t i = 0; i < A.rowCount; i++)
+        dest->data[GetIndex(i, column, (dest->rowCount))] = sigma(A.data[GetIndex(i, column, A.rowCount)]);
+}
+
+void MatrixDiagonalTransform(Matrix* dest, Matrix A, RealFn sigma)
 {
     if(IsSquareMatrix(A))
     {
@@ -294,13 +331,28 @@ void GetRowMatrix(Matrix matrix, double* dest, size_t row)
             dest[i] = matrix.data[GetIndex(row, i, matrix.rowCount)];
     }
 }
-void GetColumnMatrix(Matrix matrix, double* dest, size_t column)
+
+void GetColumnDataMatrix(Matrix matrix, double* dest, size_t column)
 {
     if(ColumnWithinMatrixBounds(matrix, column))
         memmove(dest, (matrix.data + (column * matrix.rowCount)), (matrix.rowCount * sizeof(double)));
 }
 
-void SetRowMatrix(Matrix matrix, const double* src, size_t row)
+Matrix GetColumnVectorMatrix(Matrix matrix, size_t column)
+{
+    if(ColumnWithinMatrixBounds(matrix, column))
+        return (Matrix){ (matrix.data + (column * matrix.rowCount)), matrix.rowCount, 1 };
+    return (Matrix){ NULL, 0, 0 };
+}
+
+Matrix GetSubColumnVectorMatrix(Matrix matrix, size_t column, size_t startRow, size_t newRowCount)
+{
+    if(ColumnWithinMatrixBounds(matrix, column) && RowWithinMatrixBounds(matrix, startRow) && RowWithinMatrixBounds(matrix, (startRow + newRowCount - 1)))
+        return (Matrix){ (matrix.data + ((column * matrix.rowCount) + startRow)), newRowCount, 1 };
+    return (Matrix){ NULL, 0, 0 };
+}
+
+void SetRowDataMatrix(Matrix matrix, const double* src, size_t row)
 {
     if(RowWithinMatrixBounds(matrix, row))
     {
@@ -308,10 +360,22 @@ void SetRowMatrix(Matrix matrix, const double* src, size_t row)
             matrix.data[GetIndex(row, i, matrix.rowCount)] = src[i];
     }
 }
-void SetColumnMatrix(Matrix matrix, const double* src, size_t column)
+void SetColumnDataMatrix(Matrix matrix, const double* src, size_t column)
 {
     if(ColumnWithinMatrixBounds(matrix, column))
         memmove((matrix.data + (column * matrix.rowCount)), src, (matrix.rowCount * sizeof(double)));
+}
+
+void SetColumnVectorMatrix(Matrix matrix, Matrix src, size_t column)
+{
+    if(ColumnWithinMatrixBounds(matrix, column))
+        memmove((matrix.data + (column * matrix.rowCount)), (src.data), (matrix.rowCount * sizeof(double)));
+}
+
+void SetColumnMatrix(Matrix matrix, double val, size_t column)
+{
+    for(uint32_t i = 0; i < matrix.rowCount; i++)
+        SetValueMatrix(matrix, val, i, column);
 }
 
 void SetValueMatrix(Matrix matrix, double val, size_t row, size_t column)
@@ -322,10 +386,10 @@ void SetValueMatrix(Matrix matrix, double val, size_t row, size_t column)
 
 void SetMatrix(Matrix matrix, double val)
 {
-    for(uint32_t x = 0; x < matrix.rowCount; x++)
+    for(uint32_t i = 0; i < matrix.rowCount; i++)
     {
-        for(uint32_t y = 0; y < matrix.columnCount; y++)
-            SetValueMatrix(matrix, val, x, y);
+        for(uint32_t j = 0; j < matrix.columnCount; j++)
+            SetValueMatrix(matrix, val, i, j);
     }
 }
 

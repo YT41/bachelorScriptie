@@ -8,7 +8,7 @@ set xrange [0:]
 
 set xlabel "t"
 
-set yrange [5:15]
+set yrange [0:15]
 set ylabel "mean"
 plot      'mean.data' index 1 w l lw 3 title 'BTCM', \
           'mean.data' index 0 w l lw 5 dt "..." title 'Gillespie'

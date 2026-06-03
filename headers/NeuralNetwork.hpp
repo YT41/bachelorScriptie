@@ -41,7 +41,7 @@ typedef struct NeuralNetwork
 } NeuralNetwork;
 
 
-NeuralNetwork* NNCreate(uint32_t* neuronsPerLayer, ActivationFnID* activationFnPerLayer, uint32_t hiddenLayerCount, double learningRate);
+NeuralNetwork* NNCreate(uint32_t* neuronsPerLayer, ActivationFnID* activationFnPerLayer, uint32_t hiddenLayerCount, uint32_t batchSize, double learningRate);
 void NNDelete(NeuralNetwork* network);
 
 size_t NNGetParamCount(const NeuralNetwork* network);
@@ -50,12 +50,17 @@ void NNCopyParameters(NeuralNetwork* dest, const NeuralNetwork* src);
 // void NNSaveToFile(const NeuralNetwork* network, const char* fileName);
 // void NNLoadFromFile(NeuralNetwork* network, const char* fileName);
 
-void NNSetLastLayer(NeuralNetwork* network, Matrix y); /*can be used to set cost gradient with respects to last layer*/
+void NNSetLastLayer(NeuralNetwork* network, Matrix Y); /*can be used to set cost gradient with respects to last layer*/
 void NNBackPropagation(NeuralNetwork* network);
-Matrix NNPredict(NeuralNetwork* network, Matrix x);
+Matrix NNPredict(NeuralNetwork* network, Matrix X); /*expects X to be shape inputDim x batchSize*/
+Matrix NNPredictNoCopy(NeuralNetwork* network); /*assumes input of NN is already set*/
+Matrix NNPredictSingleDataPoint(NeuralNetwork* network, uint32_t i, Matrix X); /*still expects X to be shape inputDim x batchSize*/
 double NNTrain(NeuralNetwork* network, Matrix x, Matrix y); /*just for batch size 1*/
 
 static inline uint32_t NNGetOutputDimension(const NeuralNetwork* network) { return (network->layerVectors[(network->hiddenLayerCount) + 1].rowCount); };
+static inline uint32_t NNGetBatchSize(const NeuralNetwork* network) { return (network->layerVectors[0].columnCount); };
+static inline Matrix NNGetLastLayer(const NeuralNetwork* network) { return (network->layerVectors[(network->hiddenLayerCount) + 1]); };
+static inline Matrix NNGetFirstLayer(const NeuralNetwork* network) { return (network->layerVectors[0]); };
 
 
 /*========================== NN testing ==========================*/

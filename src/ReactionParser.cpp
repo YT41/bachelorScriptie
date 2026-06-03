@@ -3,6 +3,7 @@
 #include "MemArena.hpp"
 
 #include <cstdint>
+#include <cstdio>
 #include <stdbool.h>
 #include <stdio.h>
 #include <string.h>
@@ -217,6 +218,8 @@ SRN* ParseSRN(const char* fileName)
         DeleteReaction(reactions[k]);
     DeleteMemArena(&arena);
     fclose(SRNFilePointer);
+
+    printf("\nLoaded %s\n\n", fileName);
 
     return srn;
 }

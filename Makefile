@@ -1,12 +1,13 @@
 CC=g++
 FLAGS=-g -Wall -std=c++11
+#FLAGS=-g -std=c++11 #for nvcc cublas
 OBJ=obj
 SRC=src
 RES=res
 
 #linux:
 ADINCL=-I headers -I dependencies
-LNK=-lm
+LNK=-lm #-lcublas
 
 RM=find
 RMFLAGS=-type f -print -delete
@@ -36,6 +37,7 @@ cpyres:
 
 #normal release
 release: FLAGS=-Wall -O4 -std=c++11
+#release: FLAGS=-O4 -std=c++11 #for nvcc cublas
 release: clean
 release: $(BIN)
 

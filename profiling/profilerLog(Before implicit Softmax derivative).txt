@@ -1,0 +1,751 @@
+Flat profile:
+
+Each sample counts as 0.01 seconds.
+  %   cumulative   self              self     total           
+ time   seconds   seconds    calls  Ks/call  Ks/call  name    
+ 38.90    714.16   714.16 14866205568     0.00     0.00  SetValueMatrix(Matrix, double, unsigned long, unsigned long)
+ 24.35   1161.16   447.00 954247867     0.00     0.00  SoftmaxDerivative(Matrix, Matrix)
+ 18.02   1491.96   330.80 1908495734     0.00     0.00  MatrixAffineTransform(Matrix*, Matrix, Matrix, Matrix)
+  5.35   1590.08    98.12 954247867     0.00     0.00  SetMatrixDiagonal(Matrix, double const*)
+  4.40   1670.79    80.71 1908495734     0.00     0.00  IdentityDerivative(Matrix, Matrix)
+  1.77   1703.30    32.51                             _init
+  1.17   1724.81    21.51 2383063984     0.00     0.00  DTanhDx(double)
+  0.95   1742.31    17.50 954249869     0.00     0.00  MatrixTransform(Matrix*, Matrix, double (*)(double))
+  0.73   1755.66    13.35    30031     0.00     0.00  BTCMPredict(BTCM*, IntMatrix, double)
+  0.68   1768.15    12.49 954247867     0.00     0.00  MatrixTransformDiagonal(Matrix*, Matrix, double (*)(double))
+  0.60   1779.22    11.07 1204751871     0.00     0.00  SetMatrix(Matrix, double)
+  0.56   1789.44    10.22 954247867     0.00     0.00  NNPredict(NeuralNetwork*, Matrix)
+  0.39   1796.53     7.09 250000000     0.00     0.00  BTCMTakeSample(BTCM*, IntMatrix, double, Matrix)
+  0.38   1803.59     7.06 250000000     0.00     0.00  MatrixAdd(Matrix*, Matrix, Matrix)
+  0.35   1810.10     6.51 250500799     0.00     0.00  MatrixScale(Matrix*, Matrix, double)
+  0.29   1815.46     5.36 500000000     0.00     0.00  GetPreviousConnectedState(SRN const*, IntMatrix, IntMatrix, unsigned int)
+  0.20   1819.15     3.69 8940517814     0.00     0.00  GetValueIntMatrix(IntMatrix, unsigned long, unsigned long)
+  0.16   1822.05     2.90     1001     0.00     0.00  GillespieSRNTrajectorySimGetFullDistribution(SRN const*, Tensor, double, unsigned long)
+  0.14   1824.70     2.65 250000000     0.00     0.00  GetEscapeRate(SRN const*, IntMatrix)
+  0.13   1827.03     2.33 954247867     0.00     0.00  TanhDerivative(Matrix, Matrix)
+  0.11   1829.14     2.11 954247867     0.00     0.00  TanhElementWise(Matrix)
+  0.10   1831.02     1.88 211038503     0.00     0.00  GetReactionPropensities(SRN const*, IntMatrix, double*)
+  0.04   1831.82     0.80     2002     0.00     0.00  BTCMTakeSampleNoGradient(BTCM*, IntMatrix, double)
+  0.04   1832.54     0.72 954247867     0.00     0.00  Softmax(Matrix)
+  0.03   1833.16     0.62 210197484     0.00     0.00  IsValidState(SRN const*, IntMatrix)
+  0.03   1833.66     0.50 231058503     0.00     0.00  IntMatrixAdd(IntMatrix*, IntMatrix, IntMatrix)
+  0.02   1834.10     0.44 703030371     0.00     0.00  RandU48()
+  0.02   1834.49     0.39 790081005     0.00     0.00  SetValueIntMatrix(IntMatrix, int, unsigned long, unsigned long)
+  0.02   1834.83     0.34   500000     0.00     0.00  MatrixMultiply(Matrix*, Matrix, Matrix)
+  0.01   1835.10     0.27 956747871     0.00     0.00  CopyMatrixData(Matrix, Matrix)
+  0.01   1835.30     0.20   500000     0.00     0.00  NNBackPropagation(NeuralNetwork*)
+  0.01   1835.40     0.10 211038503     0.00     0.00  GetColumnVectorIntMatrix(IntMatrix, IntMatrix, unsigned long)
+  0.01   1835.50     0.10 40040000     0.00     0.00  MatrixAddValue(Matrix, double, unsigned long, unsigned long)
+  0.00   1835.58     0.08 20020000     0.00     0.00  TensorAddValue(Tensor, double, IntMatrix)
+  0.00   1835.64     0.06        1     0.00     0.00  GillespieSRNTrajectorySimLogPerSpeciesMean(SRN const*, double, double, unsigned long, _IO_FILE*)
+  0.00   1835.67     0.03        1     0.00     0.00  GillespieSRNTrajectorySimLogPerSpeciesStandardDeviation(SRN const*, double, double, unsigned long, _IO_FILE*)
+  0.00   1835.68     0.01 10050000     0.00     0.00  SetInitialState(SRN const*, IntMatrix)
+  0.00   1835.69     0.01   500000     0.00     0.00  NNSetLastLayer(NeuralNetwork*, Matrix)
+  0.00   1835.70     0.01        1     0.00     0.00  GillespieSRNTrajectorySimLogFullDistribution(SRN const*, double, double, unsigned long, _IO_FILE*)
+  0.00   1835.70     0.00 10056006     0.00     0.00  SetIntMatrix(IntMatrix, int)
+  0.00   1835.70     0.00   500001     0.00     0.00  NNCopyParameters(NeuralNetwork*, NeuralNetwork const*)
+  0.00   1835.70     0.00   120120     0.00     0.00  IntMatrixIsZero(IntMatrix)
+  0.00   1835.70     0.00    90090     0.00     0.00  IncrementTensorIndex(Tensor, IntMatrix)
+  0.00   1835.70     0.00    60060     0.00     0.00  GetValueTensor(Tensor, IntMatrix)
+  0.00   1835.70     0.00    60060     0.00     0.00  SetValueTensor(Tensor, double, IntMatrix)
+  0.00   1835.70     0.00    31031     0.00     0.00  GetTensorSize(unsigned long*, unsigned long)
+  0.00   1835.70     0.00    30030     0.00     0.00  IncrementStateInStateSpace(SRN const*, IntMatrix)
+  0.00   1835.70     0.00    29029     0.00     0.00  IntMatrixAddValue(IntMatrix, int, unsigned long, unsigned long)
+  0.00   1835.70     0.00    11024     0.00     0.00  CreateBlankIntMatrix(MemArena*, unsigned long, unsigned long)
+  0.00   1835.70     0.00     4509     0.00     0.00  CreateMatrix(MemArena*, unsigned long, unsigned long, double const*)
+  0.00   1835.70     0.00     4004     0.00     0.00  LogDataPoint(double, Matrix, _IO_FILE*)
+  0.00   1835.70     0.00     2002     0.00     0.00  TensorScaleSelf(Tensor, double)
+  0.00   1835.70     0.00     2002     0.00     0.00  LogFullDistribution(Tensor, double, _IO_FILE*)
+  0.00   1835.70     0.00     2002     0.00     0.00  SetTensor(Tensor, double)
+  0.00   1835.70     0.00     1004     0.00     0.00  CreateTensor(MemArena*, unsigned long*, unsigned long, double const*)
+  0.00   1835.70     0.00     1004     0.00     0.00  SRNCreateStateSpaceTensor(MemArena*, SRN const*)
+  0.00   1835.70     0.00     1001     0.00     0.00  HellingerDistance(Tensor, Tensor)
+  0.00   1835.70     0.00     1001     0.00     0.00  BTCMGetFullProbabilityDistribution(BTCM*, double, Tensor)
+  0.00   1835.70     0.00       20     0.00     0.00  CreateRandomMatrix(MemArena*, unsigned long, unsigned long)
+  0.00   1835.70     0.00        4     0.00     0.00  SetColumnIntMatrix(IntMatrix, int const*, unsigned long)
+  0.00   1835.70     0.00        3     0.00     0.00  PrintIntMatrix(IntMatrix)
+  0.00   1835.70     0.00        3     0.00     0.00  GetTensorAllocSize(unsigned long*, unsigned long)
+  0.00   1835.70     0.00        3     0.00     0.00  SRNGetStateSpaceTensorAllocSize(SRN const*)
+  0.00   1835.70     0.00        2     0.00     0.00  CreateReaction(double, unsigned int, int*, int*)
+  0.00   1835.70     0.00        2     0.00     0.00  DeleteReaction(Reaction*)
+  0.00   1835.70     0.00        2     0.00     0.00  ClipToValidState(SRN const*, IntMatrix)
+  0.00   1835.70     0.00        2     0.00     0.00  SRNGetMaxSpeciesCount(SRN const*)
+  0.00   1835.70     0.00        2     0.00     0.00  NNCreate(unsigned int*, ActivationFnID*, unsigned int, double)
+  0.00   1835.70     0.00        2     0.00     0.00  NNDelete(NeuralNetwork*)
+  0.00   1835.70     0.00        1     0.00     0.00  BTCMCreate(SRN*, unsigned int*, unsigned int, double)
+  0.00   1835.70     0.00        1     0.00     0.00  SetSeedRandU48(unsigned long)
+  0.00   1835.70     0.00        1     0.00     0.00  NNGetParamCount(NeuralNetwork const*)
+  0.00   1835.70     0.00        1     0.00     1.80  BTCMGlobalTimeExperiment()
+  0.00   1835.70     0.00        1     0.00     0.00  ParseSRN(char const*)
+  0.00   1835.70     0.00        1     0.00     0.00  CreateSRN(unsigned int, Reaction**, Species*)
+  0.00   1835.70     0.00        1     0.00     0.00  DeleteSRN(SRN*)
+  0.00   1835.70     0.00        1     0.00     0.00  frame_dummy
+
+ %         the percentage of the total running time of the
+time       program used by this function.
+
+cumulative a running sum of the number of seconds accounted
+ seconds   for by this function and those listed above it.
+
+ self      the number of seconds accounted for by this
+seconds    function alone.  This is the major sort for this
+           listing.
+
+calls      the number of times this function was invoked, if
+           this function is profiled, else blank.
+
+ self      the average number of milliseconds spent in this
+ms/call    function per call, if this function is profiled,
+	   else blank.
+
+ total     the average number of milliseconds spent in this
+ms/call    function and its descendents per call, if this
+	   function is profiled, else blank.
+
+name       the name of the function.  This is the minor sort
+           for this listing. The index shows the location of
+	   the function in the gprof listing. If the index is
+	   in parenthesis it shows where it would appear in
+	   the gprof listing if it were to be printed.
+
+Copyright (C) 2012-2026 Free Software Foundation, Inc.
+
+Copying and distribution of this file, with or without modification,
+are permitted in any medium without royalty provided the copyright
+notice and this notice are preserved.
+
+		     Call graph (explanation follows)
+
+
+granularity: each sample hit covers 4 byte(s) for 0.00% of 1835.70 seconds
+
+index % time    self  children    called     name
+                                                 <spontaneous>
+[1]     98.2    0.00 1803.19                 main [1]
+                0.00 1803.19       1/1           BTCMGlobalTimeExperiment() [2]
+-----------------------------------------------
+                0.00 1803.19       1/1           main [1]
+[2]     98.2    0.00 1803.19       1         BTCMGlobalTimeExperiment() [2]
+                0.00 1740.64    1001/1001        BTCMGetFullProbabilityDistribution(BTCM*, double, Tensor) [4]
+                0.80   54.70    2002/2002        BTCMTakeSampleNoGradient(BTCM*, IntMatrix, double) [13]
+                2.90    3.80    1001/1001        GillespieSRNTrajectorySimGetFullDistribution(SRN const*, Tensor, double, unsigned long) [21]
+                0.03    0.06       1/1           GillespieSRNTrajectorySimLogPerSpeciesStandardDeviation(SRN const*, double, double, unsigned long, _IO_FILE*) [37]
+                0.06    0.03       1/1           GillespieSRNTrajectorySimLogPerSpeciesMean(SRN const*, double, double, unsigned long, _IO_FILE*) [38]
+                0.00    0.06       1/30031       BTCMPredict(BTCM*, IntMatrix, double) [3]
+                0.01    0.04       1/1           GillespieSRNTrajectorySimLogFullDistribution(SRN const*, double, double, unsigned long, _IO_FILE*) [40]
+                0.00    0.04   30030/954247867     NNPredict(NeuralNetwork*, Matrix) [5]
+                0.01    0.00  240240/14866205568     SetValueMatrix(Matrix, double, unsigned long, unsigned long) [7]
+                0.00    0.00   30030/1204751871     SetMatrix(Matrix, double) [19]
+                0.00    0.00  150150/8940517814     GetValueIntMatrix(IntMatrix, unsigned long, unsigned long) [24]
+                0.00    0.00    1001/2002        LogFullDistribution(Tensor, double, _IO_FILE*) [44]
+                0.00    0.00       1/1           frame_dummy [48]
+                0.00    0.00       1/1           ParseSRN(char const*) [51]
+                0.00    0.00   30030/60060       SetValueTensor(Tensor, double, IntMatrix) [62]
+                0.00    0.00   30030/90090       IncrementTensorIndex(Tensor, IntMatrix) [60]
+                0.00    0.00   30030/120120      IntMatrixIsZero(IntMatrix) [59]
+                0.00    0.00    2002/4004        LogDataPoint(double, Matrix, _IO_FILE*) [67]
+                0.00    0.00    1001/11024       CreateBlankIntMatrix(MemArena*, unsigned long, unsigned long) [65]
+                0.00    0.00    1001/10056006     SetIntMatrix(IntMatrix, int) [58]
+                0.00    0.00    1001/1001        HellingerDistance(Tensor, Tensor) [72]
+                0.00    0.00       3/1004        SRNCreateStateSpaceTensor(MemArena*, SRN const*) [71]
+                0.00    0.00       2/4509        CreateMatrix(MemArena*, unsigned long, unsigned long, double const*) [66]
+                0.00    0.00       2/3           SRNGetStateSpaceTensorAllocSize(SRN const*) [76]
+                0.00    0.00       1/1           SetSeedRandU48(unsigned long) [81]
+                0.00    0.00       1/3           PrintIntMatrix(IntMatrix) [74]
+                0.00    0.00       1/1           NNGetParamCount(NeuralNetwork const*) [82]
+                0.00    0.00       1/2           NNDelete(NeuralNetwork*) [80]
+                0.00    0.00       1/1           DeleteSRN(SRN*) [83]
+-----------------------------------------------
+                             749924225             BTCMPredict(BTCM*, IntMatrix, double) [3]
+                0.00    0.06       1/30031       BTCMGlobalTimeExperiment() [2]
+               13.35 1727.29   30030/30031       BTCMGetFullProbabilityDistribution(BTCM*, double, Tensor) [4]
+[3]     94.8   13.35 1727.34   30031+749924225 BTCMPredict(BTCM*, IntMatrix, double) [3]
+                7.22  953.11 674217837/954247867     NNPredict(NeuralNetwork*, Matrix) [5]
+                7.09  469.57 250000000/250000000     BTCMTakeSample(BTCM*, IntMatrix, double, Matrix) [8]
+              259.11    0.00 5393742696/14866205568     SetValueMatrix(Matrix, double, unsigned long, unsigned long) [7]
+                7.06    0.00 250000000/250000000     MatrixAdd(Matrix*, Matrix, Matrix) [20]
+                5.36    1.18 500000000/500000000     GetPreviousConnectedState(SRN const*, IntMatrix, IntMatrix, unsigned int) [22]
+                6.51    0.00 250496795/250500799     MatrixScale(Matrix*, Matrix, double) [23]
+                6.20    0.00 674717837/1204751871     SetMatrix(Matrix, double) [19]
+                2.65    0.31 250000000/250000000     GetEscapeRate(SRN const*, IntMatrix) [25]
+                1.42    0.00 3446825603/8940517814     GetValueIntMatrix(IntMatrix, unsigned long, unsigned long) [24]
+                0.20    0.34  500000/500000      NNBackPropagation(NeuralNetwork*) [29]
+                0.01    0.00  500000/500000      NNSetLastLayer(NeuralNetwork*, Matrix) [42]
+                0.00    0.00  949509/703030371     RandU48() [31]
+                0.00    0.00  500001/500001      NNCopyParameters(NeuralNetwork*, NeuralNetwork const*) [43]
+                0.00    0.00       1/1           BTCMCreate(SRN*, unsigned int*, unsigned int, double) [49]
+                0.00    0.00     501/4509        CreateMatrix(MemArena*, unsigned long, unsigned long, double const*) [66]
+                0.00    0.00       2/11024       CreateBlankIntMatrix(MemArena*, unsigned long, unsigned long) [65]
+                0.00    0.00       1/2           NNDelete(NeuralNetwork*) [80]
+                             749924225             BTCMPredict(BTCM*, IntMatrix, double) [3]
+-----------------------------------------------
+                0.00 1740.64    1001/1001        BTCMGlobalTimeExperiment() [2]
+[4]     94.8    0.00 1740.64    1001         BTCMGetFullProbabilityDistribution(BTCM*, double, Tensor) [4]
+               13.35 1727.29   30030/30031       BTCMPredict(BTCM*, IntMatrix, double) [3]
+                0.00    0.00   30030/30030       IncrementStateInStateSpace(SRN const*, IntMatrix) [45]
+                0.00    0.00   30030/60060       SetValueTensor(Tensor, double, IntMatrix) [62]
+                0.00    0.00   30030/120120      IntMatrixIsZero(IntMatrix) [59]
+                0.00    0.00   29029/29029       IntMatrixAddValue(IntMatrix, int, unsigned long, unsigned long) [64]
+                0.00    0.00    1001/11024       CreateBlankIntMatrix(MemArena*, unsigned long, unsigned long) [65]
+                0.00    0.00    1001/10056006     SetIntMatrix(IntMatrix, int) [58]
+-----------------------------------------------
+                0.00    0.04   30030/954247867     BTCMGlobalTimeExperiment() [2]
+                0.32   42.41 30000000/954247867     BTCMTakeSampleNoGradient(BTCM*, IntMatrix, double) [13]
+                2.68  353.41 250000000/954247867     BTCMTakeSample(BTCM*, IntMatrix, double, Matrix) [8]
+                7.22  953.11 674217837/954247867     BTCMPredict(BTCM*, IntMatrix, double) [3]
+[5]     74.0   10.22 1348.98 954247867         NNPredict(NeuralNetwork*, Matrix) [5]
+              447.00  375.78 954247867/954247867     SoftmaxDerivative(Matrix, Matrix) [6]
+              330.80    0.00 1908495734/1908495734     MatrixAffineTransform(Matrix*, Matrix, Matrix, Matrix) [9]
+                2.33  132.12 954247867/954247867     TanhDerivative(Matrix, Matrix) [10]
+               40.35    0.00 954247867/1908495734     IdentityDerivative(Matrix, Matrix) [12]
+                2.11   17.50 954247867/954247867     TanhElementWise(Matrix) [17]
+                0.72    0.00 954247867/954247867     Softmax(Matrix) [28]
+                0.27    0.00 954247867/956747871     CopyMatrixData(Matrix, Matrix) [34]
+-----------------------------------------------
+              447.00  375.78 954247867/954247867     NNPredict(NeuralNetwork*, Matrix) [5]
+[6]     44.8  447.00  375.78 954247867         SoftmaxDerivative(Matrix, Matrix) [6]
+              335.42    0.00 6982220630/14866205568     SetValueMatrix(Matrix, double, unsigned long, unsigned long) [7]
+               40.35    0.00 954247867/1908495734     IdentityDerivative(Matrix, Matrix) [12]
+-----------------------------------------------
+                0.01    0.00  240240/14866205568     BTCMGlobalTimeExperiment() [2]
+               11.53    0.00 240002002/14866205568     BTCMTakeSampleNoGradient(BTCM*, IntMatrix, double) [13]
+              108.09    0.00 2250000000/14866205568     BTCMTakeSample(BTCM*, IntMatrix, double, Matrix) [8]
+              259.11    0.00 5393742696/14866205568     BTCMPredict(BTCM*, IntMatrix, double) [3]
+              335.42    0.00 6982220630/14866205568     SoftmaxDerivative(Matrix, Matrix) [6]
+[7]     38.9  714.16    0.00 14866205568         SetValueMatrix(Matrix, double, unsigned long, unsigned long) [7]
+-----------------------------------------------
+                7.09  469.57 250000000/250000000     BTCMPredict(BTCM*, IntMatrix, double) [3]
+[8]     26.0    7.09  469.57 250000000         BTCMTakeSample(BTCM*, IntMatrix, double, Matrix) [8]
+                2.68  353.41 250000000/954247867     NNPredict(NeuralNetwork*, Matrix) [5]
+              108.09    0.00 2250000000/14866205568     SetValueMatrix(Matrix, double, unsigned long, unsigned long) [7]
+                4.59    0.00 500000000/1204751871     SetMatrix(Matrix, double) [19]
+                0.52    0.00 1250000000/8940517814     GetValueIntMatrix(IntMatrix, unsigned long, unsigned long) [24]
+                0.16    0.00 250000000/703030371     RandU48() [31]
+                0.12    0.00 250000000/790081005     SetValueIntMatrix(IntMatrix, int, unsigned long, unsigned long) [32]
+-----------------------------------------------
+              330.80    0.00 1908495734/1908495734     NNPredict(NeuralNetwork*, Matrix) [5]
+[9]     18.0  330.80    0.00 1908495734         MatrixAffineTransform(Matrix*, Matrix, Matrix, Matrix) [9]
+-----------------------------------------------
+                2.33  132.12 954247867/954247867     NNPredict(NeuralNetwork*, Matrix) [5]
+[10]     7.3    2.33  132.12 954247867         TanhDerivative(Matrix, Matrix) [10]
+               98.12    0.00 954247867/954247867     SetMatrixDiagonal(Matrix, double const*) [11]
+               12.49   21.51 954247867/954247867     MatrixTransformDiagonal(Matrix*, Matrix, double (*)(double)) [14]
+-----------------------------------------------
+               98.12    0.00 954247867/954247867     TanhDerivative(Matrix, Matrix) [10]
+[11]     5.3   98.12    0.00 954247867         SetMatrixDiagonal(Matrix, double const*) [11]
+-----------------------------------------------
+               40.35    0.00 954247867/1908495734     SoftmaxDerivative(Matrix, Matrix) [6]
+               40.35    0.00 954247867/1908495734     NNPredict(NeuralNetwork*, Matrix) [5]
+[12]     4.4   80.71    0.00 1908495734         IdentityDerivative(Matrix, Matrix) [12]
+-----------------------------------------------
+                             30031001             BTCMTakeSampleNoGradient(BTCM*, IntMatrix, double) [13]
+                0.80   54.70    2002/2002        BTCMGlobalTimeExperiment() [2]
+[13]     3.0    0.80   54.70    2002+30031001 BTCMTakeSampleNoGradient(BTCM*, IntMatrix, double) [13]
+                0.32   42.41 30000000/954247867     NNPredict(NeuralNetwork*, Matrix) [5]
+               11.53    0.00 240002002/14866205568     SetValueMatrix(Matrix, double, unsigned long, unsigned long) [7]
+                0.28    0.00 30001001/1204751871     SetMatrix(Matrix, double) [19]
+                0.07    0.00 160012002/8940517814     GetValueIntMatrix(IntMatrix, unsigned long, unsigned long) [24]
+                0.04    0.00 20020000/231058503     IntMatrixAdd(IntMatrix*, IntMatrix, IntMatrix) [30]
+                0.03    0.00 10010000/40040000     MatrixAddValue(Matrix, double, unsigned long, unsigned long) [36]
+                0.02    0.00 30000000/703030371     RandU48() [31]
+                0.01    0.00 30030000/790081005     SetValueIntMatrix(IntMatrix, int, unsigned long, unsigned long) [32]
+                0.00    0.00    1001/250500799     MatrixScale(Matrix*, Matrix, double) [23]
+                0.00    0.00    1001/954249869     MatrixTransform(Matrix*, Matrix, double (*)(double)) [18]
+                0.00    0.00    5005/11024       CreateBlankIntMatrix(MemArena*, unsigned long, unsigned long) [65]
+                0.00    0.00    2002/10056006     SetIntMatrix(IntMatrix, int) [58]
+                0.00    0.00    1001/4509        CreateMatrix(MemArena*, unsigned long, unsigned long, double const*) [66]
+                             30031001             BTCMTakeSampleNoGradient(BTCM*, IntMatrix, double) [13]
+-----------------------------------------------
+               12.49   21.51 954247867/954247867     TanhDerivative(Matrix, Matrix) [10]
+[14]     1.9   12.49   21.51 954247867         MatrixTransformDiagonal(Matrix*, Matrix, double (*)(double)) [14]
+               21.51    0.00 2383063984/2383063984     DTanhDx(double) [16]
+-----------------------------------------------
+                                                 <spontaneous>
+[15]     1.8   32.51    0.00                 _init [15]
+-----------------------------------------------
+               21.51    0.00 2383063984/2383063984     MatrixTransformDiagonal(Matrix*, Matrix, double (*)(double)) [14]
+[16]     1.2   21.51    0.00 2383063984         DTanhDx(double) [16]
+-----------------------------------------------
+                2.11   17.50 954247867/954247867     NNPredict(NeuralNetwork*, Matrix) [5]
+[17]     1.1    2.11   17.50 954247867         TanhElementWise(Matrix) [17]
+               17.50    0.00 954247867/954249869     MatrixTransform(Matrix*, Matrix, double (*)(double)) [18]
+-----------------------------------------------
+                0.00    0.00    1001/954249869     BTCMTakeSampleNoGradient(BTCM*, IntMatrix, double) [13]
+                0.00    0.00    1001/954249869     GillespieSRNTrajectorySimLogPerSpeciesStandardDeviation(SRN const*, double, double, unsigned long, _IO_FILE*) [37]
+               17.50    0.00 954247867/954249869     TanhElementWise(Matrix) [17]
+[18]     1.0   17.50    0.00 954249869         MatrixTransform(Matrix*, Matrix, double (*)(double)) [18]
+-----------------------------------------------
+                0.00    0.00    1001/1204751871     GillespieSRNTrajectorySimLogPerSpeciesMean(SRN const*, double, double, unsigned long, _IO_FILE*) [38]
+                0.00    0.00    2002/1204751871     GillespieSRNTrajectorySimLogPerSpeciesStandardDeviation(SRN const*, double, double, unsigned long, _IO_FILE*) [37]
+                0.00    0.00   30030/1204751871     BTCMGlobalTimeExperiment() [2]
+                0.28    0.00 30001001/1204751871     BTCMTakeSampleNoGradient(BTCM*, IntMatrix, double) [13]
+                4.59    0.00 500000000/1204751871     BTCMTakeSample(BTCM*, IntMatrix, double, Matrix) [8]
+                6.20    0.00 674717837/1204751871     BTCMPredict(BTCM*, IntMatrix, double) [3]
+[19]     0.6   11.07    0.00 1204751871         SetMatrix(Matrix, double) [19]
+-----------------------------------------------
+                7.06    0.00 250000000/250000000     BTCMPredict(BTCM*, IntMatrix, double) [3]
+[20]     0.4    7.06    0.00 250000000         MatrixAdd(Matrix*, Matrix, Matrix) [20]
+-----------------------------------------------
+                2.90    3.80    1001/1001        BTCMGlobalTimeExperiment() [2]
+[21]     0.4    2.90    3.80    1001         GillespieSRNTrajectorySimGetFullDistribution(SRN const*, Tensor, double, unsigned long) [21]
+                1.87    0.26 210197484/211038503     GetReactionPropensities(SRN const*, IntMatrix, double*) [26]
+                0.62    0.17 210197484/210197484     IsValidState(SRN const*, IntMatrix) [27]
+                0.45    0.00 210197484/231058503     IntMatrixAdd(IntMatrix*, IntMatrix, IntMatrix) [30]
+                0.26    0.00 420394968/703030371     RandU48() [31]
+                0.10    0.00 210197484/211038503     GetColumnVectorIntMatrix(IntMatrix, IntMatrix, unsigned long) [35]
+                0.04    0.00 10010000/20020000     TensorAddValue(Tensor, double, IntMatrix) [39]
+                0.01    0.00 10010000/10050000     SetInitialState(SRN const*, IntMatrix) [41]
+                0.00    0.00       2/2           ClipToValidState(SRN const*, IntMatrix) [50]
+                0.00    0.00 10010000/10056006     SetIntMatrix(IntMatrix, int) [58]
+                0.00    0.00    2002/11024       CreateBlankIntMatrix(MemArena*, unsigned long, unsigned long) [65]
+                0.00    0.00    1001/2002        SetTensor(Tensor, double) [69]
+                0.00    0.00    1001/2002        TensorScaleSelf(Tensor, double) [68]
+                0.00    0.00       2/3           PrintIntMatrix(IntMatrix) [74]
+-----------------------------------------------
+                5.36    1.18 500000000/500000000     BTCMPredict(BTCM*, IntMatrix, double) [3]
+[22]     0.4    5.36    1.18 500000000         GetPreviousConnectedState(SRN const*, IntMatrix, IntMatrix, unsigned int) [22]
+                0.93    0.00 2249899488/8940517814     GetValueIntMatrix(IntMatrix, unsigned long, unsigned long) [24]
+                0.25    0.00 500000000/790081005     SetValueIntMatrix(IntMatrix, int, unsigned long, unsigned long) [32]
+-----------------------------------------------
+                0.00    0.00    1001/250500799     BTCMTakeSampleNoGradient(BTCM*, IntMatrix, double) [13]
+                0.00    0.00    1001/250500799     GillespieSRNTrajectorySimLogPerSpeciesMean(SRN const*, double, double, unsigned long, _IO_FILE*) [38]
+                0.00    0.00    2002/250500799     GillespieSRNTrajectorySimLogPerSpeciesStandardDeviation(SRN const*, double, double, unsigned long, _IO_FILE*) [37]
+                6.51    0.00 250496795/250500799     BTCMPredict(BTCM*, IntMatrix, double) [3]
+[23]     0.4    6.51    0.00 250500799         MatrixScale(Matrix*, Matrix, double) [23]
+-----------------------------------------------
+                0.00    0.00       4/8940517814     ClipToValidState(SRN const*, IntMatrix) [50]
+                0.00    0.00   30030/8940517814     IncrementStateInStateSpace(SRN const*, IntMatrix) [45]
+                0.00    0.00   60060/8940517814     LogFullDistribution(Tensor, double, _IO_FILE*) [44]
+                0.00    0.00  150150/8940517814     BTCMGlobalTimeExperiment() [2]
+                0.00    0.00 10010000/8940517814     GillespieSRNTrajectorySimLogPerSpeciesMean(SRN const*, double, double, unsigned long, _IO_FILE*) [38]
+                0.01    0.00 20020000/8940517814     GillespieSRNTrajectorySimLogPerSpeciesStandardDeviation(SRN const*, double, double, unsigned long, _IO_FILE*) [37]
+                0.07    0.00 160012002/8940517814     BTCMTakeSampleNoGradient(BTCM*, IntMatrix, double) [13]
+                0.17    0.00 420394968/8940517814     IsValidState(SRN const*, IntMatrix) [27]
+                0.26    0.00 633115509/8940517814     GetReactionPropensities(SRN const*, IntMatrix, double*) [26]
+                0.31    0.00 750000000/8940517814     GetEscapeRate(SRN const*, IntMatrix) [25]
+                0.52    0.00 1250000000/8940517814     BTCMTakeSample(BTCM*, IntMatrix, double, Matrix) [8]
+                0.93    0.00 2249899488/8940517814     GetPreviousConnectedState(SRN const*, IntMatrix, IntMatrix, unsigned int) [22]
+                1.42    0.00 3446825603/8940517814     BTCMPredict(BTCM*, IntMatrix, double) [3]
+[24]     0.2    3.69    0.00 8940517814         GetValueIntMatrix(IntMatrix, unsigned long, unsigned long) [24]
+-----------------------------------------------
+                2.65    0.31 250000000/250000000     BTCMPredict(BTCM*, IntMatrix, double) [3]
+[25]     0.2    2.65    0.31 250000000         GetEscapeRate(SRN const*, IntMatrix) [25]
+                0.31    0.00 750000000/8940517814     GetValueIntMatrix(IntMatrix, unsigned long, unsigned long) [24]
+-----------------------------------------------
+                0.00    0.00  209728/211038503     GillespieSRNTrajectorySimLogFullDistribution(SRN const*, double, double, unsigned long, _IO_FILE*) [40]
+                0.00    0.00  210725/211038503     GillespieSRNTrajectorySimLogPerSpeciesMean(SRN const*, double, double, unsigned long, _IO_FILE*) [38]
+                0.00    0.00  420566/211038503     GillespieSRNTrajectorySimLogPerSpeciesStandardDeviation(SRN const*, double, double, unsigned long, _IO_FILE*) [37]
+                1.87    0.26 210197484/211038503     GillespieSRNTrajectorySimGetFullDistribution(SRN const*, Tensor, double, unsigned long) [21]
+[26]     0.1    1.88    0.26 211038503         GetReactionPropensities(SRN const*, IntMatrix, double*) [26]
+                0.26    0.00 633115509/8940517814     GetValueIntMatrix(IntMatrix, unsigned long, unsigned long) [24]
+-----------------------------------------------
+                0.62    0.17 210197484/210197484     GillespieSRNTrajectorySimGetFullDistribution(SRN const*, Tensor, double, unsigned long) [21]
+[27]     0.0    0.62    0.17 210197484         IsValidState(SRN const*, IntMatrix) [27]
+                0.17    0.00 420394968/8940517814     GetValueIntMatrix(IntMatrix, unsigned long, unsigned long) [24]
+-----------------------------------------------
+                0.72    0.00 954247867/954247867     NNPredict(NeuralNetwork*, Matrix) [5]
+[28]     0.0    0.72    0.00 954247867         Softmax(Matrix) [28]
+-----------------------------------------------
+                0.20    0.34  500000/500000      BTCMPredict(BTCM*, IntMatrix, double) [3]
+[29]     0.0    0.20    0.34  500000         NNBackPropagation(NeuralNetwork*) [29]
+                0.34    0.00  500000/500000      MatrixMultiply(Matrix*, Matrix, Matrix) [33]
+-----------------------------------------------
+                0.00    0.00  209728/231058503     GillespieSRNTrajectorySimLogFullDistribution(SRN const*, double, double, unsigned long, _IO_FILE*) [40]
+                0.00    0.00  210725/231058503     GillespieSRNTrajectorySimLogPerSpeciesMean(SRN const*, double, double, unsigned long, _IO_FILE*) [38]
+                0.00    0.00  420566/231058503     GillespieSRNTrajectorySimLogPerSpeciesStandardDeviation(SRN const*, double, double, unsigned long, _IO_FILE*) [37]
+                0.04    0.00 20020000/231058503     BTCMTakeSampleNoGradient(BTCM*, IntMatrix, double) [13]
+                0.45    0.00 210197484/231058503     GillespieSRNTrajectorySimGetFullDistribution(SRN const*, Tensor, double, unsigned long) [21]
+[30]     0.0    0.50    0.00 231058503         IntMatrixAdd(IntMatrix*, IntMatrix, IntMatrix) [30]
+-----------------------------------------------
+                0.00    0.00    3856/703030371     CreateRandomMatrix(MemArena*, unsigned long, unsigned long) [46]
+                0.00    0.00  419456/703030371     GillespieSRNTrajectorySimLogFullDistribution(SRN const*, double, double, unsigned long, _IO_FILE*) [40]
+                0.00    0.00  421450/703030371     GillespieSRNTrajectorySimLogPerSpeciesMean(SRN const*, double, double, unsigned long, _IO_FILE*) [38]
+                0.00    0.00  841132/703030371     GillespieSRNTrajectorySimLogPerSpeciesStandardDeviation(SRN const*, double, double, unsigned long, _IO_FILE*) [37]
+                0.00    0.00  949509/703030371     BTCMPredict(BTCM*, IntMatrix, double) [3]
+                0.02    0.00 30000000/703030371     BTCMTakeSampleNoGradient(BTCM*, IntMatrix, double) [13]
+                0.16    0.00 250000000/703030371     BTCMTakeSample(BTCM*, IntMatrix, double, Matrix) [8]
+                0.26    0.00 420394968/703030371     GillespieSRNTrajectorySimGetFullDistribution(SRN const*, Tensor, double, unsigned long) [21]
+[31]     0.0    0.44    0.00 703030371         RandU48() [31]
+-----------------------------------------------
+                0.00    0.00       2/790081005     CreateSRN(unsigned int, Reaction**, Species*) [52]
+                0.00    0.00       2/790081005     ClipToValidState(SRN const*, IntMatrix) [50]
+                0.00    0.00    1001/790081005     IncrementStateInStateSpace(SRN const*, IntMatrix) [45]
+                0.00    0.00 10050000/790081005     SetInitialState(SRN const*, IntMatrix) [41]
+                0.01    0.00 30030000/790081005     BTCMTakeSampleNoGradient(BTCM*, IntMatrix, double) [13]
+                0.12    0.00 250000000/790081005     BTCMTakeSample(BTCM*, IntMatrix, double, Matrix) [8]
+                0.25    0.00 500000000/790081005     GetPreviousConnectedState(SRN const*, IntMatrix, IntMatrix, unsigned int) [22]
+[32]     0.0    0.39    0.00 790081005         SetValueIntMatrix(IntMatrix, int, unsigned long, unsigned long) [32]
+-----------------------------------------------
+                0.34    0.00  500000/500000      NNBackPropagation(NeuralNetwork*) [29]
+[33]     0.0    0.34    0.00  500000         MatrixMultiply(Matrix*, Matrix, Matrix) [33]
+-----------------------------------------------
+                0.00    0.00  500000/956747871     NNSetLastLayer(NeuralNetwork*, Matrix) [42]
+                0.00    0.00 2000004/956747871     NNCopyParameters(NeuralNetwork*, NeuralNetwork const*) [43]
+                0.27    0.00 954247867/956747871     NNPredict(NeuralNetwork*, Matrix) [5]
+[34]     0.0    0.27    0.00 956747871         CopyMatrixData(Matrix, Matrix) [34]
+-----------------------------------------------
+                0.00    0.00  209728/211038503     GillespieSRNTrajectorySimLogFullDistribution(SRN const*, double, double, unsigned long, _IO_FILE*) [40]
+                0.00    0.00  210725/211038503     GillespieSRNTrajectorySimLogPerSpeciesMean(SRN const*, double, double, unsigned long, _IO_FILE*) [38]
+                0.00    0.00  420566/211038503     GillespieSRNTrajectorySimLogPerSpeciesStandardDeviation(SRN const*, double, double, unsigned long, _IO_FILE*) [37]
+                0.10    0.00 210197484/211038503     GillespieSRNTrajectorySimGetFullDistribution(SRN const*, Tensor, double, unsigned long) [21]
+[35]     0.0    0.10    0.00 211038503         GetColumnVectorIntMatrix(IntMatrix, IntMatrix, unsigned long) [35]
+-----------------------------------------------
+                0.03    0.00 10010000/40040000     BTCMTakeSampleNoGradient(BTCM*, IntMatrix, double) [13]
+                0.03    0.00 10010000/40040000     GillespieSRNTrajectorySimLogPerSpeciesMean(SRN const*, double, double, unsigned long, _IO_FILE*) [38]
+                0.05    0.00 20020000/40040000     GillespieSRNTrajectorySimLogPerSpeciesStandardDeviation(SRN const*, double, double, unsigned long, _IO_FILE*) [37]
+[36]     0.0    0.10    0.00 40040000         MatrixAddValue(Matrix, double, unsigned long, unsigned long) [36]
+-----------------------------------------------
+                0.03    0.06       1/1           BTCMGlobalTimeExperiment() [2]
+[37]     0.0    0.03    0.06       1         GillespieSRNTrajectorySimLogPerSpeciesStandardDeviation(SRN const*, double, double, unsigned long, _IO_FILE*) [37]
+                0.05    0.00 20020000/40040000     MatrixAddValue(Matrix, double, unsigned long, unsigned long) [36]
+                0.01    0.00 20020000/8940517814     GetValueIntMatrix(IntMatrix, unsigned long, unsigned long) [24]
+                0.00    0.00  420566/211038503     GetReactionPropensities(SRN const*, IntMatrix, double*) [26]
+                0.00    0.00  420566/231058503     IntMatrixAdd(IntMatrix*, IntMatrix, IntMatrix) [30]
+                0.00    0.00  841132/703030371     RandU48() [31]
+                0.00    0.00  420566/211038503     GetColumnVectorIntMatrix(IntMatrix, IntMatrix, unsigned long) [35]
+                0.00    0.00    2002/250500799     MatrixScale(Matrix*, Matrix, double) [23]
+                0.00    0.00   20000/10050000     SetInitialState(SRN const*, IntMatrix) [41]
+                0.00    0.00    2002/1204751871     SetMatrix(Matrix, double) [19]
+                0.00    0.00    1001/954249869     MatrixTransform(Matrix*, Matrix, double (*)(double)) [18]
+                0.00    0.00   20000/10056006     SetIntMatrix(IntMatrix, int) [58]
+                0.00    0.00    2002/4509        CreateMatrix(MemArena*, unsigned long, unsigned long, double const*) [66]
+                0.00    0.00    1001/4004        LogDataPoint(double, Matrix, _IO_FILE*) [67]
+                0.00    0.00       4/11024       CreateBlankIntMatrix(MemArena*, unsigned long, unsigned long) [65]
+-----------------------------------------------
+                0.06    0.03       1/1           BTCMGlobalTimeExperiment() [2]
+[38]     0.0    0.06    0.03       1         GillespieSRNTrajectorySimLogPerSpeciesMean(SRN const*, double, double, unsigned long, _IO_FILE*) [38]
+                0.03    0.00 10010000/40040000     MatrixAddValue(Matrix, double, unsigned long, unsigned long) [36]
+                0.00    0.00 10010000/8940517814     GetValueIntMatrix(IntMatrix, unsigned long, unsigned long) [24]
+                0.00    0.00  210725/211038503     GetReactionPropensities(SRN const*, IntMatrix, double*) [26]
+                0.00    0.00  210725/231058503     IntMatrixAdd(IntMatrix*, IntMatrix, IntMatrix) [30]
+                0.00    0.00  421450/703030371     RandU48() [31]
+                0.00    0.00  210725/211038503     GetColumnVectorIntMatrix(IntMatrix, IntMatrix, unsigned long) [35]
+                0.00    0.00    1001/250500799     MatrixScale(Matrix*, Matrix, double) [23]
+                0.00    0.00   10000/10050000     SetInitialState(SRN const*, IntMatrix) [41]
+                0.00    0.00    1001/1204751871     SetMatrix(Matrix, double) [19]
+                0.00    0.00   10000/10056006     SetIntMatrix(IntMatrix, int) [58]
+                0.00    0.00    1001/4509        CreateMatrix(MemArena*, unsigned long, unsigned long, double const*) [66]
+                0.00    0.00    1001/4004        LogDataPoint(double, Matrix, _IO_FILE*) [67]
+                0.00    0.00       2/11024       CreateBlankIntMatrix(MemArena*, unsigned long, unsigned long) [65]
+-----------------------------------------------
+                0.04    0.00 10010000/20020000     GillespieSRNTrajectorySimGetFullDistribution(SRN const*, Tensor, double, unsigned long) [21]
+                0.04    0.00 10010000/20020000     GillespieSRNTrajectorySimLogFullDistribution(SRN const*, double, double, unsigned long, _IO_FILE*) [40]
+[39]     0.0    0.08    0.00 20020000         TensorAddValue(Tensor, double, IntMatrix) [39]
+-----------------------------------------------
+                0.01    0.04       1/1           BTCMGlobalTimeExperiment() [2]
+[40]     0.0    0.01    0.04       1         GillespieSRNTrajectorySimLogFullDistribution(SRN const*, double, double, unsigned long, _IO_FILE*) [40]
+                0.04    0.00 10010000/20020000     TensorAddValue(Tensor, double, IntMatrix) [39]
+                0.00    0.00  209728/211038503     GetReactionPropensities(SRN const*, IntMatrix, double*) [26]
+                0.00    0.00  209728/231058503     IntMatrixAdd(IntMatrix*, IntMatrix, IntMatrix) [30]
+                0.00    0.00  419456/703030371     RandU48() [31]
+                0.00    0.00  209728/211038503     GetColumnVectorIntMatrix(IntMatrix, IntMatrix, unsigned long) [35]
+                0.00    0.00   10000/10050000     SetInitialState(SRN const*, IntMatrix) [41]
+                0.00    0.00    1001/2002        LogFullDistribution(Tensor, double, _IO_FILE*) [44]
+                0.00    0.00   10000/10056006     SetIntMatrix(IntMatrix, int) [58]
+                0.00    0.00    1001/1004        SRNCreateStateSpaceTensor(MemArena*, SRN const*) [71]
+                0.00    0.00    1001/2002        SetTensor(Tensor, double) [69]
+                0.00    0.00    1001/2002        TensorScaleSelf(Tensor, double) [68]
+                0.00    0.00       2/11024       CreateBlankIntMatrix(MemArena*, unsigned long, unsigned long) [65]
+                0.00    0.00       1/3           SRNGetStateSpaceTensorAllocSize(SRN const*) [76]
+-----------------------------------------------
+                0.00    0.00   10000/10050000     GillespieSRNTrajectorySimLogFullDistribution(SRN const*, double, double, unsigned long, _IO_FILE*) [40]
+                0.00    0.00   10000/10050000     GillespieSRNTrajectorySimLogPerSpeciesMean(SRN const*, double, double, unsigned long, _IO_FILE*) [38]
+                0.00    0.00   20000/10050000     GillespieSRNTrajectorySimLogPerSpeciesStandardDeviation(SRN const*, double, double, unsigned long, _IO_FILE*) [37]
+                0.01    0.00 10010000/10050000     GillespieSRNTrajectorySimGetFullDistribution(SRN const*, Tensor, double, unsigned long) [21]
+[41]     0.0    0.01    0.00 10050000         SetInitialState(SRN const*, IntMatrix) [41]
+                0.00    0.00 10050000/790081005     SetValueIntMatrix(IntMatrix, int, unsigned long, unsigned long) [32]
+-----------------------------------------------
+                0.01    0.00  500000/500000      BTCMPredict(BTCM*, IntMatrix, double) [3]
+[42]     0.0    0.01    0.00  500000         NNSetLastLayer(NeuralNetwork*, Matrix) [42]
+                0.00    0.00  500000/956747871     CopyMatrixData(Matrix, Matrix) [34]
+-----------------------------------------------
+                0.00    0.00  500001/500001      BTCMPredict(BTCM*, IntMatrix, double) [3]
+[43]     0.0    0.00    0.00  500001         NNCopyParameters(NeuralNetwork*, NeuralNetwork const*) [43]
+                0.00    0.00 2000004/956747871     CopyMatrixData(Matrix, Matrix) [34]
+-----------------------------------------------
+                0.00    0.00    1001/2002        BTCMGlobalTimeExperiment() [2]
+                0.00    0.00    1001/2002        GillespieSRNTrajectorySimLogFullDistribution(SRN const*, double, double, unsigned long, _IO_FILE*) [40]
+[44]     0.0    0.00    0.00    2002         LogFullDistribution(Tensor, double, _IO_FILE*) [44]
+                0.00    0.00   60060/8940517814     GetValueIntMatrix(IntMatrix, unsigned long, unsigned long) [24]
+                0.00    0.00   60060/60060       GetValueTensor(Tensor, IntMatrix) [61]
+                0.00    0.00   60060/90090       IncrementTensorIndex(Tensor, IntMatrix) [60]
+                0.00    0.00   60060/120120      IntMatrixIsZero(IntMatrix) [59]
+                0.00    0.00    2002/11024       CreateBlankIntMatrix(MemArena*, unsigned long, unsigned long) [65]
+                0.00    0.00    2002/10056006     SetIntMatrix(IntMatrix, int) [58]
+-----------------------------------------------
+                0.00    0.00   30030/30030       BTCMGetFullProbabilityDistribution(BTCM*, double, Tensor) [4]
+[45]     0.0    0.00    0.00   30030         IncrementStateInStateSpace(SRN const*, IntMatrix) [45]
+                0.00    0.00   30030/8940517814     GetValueIntMatrix(IntMatrix, unsigned long, unsigned long) [24]
+                0.00    0.00    1001/790081005     SetValueIntMatrix(IntMatrix, int, unsigned long, unsigned long) [32]
+-----------------------------------------------
+                0.00    0.00      20/20          NNCreate(unsigned int*, ActivationFnID*, unsigned int, double) [47]
+[46]     0.0    0.00    0.00      20         CreateRandomMatrix(MemArena*, unsigned long, unsigned long) [46]
+                0.00    0.00    3856/703030371     RandU48() [31]
+-----------------------------------------------
+                0.00    0.00       1/2           frame_dummy [48]
+                0.00    0.00       1/2           BTCMCreate(SRN*, unsigned int*, unsigned int, double) [49]
+[47]     0.0    0.00    0.00       2         NNCreate(unsigned int*, ActivationFnID*, unsigned int, double) [47]
+                0.00    0.00      20/20          CreateRandomMatrix(MemArena*, unsigned long, unsigned long) [46]
+-----------------------------------------------
+                0.00    0.00       1/1           BTCMGlobalTimeExperiment() [2]
+[48]     0.0    0.00    0.00       1         frame_dummy [48]
+                0.00    0.00       1/2           NNCreate(unsigned int*, ActivationFnID*, unsigned int, double) [47]
+                0.00    0.00       1/4509        CreateMatrix(MemArena*, unsigned long, unsigned long, double const*) [66]
+                0.00    0.00       1/2           SRNGetMaxSpeciesCount(SRN const*) [79]
+-----------------------------------------------
+                0.00    0.00       1/1           BTCMPredict(BTCM*, IntMatrix, double) [3]
+[49]     0.0    0.00    0.00       1         BTCMCreate(SRN*, unsigned int*, unsigned int, double) [49]
+                0.00    0.00       1/2           NNCreate(unsigned int*, ActivationFnID*, unsigned int, double) [47]
+                0.00    0.00       1/4509        CreateMatrix(MemArena*, unsigned long, unsigned long, double const*) [66]
+                0.00    0.00       1/2           SRNGetMaxSpeciesCount(SRN const*) [79]
+-----------------------------------------------
+                0.00    0.00       2/2           GillespieSRNTrajectorySimGetFullDistribution(SRN const*, Tensor, double, unsigned long) [21]
+[50]     0.0    0.00    0.00       2         ClipToValidState(SRN const*, IntMatrix) [50]
+                0.00    0.00       4/8940517814     GetValueIntMatrix(IntMatrix, unsigned long, unsigned long) [24]
+                0.00    0.00       2/790081005     SetValueIntMatrix(IntMatrix, int, unsigned long, unsigned long) [32]
+-----------------------------------------------
+                0.00    0.00       1/1           BTCMGlobalTimeExperiment() [2]
+[51]     0.0    0.00    0.00       1         ParseSRN(char const*) [51]
+                0.00    0.00       1/1           CreateSRN(unsigned int, Reaction**, Species*) [52]
+                0.00    0.00       2/2           CreateReaction(double, unsigned int, int*, int*) [77]
+                0.00    0.00       2/2           DeleteReaction(Reaction*) [78]
+-----------------------------------------------
+                0.00    0.00       1/1           ParseSRN(char const*) [51]
+[52]     0.0    0.00    0.00       1         CreateSRN(unsigned int, Reaction**, Species*) [52]
+                0.00    0.00       2/790081005     SetValueIntMatrix(IntMatrix, int, unsigned long, unsigned long) [32]
+                0.00    0.00       4/4           SetColumnIntMatrix(IntMatrix, int const*, unsigned long) [73]
+                0.00    0.00       3/11024       CreateBlankIntMatrix(MemArena*, unsigned long, unsigned long) [65]
+-----------------------------------------------
+                0.00    0.00    1001/10056006     BTCMGetFullProbabilityDistribution(BTCM*, double, Tensor) [4]
+                0.00    0.00    1001/10056006     BTCMGlobalTimeExperiment() [2]
+                0.00    0.00    2002/10056006     BTCMTakeSampleNoGradient(BTCM*, IntMatrix, double) [13]
+                0.00    0.00    2002/10056006     LogFullDistribution(Tensor, double, _IO_FILE*) [44]
+                0.00    0.00   10000/10056006     GillespieSRNTrajectorySimLogFullDistribution(SRN const*, double, double, unsigned long, _IO_FILE*) [40]
+                0.00    0.00   10000/10056006     GillespieSRNTrajectorySimLogPerSpeciesMean(SRN const*, double, double, unsigned long, _IO_FILE*) [38]
+                0.00    0.00   20000/10056006     GillespieSRNTrajectorySimLogPerSpeciesStandardDeviation(SRN const*, double, double, unsigned long, _IO_FILE*) [37]
+                0.00    0.00 10010000/10056006     GillespieSRNTrajectorySimGetFullDistribution(SRN const*, Tensor, double, unsigned long) [21]
+[58]     0.0    0.00    0.00 10056006         SetIntMatrix(IntMatrix, int) [58]
+-----------------------------------------------
+                0.00    0.00   30030/120120      BTCMGetFullProbabilityDistribution(BTCM*, double, Tensor) [4]
+                0.00    0.00   30030/120120      BTCMGlobalTimeExperiment() [2]
+                0.00    0.00   60060/120120      LogFullDistribution(Tensor, double, _IO_FILE*) [44]
+[59]     0.0    0.00    0.00  120120         IntMatrixIsZero(IntMatrix) [59]
+-----------------------------------------------
+                0.00    0.00   30030/90090       BTCMGlobalTimeExperiment() [2]
+                0.00    0.00   60060/90090       LogFullDistribution(Tensor, double, _IO_FILE*) [44]
+[60]     0.0    0.00    0.00   90090         IncrementTensorIndex(Tensor, IntMatrix) [60]
+-----------------------------------------------
+                0.00    0.00   60060/60060       LogFullDistribution(Tensor, double, _IO_FILE*) [44]
+[61]     0.0    0.00    0.00   60060         GetValueTensor(Tensor, IntMatrix) [61]
+-----------------------------------------------
+                0.00    0.00   30030/60060       BTCMGetFullProbabilityDistribution(BTCM*, double, Tensor) [4]
+                0.00    0.00   30030/60060       BTCMGlobalTimeExperiment() [2]
+[62]     0.0    0.00    0.00   60060         SetValueTensor(Tensor, double, IntMatrix) [62]
+-----------------------------------------------
+                0.00    0.00   31031/31031       HellingerDistance(Tensor, Tensor) [72]
+[63]     0.0    0.00    0.00   31031         GetTensorSize(unsigned long*, unsigned long) [63]
+-----------------------------------------------
+                0.00    0.00   29029/29029       BTCMGetFullProbabilityDistribution(BTCM*, double, Tensor) [4]
+[64]     0.0    0.00    0.00   29029         IntMatrixAddValue(IntMatrix, int, unsigned long, unsigned long) [64]
+-----------------------------------------------
+                0.00    0.00       2/11024       BTCMPredict(BTCM*, IntMatrix, double) [3]
+                0.00    0.00       2/11024       GillespieSRNTrajectorySimLogFullDistribution(SRN const*, double, double, unsigned long, _IO_FILE*) [40]
+                0.00    0.00       2/11024       GillespieSRNTrajectorySimLogPerSpeciesMean(SRN const*, double, double, unsigned long, _IO_FILE*) [38]
+                0.00    0.00       3/11024       CreateSRN(unsigned int, Reaction**, Species*) [52]
+                0.00    0.00       4/11024       GillespieSRNTrajectorySimLogPerSpeciesStandardDeviation(SRN const*, double, double, unsigned long, _IO_FILE*) [37]
+                0.00    0.00    1001/11024       BTCMGetFullProbabilityDistribution(BTCM*, double, Tensor) [4]
+                0.00    0.00    1001/11024       BTCMGlobalTimeExperiment() [2]
+                0.00    0.00    2002/11024       LogFullDistribution(Tensor, double, _IO_FILE*) [44]
+                0.00    0.00    2002/11024       GillespieSRNTrajectorySimGetFullDistribution(SRN const*, Tensor, double, unsigned long) [21]
+                0.00    0.00    5005/11024       BTCMTakeSampleNoGradient(BTCM*, IntMatrix, double) [13]
+[65]     0.0    0.00    0.00   11024         CreateBlankIntMatrix(MemArena*, unsigned long, unsigned long) [65]
+-----------------------------------------------
+                0.00    0.00       1/4509        frame_dummy [48]
+                0.00    0.00       1/4509        BTCMCreate(SRN*, unsigned int*, unsigned int, double) [49]
+                0.00    0.00       2/4509        BTCMGlobalTimeExperiment() [2]
+                0.00    0.00     501/4509        BTCMPredict(BTCM*, IntMatrix, double) [3]
+                0.00    0.00    1001/4509        BTCMTakeSampleNoGradient(BTCM*, IntMatrix, double) [13]
+                0.00    0.00    1001/4509        GillespieSRNTrajectorySimLogPerSpeciesMean(SRN const*, double, double, unsigned long, _IO_FILE*) [38]
+                0.00    0.00    2002/4509        GillespieSRNTrajectorySimLogPerSpeciesStandardDeviation(SRN const*, double, double, unsigned long, _IO_FILE*) [37]
+[66]     0.0    0.00    0.00    4509         CreateMatrix(MemArena*, unsigned long, unsigned long, double const*) [66]
+-----------------------------------------------
+                0.00    0.00    1001/4004        GillespieSRNTrajectorySimLogPerSpeciesMean(SRN const*, double, double, unsigned long, _IO_FILE*) [38]
+                0.00    0.00    1001/4004        GillespieSRNTrajectorySimLogPerSpeciesStandardDeviation(SRN const*, double, double, unsigned long, _IO_FILE*) [37]
+                0.00    0.00    2002/4004        BTCMGlobalTimeExperiment() [2]
+[67]     0.0    0.00    0.00    4004         LogDataPoint(double, Matrix, _IO_FILE*) [67]
+-----------------------------------------------
+                0.00    0.00    1001/2002        GillespieSRNTrajectorySimGetFullDistribution(SRN const*, Tensor, double, unsigned long) [21]
+                0.00    0.00    1001/2002        GillespieSRNTrajectorySimLogFullDistribution(SRN const*, double, double, unsigned long, _IO_FILE*) [40]
+[68]     0.0    0.00    0.00    2002         TensorScaleSelf(Tensor, double) [68]
+-----------------------------------------------
+                0.00    0.00    1001/2002        GillespieSRNTrajectorySimGetFullDistribution(SRN const*, Tensor, double, unsigned long) [21]
+                0.00    0.00    1001/2002        GillespieSRNTrajectorySimLogFullDistribution(SRN const*, double, double, unsigned long, _IO_FILE*) [40]
+[69]     0.0    0.00    0.00    2002         SetTensor(Tensor, double) [69]
+-----------------------------------------------
+                0.00    0.00    1004/1004        SRNCreateStateSpaceTensor(MemArena*, SRN const*) [71]
+[70]     0.0    0.00    0.00    1004         CreateTensor(MemArena*, unsigned long*, unsigned long, double const*) [70]
+-----------------------------------------------
+                0.00    0.00       3/1004        BTCMGlobalTimeExperiment() [2]
+                0.00    0.00    1001/1004        GillespieSRNTrajectorySimLogFullDistribution(SRN const*, double, double, unsigned long, _IO_FILE*) [40]
+[71]     0.0    0.00    0.00    1004         SRNCreateStateSpaceTensor(MemArena*, SRN const*) [71]
+                0.00    0.00    1004/1004        CreateTensor(MemArena*, unsigned long*, unsigned long, double const*) [70]
+-----------------------------------------------
+                0.00    0.00    1001/1001        BTCMGlobalTimeExperiment() [2]
+[72]     0.0    0.00    0.00    1001         HellingerDistance(Tensor, Tensor) [72]
+                0.00    0.00   31031/31031       GetTensorSize(unsigned long*, unsigned long) [63]
+-----------------------------------------------
+                0.00    0.00       4/4           CreateSRN(unsigned int, Reaction**, Species*) [52]
+[73]     0.0    0.00    0.00       4         SetColumnIntMatrix(IntMatrix, int const*, unsigned long) [73]
+-----------------------------------------------
+                0.00    0.00       1/3           BTCMGlobalTimeExperiment() [2]
+                0.00    0.00       2/3           GillespieSRNTrajectorySimGetFullDistribution(SRN const*, Tensor, double, unsigned long) [21]
+[74]     0.0    0.00    0.00       3         PrintIntMatrix(IntMatrix) [74]
+-----------------------------------------------
+                0.00    0.00       3/3           SRNGetStateSpaceTensorAllocSize(SRN const*) [76]
+[75]     0.0    0.00    0.00       3         GetTensorAllocSize(unsigned long*, unsigned long) [75]
+-----------------------------------------------
+                0.00    0.00       1/3           GillespieSRNTrajectorySimLogFullDistribution(SRN const*, double, double, unsigned long, _IO_FILE*) [40]
+                0.00    0.00       2/3           BTCMGlobalTimeExperiment() [2]
+[76]     0.0    0.00    0.00       3         SRNGetStateSpaceTensorAllocSize(SRN const*) [76]
+                0.00    0.00       3/3           GetTensorAllocSize(unsigned long*, unsigned long) [75]
+-----------------------------------------------
+                0.00    0.00       2/2           ParseSRN(char const*) [51]
+[77]     0.0    0.00    0.00       2         CreateReaction(double, unsigned int, int*, int*) [77]
+-----------------------------------------------
+                0.00    0.00       2/2           ParseSRN(char const*) [51]
+[78]     0.0    0.00    0.00       2         DeleteReaction(Reaction*) [78]
+-----------------------------------------------
+                0.00    0.00       1/2           frame_dummy [48]
+                0.00    0.00       1/2           BTCMCreate(SRN*, unsigned int*, unsigned int, double) [49]
+[79]     0.0    0.00    0.00       2         SRNGetMaxSpeciesCount(SRN const*) [79]
+-----------------------------------------------
+                0.00    0.00       1/2           BTCMPredict(BTCM*, IntMatrix, double) [3]
+                0.00    0.00       1/2           BTCMGlobalTimeExperiment() [2]
+[80]     0.0    0.00    0.00       2         NNDelete(NeuralNetwork*) [80]
+-----------------------------------------------
+                0.00    0.00       1/1           BTCMGlobalTimeExperiment() [2]
+[81]     0.0    0.00    0.00       1         SetSeedRandU48(unsigned long) [81]
+-----------------------------------------------
+                0.00    0.00       1/1           BTCMGlobalTimeExperiment() [2]
+[82]     0.0    0.00    0.00       1         NNGetParamCount(NeuralNetwork const*) [82]
+-----------------------------------------------
+                0.00    0.00       1/1           BTCMGlobalTimeExperiment() [2]
+[83]     0.0    0.00    0.00       1         DeleteSRN(SRN*) [83]
+-----------------------------------------------
+
+ This table describes the call tree of the program, and was sorted by
+ the total amount of time spent in each function and its children.
+
+ Each entry in this table consists of several lines.  The line with the
+ index number at the left hand margin lists the current function.
+ The lines above it list the functions that called this function,
+ and the lines below it list the functions this one called.
+ This line lists:
+     index	A unique number given to each element of the table.
+		Index numbers are sorted numerically.
+		The index number is printed next to every function name so
+		it is easier to look up where the function is in the table.
+
+     % time	This is the percentage of the `total' time that was spent
+		in this function and its children.  Note that due to
+		different viewpoints, functions excluded by options, etc,
+		these numbers will NOT add up to 100%.
+
+     self	This is the total amount of time spent in this function.
+
+     children	This is the total amount of time propagated into this
+		function by its children.
+
+     called	This is the number of times the function was called.
+		If the function called itself recursively, the number
+		only includes non-recursive calls, and is followed by
+		a `+' and the number of recursive calls.
+
+     name	The name of the current function.  The index number is
+		printed after it.  If the function is a member of a
+		cycle, the cycle number is printed between the
+		function's name and the index number.
+
+
+ For the function's parents, the fields have the following meanings:
+
+     self	This is the amount of time that was propagated directly
+		from the function into this parent.
+
+     children	This is the amount of time that was propagated from
+		the function's children into this parent.
+
+     called	This is the number of times this parent called the
+		function `/' the total number of times the function
+		was called.  Recursive calls to the function are not
+		included in the number after the `/'.
+
+     name	This is the name of the parent.  The parent's index
+		number is printed after it.  If the parent is a
+		member of a cycle, the cycle number is printed between
+		the name and the index number.
+
+ If the parents of the function cannot be determined, the word
+ `<spontaneous>' is printed in the `name' field, and all the other
+ fields are blank.
+
+ For the function's children, the fields have the following meanings:
+
+     self	This is the amount of time that was propagated directly
+		from the child into the function.
+
+     children	This is the amount of time that was propagated from the
+		child's children to the function.
+
+     called	This is the number of times the function called
+		this child `/' the total number of times the child
+		was called.  Recursive calls by the child are not
+		listed in the number after the `/'.
+
+     name	This is the name of the child.  The child's index
+		number is printed after it.  If the child is a
+		member of a cycle, the cycle number is printed
+		between the name and the index number.
+
+ If there are any cycles (circles) in the call graph, there is an
+ entry for the cycle-as-a-whole.  This entry shows who called the
+ cycle (as parents) and the members of the cycle (as children.)
+ The `+' recursive calls entry shows the number of function calls that
+ were internal to the cycle, and the calls entry for each member shows,
+ for that member, how many times it was called from other members of
+ the cycle.
+
+Copyright (C) 2012-2026 Free Software Foundation, Inc.
+
+Copying and distribution of this file, with or without modification,
+are permitted in any medium without royalty provided the copyright
+notice and this notice are preserved.
+
+Index by function name
+
+  [49] BTCMCreate(SRN*, unsigned int*, unsigned int, double) [82] NNGetParamCount(NeuralNetwork const*) [45] IncrementStateInStateSpace(SRN const*, IntMatrix)
+   [3] BTCMPredict(BTCM*, IntMatrix, double) [41] SetInitialState(SRN const*, IntMatrix) [76] SRNGetStateSpaceTensorAllocSize(SRN const*)
+  [23] MatrixScale(Matrix*, Matrix, double) [68] TensorScaleSelf(Tensor, double) [4] BTCMGetFullProbabilityDistribution(BTCM*, double, Tensor)
+  [66] CreateMatrix(MemArena*, unsigned long, unsigned long, double const*) [50] ClipToValidState(SRN const*, IntMatrix) [38] GillespieSRNTrajectorySimLogPerSpeciesMean(SRN const*, double, double, unsigned long, _IO_FILE*)
+  [70] CreateTensor(MemArena*, unsigned long*, unsigned long, double const*) [43] NNCopyParameters(NeuralNetwork*, NeuralNetwork const*) [21] GillespieSRNTrajectorySimGetFullDistribution(SRN const*, Tensor, double, unsigned long)
+  [30] IntMatrixAdd(IntMatrix*, IntMatrix, IntMatrix) [24] GetValueIntMatrix(IntMatrix, unsigned long, unsigned long) [40] GillespieSRNTrajectorySimLogFullDistribution(SRN const*, double, double, unsigned long, _IO_FILE*)
+  [27] IsValidState(SRN const*, IntMatrix) [72] HellingerDistance(Tensor, Tensor) [37] GillespieSRNTrajectorySimLogPerSpeciesStandardDeviation(SRN const*, double, double, unsigned long, _IO_FILE*)
+  [67] LogDataPoint(double, Matrix, _IO_FILE*) [64] IntMatrixAddValue(IntMatrix, int, unsigned long, unsigned long) [31] RandU48()
+  [58] SetIntMatrix(IntMatrix, int) [29] NNBackPropagation(NeuralNetwork*) [47] NNCreate(unsigned int*, ActivationFnID*, unsigned int, double)
+  [25] GetEscapeRate(SRN const*, IntMatrix) [11] SetMatrixDiagonal(Matrix, double const*) [80] NNDelete(NeuralNetwork*)
+  [63] GetTensorSize(unsigned long*, unsigned long) [32] SetValueIntMatrix(IntMatrix, int, unsigned long, unsigned long) [51] ParseSRN(char const*)
+   [8] BTCMTakeSample(BTCM*, IntMatrix, double, Matrix) [46] CreateRandomMatrix(MemArena*, unsigned long, unsigned long) [52] CreateSRN(unsigned int, Reaction**, Species*)
+  [34] CopyMatrixData(Matrix, Matrix) [75] GetTensorAllocSize(unsigned long*, unsigned long) [83] DeleteSRN(SRN*)
+  [77] CreateReaction(double, unsigned int, int*, int*) [73] SetColumnIntMatrix(IntMatrix, int const*, unsigned long) [20] MatrixAdd(Matrix*, Matrix, Matrix)
+  [78] DeleteReaction(Reaction*) [44] LogFullDistribution(Tensor, double, _IO_FILE*) [5] NNPredict(NeuralNetwork*, Matrix)
+  [61] GetValueTensor(Tensor, IntMatrix) [65] CreateBlankIntMatrix(MemArena*, unsigned long, unsigned long) [19] SetMatrix(Matrix, double)
+  [36] MatrixAddValue(Matrix, double, unsigned long, unsigned long) [60] IncrementTensorIndex(Tensor, IntMatrix) [69] SetTensor(Tensor, double)
+  [33] MatrixMultiply(Matrix*, Matrix, Matrix) [9] MatrixAffineTransform(Matrix*, Matrix, Matrix, Matrix) [10] TanhDerivative(Matrix, Matrix)
+  [42] NNSetLastLayer(NeuralNetwork*, Matrix) [79] SRNGetMaxSpeciesCount(SRN const*) [17] TanhElementWise(Matrix)
+  [74] PrintIntMatrix(IntMatrix) [26] GetReactionPropensities(SRN const*, IntMatrix, double*) [6] SoftmaxDerivative(Matrix, Matrix)
+  [81] SetSeedRandU48(unsigned long) [14] MatrixTransformDiagonal(Matrix*, Matrix, double (*)(double)) [12] IdentityDerivative(Matrix, Matrix)
+   [7] SetValueMatrix(Matrix, double, unsigned long, unsigned long) [2] BTCMGlobalTimeExperiment() [16] DTanhDx(double)
+  [62] SetValueTensor(Tensor, double, IntMatrix) [13] BTCMTakeSampleNoGradient(BTCM*, IntMatrix, double) [28] Softmax(Matrix)
+  [39] TensorAddValue(Tensor, double, IntMatrix) [35] GetColumnVectorIntMatrix(IntMatrix, IntMatrix, unsigned long) [15] _init
+  [59] IntMatrixIsZero(IntMatrix) [22] GetPreviousConnectedState(SRN const*, IntMatrix, IntMatrix, unsigned int) [48] frame_dummy
+  [18] MatrixTransform(Matrix*, Matrix, double (*)(double)) [71] SRNCreateStateSpaceTensor(MemArena*, SRN const*)

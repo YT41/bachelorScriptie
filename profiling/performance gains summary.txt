@@ -1,0 +1,4 @@
+the global birth-death experiment runtime went from:
+Before implicit Softmax derivative: ~31 min
+After implicit Softmax derivative: ~12 min
+After smaller derivative cache: ~9 min

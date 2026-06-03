@@ -12,70 +12,11 @@
 #include "Matrix.hpp"
 #include "MemArena.hpp"
 #include "Random.hpp"
+#include "MiscMath.hpp"
 
 
-typedef void ActivationFn(Matrix z); /*note: changes the matrix data in z*/
-typedef void ActivationFnDerivative(Matrix dest, Matrix z);
-
-static double Sigmoid(double x) { return 1.0 / (1.0 + exp(-x)); }
-static double ReLU(double x) { return MAX(x, 0.0); }
-static void SoftmaxHelperFunction(double* dest, Matrix z) /*z does not change*/
-{
-    uint32_t K = (z.rowCount);
-    double m = GetValueMatrix(z, 0, 0);
-    for(uint32_t i = 0; i < K; i++)
-    {
-        double zi = GetValueMatrix(z, i, 0);
-        if(zi > m)
-            m = zi;
-    }
-
-    double exponentialsCache[K];
-    double sum = 0.0;
-    for(uint32_t i = 0; i < K; i++)
-    {
-        exponentialsCache[i] = exp(GetValueMatrix(z, i, 0) - m);
-        sum += exponentialsCache[i];
-    }
-
-    for(uint32_t i = 0; i < K; i++)
-        dest[i] = (exponentialsCache[i] / sum);
-}
-
-
-static double DSigmoidDx(double x) { return 1.0 / (exp(x) + 2.0 + exp(-x)); }
-static double DTanhDx(double x) { double tanhx = tanh(x); return (1.0 - (tanhx * tanhx)); }
-static double DReLUDx(double x) { return (x < 0.0) ? 0.0 : 1.0; } /*does not actually exist everywhere*/
-
-
-static void Identity(Matrix z) {  }
-static void SigmoidElementWise(Matrix z) { MatrixTransformSelf(z, Sigmoid); }
-static void TanhElementWise(Matrix z) { MatrixTransformSelf(z, tanh); }
-static void ReLUElementWise(Matrix z) { MatrixTransformSelf(z, ReLU); }
-static void Softmax(Matrix z) { SoftmaxHelperFunction((z.data), z); } /*based on safe softmax, prevents large exponentiation*/
-
-/*dest must be a square matrix, z is the vector to evaluate derivative in, z is not changed*/
-static void IdentityDerivative(Matrix dest, Matrix z) { SetMatrixIdentity(dest); }
-static void SigmoidDerivative(Matrix dest, Matrix z) { SetMatrixDiagonal(dest, z.data); MatrixTransformDiagonalSelf(dest, DSigmoidDx); }
-static void TanhDerivative(Matrix dest, Matrix z) { SetMatrixDiagonal(dest, z.data); MatrixTransformDiagonalSelf(dest, DTanhDx); }
-static void ReLUDerivative(Matrix dest, Matrix z) { SetMatrixDiagonal(dest, z.data); MatrixTransformDiagonalSelf(dest, DReLUDx); }
-static void SoftmaxDerivative(Matrix dest, Matrix z) 
-{ 
-    uint32_t K = (z.rowCount);
-    double softmaxVals[K];
-    SoftmaxHelperFunction(softmaxVals, z);
-
-    for(uint32_t i = 0; i < K; i++)
-    {
-        for(uint32_t j = 0; j < K; j++)
-            SetValueMatrix(dest, -(softmaxVals[i] * softmaxVals[j]), i, j);
-    }
-
-    /*set diagonal values correctly now*/
-    for(uint32_t i = 0; i < K; i++)
-        SetValueMatrix(dest, (softmaxVals[i] * (1.0 - softmaxVals[i])), i, i);
-}
-
+typedef void ActivationFn(Matrix z, uint32_t column); /*note: changes the matrix data in z*/
+typedef void ActivationFnDerivative(Matrix dest, Matrix z, uint32_t column);
 
 
 ActivationFn* activationFnLUT[] = 
@@ -114,8 +55,13 @@ static double SquaredDistanceLoss(Matrix output, Matrix y)
 static inline void UpdateBiasVectorGradientDescent(NeuralNetwork* network, uint32_t l)
 {
     uint32_t d = (network->biasVectors[l].rowCount);
-    for(uint32_t i = 0; i < d; i++)
-        (network->biasVectors[l].data[GetIndex(i, 0, d)]) -= GetValueMatrix((network->layerVectors[l+1]), i, 0) * (network->learningRate);
+    uint32_t batchSize = NNGetBatchSize(network);
+
+    for(uint32_t b = 0; b < batchSize; b++)
+    {
+        for(uint32_t i = 0; i < d; i++)
+            (network->biasVectors[l].data[GetIndex(i, 0, d)]) -= (GetValueMatrix((network->layerVectors[l+1]), i, b) * (network->learningRate));
+    }
 }
 
 /*W_l -= lr * a_{l+1} (a_l)^T*/
@@ -124,27 +70,32 @@ static inline void UpdateWeightMatrixGradientDescent(NeuralNetwork* network, uin
 {
     uint32_t m = (network->layerVectors[l].rowCount);
     uint32_t n = (network->layerVectors[l+1].rowCount);
-    for(uint32_t i = 0; i < m; i++)
+    uint32_t batchSize = NNGetBatchSize(network);
+
+    for(uint32_t b = 0; b < batchSize; b++)
     {
-        double sum = 0.0;
-        for(uint32_t j = 0; j < n; j++)
+        for(uint32_t i = 0; i < m; i++)
         {
-            sum += GetValueMatrix((network->layerVectors[l+1]), j, 0) * GetValueMatrix((network->weightMatrices[l]), j, i);
+            double sum = 0.0;
+            for(uint32_t j = 0; j < n; j++)
+            {
+                sum += GetValueMatrix((network->layerVectors[l+1]), j, b) * GetValueMatrix((network->weightMatrices[l]), j, i);
 
-            /*gradient descent for weights*/
-            (network->weightMatrices[l].data[GetIndex(j, i, n)]) -= GetValueMatrix((network->layerVectors[l+1]), j, 0) * GetValueMatrix((network->layerVectors[l]), i, 0) * (network->learningRate);
+                /*gradient descent for weights*/
+                (network->weightMatrices[l].data[GetIndex(j, i, n)]) -= GetValueMatrix((network->layerVectors[l+1]), j, b) * GetValueMatrix((network->layerVectors[l]), i, b) * (network->learningRate);
+            }
+
+            /*desired changes in the l'th layer*/
+            /*TODO: this makes softmax only work in last layer (multiplication is seperate in last layer), which is fine for the purpose of this project*/
+            (network->layerVectors[l].data[GetIndex(i, b, m)]) = GetValueMatrix((network->activationFunctionDerivativeCache[l]), i, b) * sum;
         }
-
-        /*desired changes in the l'th layer*/
-        /*TODO: this makes softmax only work in last layer (multiplication is seperate in last layer), which is fine for the purpose of this project*/
-        (network->layerVectors[l].data[GetIndex(i, 0, m)]) = GetValueMatrix((network->activationFunctionDerivativeCache[l]), i, i) * sum;
     }
 }
 
 
 /*============================ public functions ============================*/
 
-NeuralNetwork* NNCreate(uint32_t* neuronsPerLayer, ActivationFnID* activationFnPerLayer, uint32_t hiddenLayerCount, double learningRate)
+NeuralNetwork* NNCreate(uint32_t* neuronsPerLayer, ActivationFnID* activationFnPerLayer, uint32_t hiddenLayerCount, uint32_t batchSize, double learningRate)
 {
     if((hiddenLayerCount > MAX_HIDDEN_LAYER_COUNT))
         return NULL;
@@ -152,11 +103,11 @@ NeuralNetwork* NNCreate(uint32_t* neuronsPerLayer, ActivationFnID* activationFnP
     size_t allocSize = sizeof(NeuralNetwork);
     /*layer vector sizes*/
     for(uint32_t i = 0; i < (hiddenLayerCount + 2); i++)
-        allocSize += GetMatrixAllocSize(neuronsPerLayer[i], 1);
+        allocSize += GetMatrixAllocSize(neuronsPerLayer[i], batchSize);
 
-    /*cache vector sizes*/
+    /*derivative cache vector sizes*/
     for(uint32_t i = 0; i < (hiddenLayerCount + 2); i++)
-        allocSize += GetMatrixAllocSize(neuronsPerLayer[i], neuronsPerLayer[i]);
+        allocSize += GetMatrixAllocSize(neuronsPerLayer[i], batchSize);
 
     /*weight matrix sizes*/
     for(uint32_t i = 0; i < (hiddenLayerCount + 1); i++)
@@ -171,19 +122,22 @@ NeuralNetwork* NNCreate(uint32_t* neuronsPerLayer, ActivationFnID* activationFnP
 
     /*layer vector init*/
     for(uint32_t i = 0; i < (hiddenLayerCount + 2); i++)
-        ret->layerVectors[i] = CreateRandomMatrix(&arena, neuronsPerLayer[i], 1);
+        ret->layerVectors[i] = CreateRandomMatrix(&arena, neuronsPerLayer[i], batchSize);
 
-    /*cache vector init*/
+    /*derivative cache vector init*/
     for(uint32_t i = 0; i < (hiddenLayerCount + 2); i++)
-        ret->activationFunctionDerivativeCache[i] = CreateRandomMatrix(&arena, neuronsPerLayer[i], neuronsPerLayer[i]);
+        ret->activationFunctionDerivativeCache[i] = CreateRandomMatrix(&arena, neuronsPerLayer[i], batchSize);
+
+
+    /*TODO: other initialization might be better for different layers based on activation function*/
 
     /*weight matrix init*/
     for(uint32_t i = 0; i < (hiddenLayerCount + 1); i++)
-        ret->weightMatrices[i] = CreateRandomMatrix(&arena, neuronsPerLayer[i+1], neuronsPerLayer[i]);
+        ret->weightMatrices[i] = CreateRandomVariancePreservingMatrix(&arena, neuronsPerLayer[i+1], neuronsPerLayer[i]);
 
     /*bias vector init*/
     for(uint32_t i = 0; i < (hiddenLayerCount + 1); i++)
-        ret->biasVectors[i] = CreateRandomMatrix(&arena, neuronsPerLayer[i+1], 1);
+        ret->biasVectors[i] = CreateRandomVariancePreservingMatrix(&arena, neuronsPerLayer[i+1], 1);
 
     ret->arena = arena;
     ret->learningRate = learningRate;
@@ -236,15 +190,14 @@ size_t NNGetParamCount(const NeuralNetwork* network)
 //     fclose(file);
 // }
 
-void NNSetLastLayer(NeuralNetwork* network, Matrix y)
+void NNSetLastLayer(NeuralNetwork* network, Matrix Y)
 {
-    CopyMatrixData(network->layerVectors[((network->hiddenLayerCount) + 1)], y);
+    CopyMatrixData(network->layerVectors[((network->hiddenLayerCount) + 1)], Y);
 }
 
 void NNBackPropagation(NeuralNetwork* network)
 {
     uint32_t L = (network->hiddenLayerCount);
-    MatrixMultiply(&(network->layerVectors[L+1]), (network->activationFunctionDerivativeCache[L+1]), (network->layerVectors[L+1]));
     
     for(int32_t l = L; l >= 0; l--)
     {
@@ -253,25 +206,59 @@ void NNBackPropagation(NeuralNetwork* network)
     }
 }
 
-Matrix NNPredict(NeuralNetwork* network, Matrix x)
+Matrix NNPredict(NeuralNetwork* network, Matrix X)
 {
-    CopyMatrixData((network->layerVectors[0]), x);
+    CopyMatrixData((network->layerVectors[0]), X);
+    return NNPredictNoCopy(network);
+}
 
+Matrix NNPredictNoCopy(NeuralNetwork* network)
+{
+    uint32_t batchSize = NNGetBatchSize(network);
     uint32_t L = (network->hiddenLayerCount);
-    for(uint32_t l = 0; l < (L + 1); l++)
+    for(uint32_t l = 0; l < L; l++)
     {
-        MatrixAffineTransform(&(network->layerVectors[l+1]), (network->weightMatrices[l]), (network->layerVectors[l]), (network->biasVectors[l]));
+        MatrixAffineTransformColumnWiseC(&(network->layerVectors[l+1]), (network->weightMatrices[l]), (network->layerVectors[l]), (network->biasVectors[l]));
 
         ActivationFnID activationFnID = (network->activationFnPerLayer[l]);
 
         /*cache derivatives for use in backpropagation*/
-        activationFnDerivativeLUT[activationFnID]((network->activationFunctionDerivativeCache[l+1]), (network->layerVectors[l+1]));
-
-        activationFnLUT[activationFnID]((network->layerVectors[l+1]));
+        for(uint32_t j = 0; j < batchSize; j++)
+        {
+            activationFnDerivativeLUT[activationFnID]((network->activationFunctionDerivativeCache[l+1]), (network->layerVectors[l+1]), j);
+            activationFnLUT[activationFnID]((network->layerVectors[l+1]), j);
+        }
     }
+    /*for last layer we do not cache derivatives, we just set the gradient to the right value in the last layer*/
+    MatrixAffineTransformColumnWiseC(&(network->layerVectors[L+1]), (network->weightMatrices[L]), (network->layerVectors[L]), (network->biasVectors[L]));
+    for(uint32_t j = 0; j < batchSize; j++)
+        activationFnLUT[(network->activationFnPerLayer[L])]((network->layerVectors[L+1]), j);
 
     return (network->layerVectors[L+1]);
 }
+
+Matrix NNPredictSingleDataPoint(NeuralNetwork* network, uint32_t i, Matrix X)
+{
+    CopyMatrixData((network->layerVectors[0]), X);
+
+    uint32_t L = (network->hiddenLayerCount);
+    for(uint32_t l = 0; l < L; l++)
+    {
+        MatrixAffineTransform(GetColumnVectorMatrix((network->layerVectors[l+1]), i), (network->weightMatrices[l]),  GetColumnVectorMatrix((network->layerVectors[l]), i), (network->biasVectors[l]));
+
+        ActivationFnID activationFnID = (network->activationFnPerLayer[l]);
+
+        /*cache derivative for use in backpropagation, only for this single data point*/
+        activationFnDerivativeLUT[activationFnID]((network->activationFunctionDerivativeCache[l+1]), (network->layerVectors[l+1]), i);
+        activationFnLUT[activationFnID]((network->layerVectors[l+1]), i);
+    }
+    /*for last layer we do not cache derivatives, we just set the gradient to the right value in the last layer*/
+    MatrixAffineTransform(GetColumnVectorMatrix((network->layerVectors[L+1]), i), (network->weightMatrices[L]),  GetColumnVectorMatrix((network->layerVectors[L]), i), (network->biasVectors[L]));
+    activationFnLUT[(network->activationFnPerLayer[L])]((network->layerVectors[L+1]), i);
+
+    return GetColumnVectorMatrix((network->layerVectors[L+1]), i);
+}
+
 
 /*TODO: make it work for general loss functions, right now this is squared error loss*/
 double NNTrain(NeuralNetwork* network, Matrix x, Matrix y)
@@ -294,7 +281,7 @@ void TestSimpleSinNN(void)
 {
     uint32_t neuronsPerLayer[] = { 1, 16, 16, 1 };
     ActivationFnID activationFnPerLayer[] = { TANH, TANH, IDENTITY };
-    NeuralNetwork* nn = NNCreate(neuronsPerLayer, activationFnPerLayer, 2, 0.01);
+    NeuralNetwork* nn = NNCreate(neuronsPerLayer, activationFnPerLayer, 2, 1, 0.01);
 
     MemArena arena = CreateMemArena(GetMatrixAllocSize(1, 1) * 2);
 

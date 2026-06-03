@@ -1,7 +1,7 @@
 #include "SRN.hpp"
 #include "Matrix.hpp"
 
-#include <cmath>
+#include <math.h>
 #include <cstddef>
 #include <cstdint>
 #include <cstdio>
@@ -91,7 +91,7 @@ SRN* SRNCreateSignallingCascade(uint32_t M)
     Species cascadeSpecies[M];
     for(uint32_t i = 0; i < M; i++)
     {
-        cascadeSpecies[i].initialCount = 0;
+        cascadeSpecies[i].initialCount = 5; /*TODO: should be 0 eventually*/
         cascadeSpecies[i].maxCount = 10;
         snprintf(cascadeSpecies[i].name, 32, "X%d", (i + 1));
     }
@@ -213,6 +213,25 @@ void ClipToValidState(const SRN* srn, IntMatrix n)
         else if(GetValueIntMatrix(n, i, 0) >= (int32_t)(srn->species[i].maxCount))
             SetValueIntMatrix(n, ((srn->species[i].maxCount) - 1), i, 0);
     }
+}
+
+double GetInitialConditionProbability(const SRN* srn, IntMatrix n)
+{
+    uint32_t M = SRNGetSpeciesCount(srn);
+    for(uint32_t i = 0; i < M; i++)
+    {
+        if(GetValueIntMatrix(n, i, 0) != (int32_t)(srn->species[i].initialCount))
+            return 0.0;
+    }
+    return 1.0;
+}
+
+double GetInitialConditionSample(const SRN* srn, IntMatrix s)
+{
+    uint32_t M = SRNGetSpeciesCount(srn);
+    for(uint32_t i = 0; i < M; i++)
+        SetValueIntMatrix(s, (srn->species[i].initialCount), i, 0);
+    return 1.0;
 }
 
 double GetPropensity(const SRN* srn, IntMatrix n, uint32_t reactionIndex)

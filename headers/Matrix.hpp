@@ -2,6 +2,7 @@
 
 #include "MemArena.hpp"
 #include <cstddef>
+#include <cstdint>
 
 
 typedef struct IntMatrix
@@ -66,17 +67,20 @@ static inline size_t GetMatrixAllocSizeMatrix(Matrix A) { return (GetMatrixSize(
 Matrix CreateMatrix(MemArena* arena, size_t rows, size_t columns, const double* vals);
 Matrix CreateDiagonalMatrix(MemArena* arena, size_t rows, const double* diagVals);
 Matrix CreateRandomMatrix(MemArena* arena, size_t rows, size_t columns);
+Matrix CreateRandomVariancePreservingMatrix(MemArena* arena, size_t rows, size_t columns); /*based on Xavier (Glorot) Initialization, good for layers with derivative close to 1 at x=0*/
 
 Matrix CreateMatrixMultiply(MemArena* arena, Matrix A, Matrix B);
 Matrix CreateMatrixScale(MemArena* arena, Matrix A, double lambda);
 
 void MatrixMultiply(Matrix* dest, Matrix A, Matrix B); /*dest = AB*/
-void MatrixAffineTransform(Matrix* dest, Matrix A, Matrix B, Matrix C); /*dest = AB + C*/
+void MatrixAffineTransform(Matrix dest, Matrix A, Matrix B, Matrix C); /*dest = AB + C*/
+void MatrixAffineTransformColumnWiseC(Matrix* dest, Matrix A, Matrix B, Matrix C);
 void MatrixAdd(Matrix* dest, Matrix A, Matrix B); /*dest = A + B*/
 void MatrixSub(Matrix* dest, Matrix A, Matrix B); /*dest = A - B*/
 void MatrixScale(Matrix* dest, Matrix A, double lambda); /*dest = lambda A*/
 void MatrixTransform(Matrix* dest, Matrix A, RealFn sigma); /*dest_ij = sigma(A_ij)*/
-void MatrixTransformDiagonal(Matrix* dest, Matrix A, RealFn sigma); /*dest_ii = sigma(A_ii)*/
+void MatrixColumnTransform(Matrix* dest, Matrix A, size_t column, RealFn sigma); /*dest_j = sigma(A_j)*/
+void MatrixDiagonalTransform(Matrix* dest, Matrix A, RealFn sigma); /*dest_ii = sigma(A_ii)*/
 void MatrixHadamard(Matrix* dest, Matrix A, Matrix B); /*dest_ij = A_ij * B_ij*/
 double Dot(Matrix v, Matrix w); /*<v, w>, v and w must have 1 column*/
 
@@ -85,17 +89,22 @@ static inline void MatrixAddSelf(Matrix A, Matrix B) { MatrixAdd(&A, A, B); } /*
 static inline void MatrixSubSelf(Matrix A, Matrix B) { MatrixSub(&A, A, B); } /*A -= B*/
 static inline void MatrixScaleSelf(Matrix A, double lambda) { MatrixScale(&A, A, lambda); } /*A = lambda A*/
 static inline void MatrixTransformSelf(Matrix A, RealFn sigma) { MatrixTransform(&A, A, sigma); } /*A_ij = sigma(A_ij)*/
-static inline void MatrixTransformDiagonalSelf(Matrix A, RealFn sigma) { MatrixTransformDiagonal(&A, A, sigma); } /*A_ii = sigma(A_ii)*/
+static inline void MatrixColumnTransformSelf(Matrix A, size_t column, RealFn sigma) { MatrixColumnTransform(&A, A, column, sigma); } /*A_j = sigma(A_j)*/
+static inline void MatrixDiagonalTransformSelf(Matrix A, RealFn sigma) { MatrixDiagonalTransform(&A, A, sigma); } /*A_ii = sigma(A_ii)*/
 static inline void MatrixHadamardSelf(Matrix A, Matrix B) { MatrixHadamard(&A, A, B); } /*A_ij = A_ij * B_ij*/
 
 static inline double GetValueMatrix(Matrix matrix, size_t row, size_t column) { return (matrix.data[GetIndex(row, column, matrix.rowCount)]); }
 double GetValueMatrixSafe(Matrix matrix, size_t row, size_t column);
 
 void GetRowMatrix(Matrix matrix, double* dest, size_t row);
-void GetColumnMatrix(Matrix matrix, double* dest, size_t column);
+void GetColumnDataMatrix(Matrix matrix, double* dest, size_t column);
+Matrix GetColumnVectorMatrix(Matrix matrix, size_t column);
+Matrix GetSubColumnVectorMatrix(Matrix matrix, size_t column, size_t startRow, size_t newRowCount);
+void SetColumnMatrix(Matrix matrix, double val, size_t column);
 
-void SetRowMatrix(Matrix matrix, const double* src, size_t row);
-void SetColumnMatrix(Matrix matrix, const double* src, size_t column);
+void SetRowDataMatrix(Matrix matrix, const double* src, size_t row);
+void SetColumnDataMatrix(Matrix matrix, const double* src, size_t column);
+void SetColumnVectorMatrix(Matrix matrix, Matrix src, size_t column);
 
 void SetValueMatrix(Matrix matrix, double val, size_t row, size_t column);
 

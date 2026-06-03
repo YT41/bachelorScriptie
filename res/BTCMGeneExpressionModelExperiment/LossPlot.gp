@@ -2,7 +2,6 @@
 set border lw 2
 unset key
 set xrange [0:]
-set yrange [-0.01:0.01]
 
 set xlabel "Epoch"
 set ylabel "Loss"
