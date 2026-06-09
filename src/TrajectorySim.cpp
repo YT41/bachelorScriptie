@@ -47,7 +47,6 @@ static inline void SimReaction(double* deltaT, uint32_t* activeReactionIndex, co
 }
 
 
-/*TODO: refactored but not tested*/
 void NaiveSRNTrajectorySim(double deltaT, uint64_t timeStepCount, uint32_t epochs, const SRN* srn, const char* saveFileName)
 {
     FILE* saveFilePointer = fopen(saveFileName, "w");
@@ -86,7 +85,6 @@ void NaiveSRNTrajectorySim(double deltaT, uint64_t timeStepCount, uint32_t epoch
     fclose(saveFilePointer);
 }
 
-/*TODO: refactored but not tested*/
 void GillespieSRNTrajectorySim(double time, uint32_t epochs, const SRN* srn, const char* saveFileName)
 {
     FILE* saveFilePointer = fopen(saveFileName, "w");

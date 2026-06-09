@@ -129,6 +129,11 @@ static inline bool IsSquareMatrix(Matrix A)
     return ((A.rowCount) == (A.columnCount));
 }
 
+static inline bool MatrixShapesMatch(Matrix A, Matrix B)
+{
+    return (A.rowCount == B.rowCount) && (A.columnCount == B.columnCount);
+}
+
 
 Matrix CreateMatrix(MemArena* arena, size_t rows, size_t columns, const double* vals)
 {
@@ -136,6 +141,14 @@ Matrix CreateMatrix(MemArena* arena, size_t rows, size_t columns, const double* 
 
     if(vals != NULL)
         SetMatrixData(ret, vals);
+
+    return ret;
+}
+
+Matrix CreateMatrixAllVal(MemArena* arena, size_t rows, size_t columns, double val)
+{
+    Matrix ret = CreateMatrix(arena, rows, columns, NULL);
+    SetMatrix(ret, val);
 
     return ret;
 }
@@ -178,7 +191,7 @@ Matrix CreateRandomVariancePreservingMatrix(MemArena* arena, size_t rows, size_t
 Matrix CreateMatrixMultiply(MemArena* arena, Matrix A, Matrix B)
 {
     Matrix ret = CreateMatrix(arena, A.rowCount, B.columnCount, NULL);
-    MatrixMultiply(&ret, A, B);
+    MatrixMultiply(ret, A, B);
 
     return ret;
 }
@@ -191,10 +204,9 @@ Matrix CreateMatrixScale(MemArena* arena, Matrix A, double lambda)
     return ret;
 }
 
-void MatrixMultiply(Matrix* dest, Matrix A, Matrix B)
+void MatrixMultiply(Matrix dest, Matrix A, Matrix B)
 {
-    if(A.columnCount != B.rowCount) 
-        return;
+    if(A.columnCount != B.rowCount) { printf("Wrong dimensions!! A B"); return; }
 
     for(uint32_t i = 0; i < A.rowCount; i++)
     {
@@ -203,7 +215,39 @@ void MatrixMultiply(Matrix* dest, Matrix A, Matrix B)
             double val = 0.0;
             for(uint32_t k = 0; k < A.columnCount; k++)
                 val += (GetValueMatrix(A, i, k) * GetValueMatrix(B, k, j));
-            dest->data[GetIndex(i, j, (dest->rowCount))] = val;
+            dest.data[GetIndex(i, j, (dest.rowCount))] = val;
+        }
+    }
+}
+
+void MatrixMultiplyTransposedB(Matrix dest, Matrix A, Matrix B)
+{
+    if(A.columnCount != B.columnCount) { printf("Wrong dimensions!! A B^T"); return; }
+
+    for(uint32_t i = 0; i < A.rowCount; i++)
+    {
+        for(uint32_t j = 0; j < B.rowCount; j++)
+        {
+            double val = 0.0;
+            for(uint32_t k = 0; k < A.columnCount; k++)
+                val += (GetValueMatrix(A, i, k) * GetValueMatrix(B, j, k));
+            dest.data[GetIndex(i, j, (dest.rowCount))] = val;
+        }
+    }
+}
+
+void MatrixMultiplyTransposedA(Matrix dest, Matrix A, Matrix B)
+{
+    if(A.rowCount != B.rowCount) { printf("Wrong dimensions!! A^T B"); return; }
+
+    for(uint32_t i = 0; i < A.columnCount; i++)
+    {
+        for(uint32_t j = 0; j < B.columnCount; j++)
+        {
+            double val = 0.0;
+            for(uint32_t k = 0; k < A.rowCount; k++)
+                val += (GetValueMatrix(A, k, i) * GetValueMatrix(B, k, j));
+            dest.data[GetIndex(i, j, (dest.rowCount))] = val;
         }
     }
 }
@@ -400,6 +444,8 @@ void SetMatrixData(Matrix matrix, const double* vals)
 
 void CopyMatrixData(Matrix dest, Matrix src)
 {
+    if(!MatrixShapesMatch(dest, src)) { printf("CopyMatrixData: matrix shapes dont match!\n"); return; }
+
     memmove((void*)(dest.data), (void*)(src.data), GetMatrixAllocSize(src.rowCount, src.columnCount));
 }
 

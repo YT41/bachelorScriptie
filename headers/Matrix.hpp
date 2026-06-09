@@ -65,6 +65,7 @@ static inline size_t GetMatrixSize(Matrix A) { return (A.rowCount * A.columnCoun
 static inline size_t GetMatrixAllocSize(size_t rows, size_t columns) { return (rows * columns * sizeof(double)); }
 static inline size_t GetMatrixAllocSizeMatrix(Matrix A) { return (GetMatrixSize(A) * sizeof(double)); }
 Matrix CreateMatrix(MemArena* arena, size_t rows, size_t columns, const double* vals);
+Matrix CreateMatrixAllVal(MemArena* arena, size_t rows, size_t columns, double val);
 Matrix CreateDiagonalMatrix(MemArena* arena, size_t rows, const double* diagVals);
 Matrix CreateRandomMatrix(MemArena* arena, size_t rows, size_t columns);
 Matrix CreateRandomVariancePreservingMatrix(MemArena* arena, size_t rows, size_t columns); /*based on Xavier (Glorot) Initialization, good for layers with derivative close to 1 at x=0*/
@@ -72,7 +73,9 @@ Matrix CreateRandomVariancePreservingMatrix(MemArena* arena, size_t rows, size_t
 Matrix CreateMatrixMultiply(MemArena* arena, Matrix A, Matrix B);
 Matrix CreateMatrixScale(MemArena* arena, Matrix A, double lambda);
 
-void MatrixMultiply(Matrix* dest, Matrix A, Matrix B); /*dest = AB*/
+void MatrixMultiply(Matrix dest, Matrix A, Matrix B); /*dest = AB*/
+void MatrixMultiplyTransposedB(Matrix dest, Matrix A, Matrix B); /*dest = AB^T*/
+void MatrixMultiplyTransposedA(Matrix dest, Matrix A, Matrix B); /*dest = A^TB*/
 void MatrixAffineTransform(Matrix dest, Matrix A, Matrix B, Matrix C); /*dest = AB + C*/
 void MatrixAffineTransformColumnWiseC(Matrix* dest, Matrix A, Matrix B, Matrix C);
 void MatrixAdd(Matrix* dest, Matrix A, Matrix B); /*dest = A + B*/

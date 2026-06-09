@@ -29,19 +29,23 @@ typedef struct NeuralNetwork
     /*(f')_0, ..., (f')_{l+1}*/
     Matrix activationFunctionDerivativeCache[MAX_HIDDEN_LAYER_COUNT + 2]; /*from input at index 0, to output layer*/
 
-    /*parameters*/
+    /*================ parameters ================*/
     /*W_0, ..., W_l*/
     Matrix weightMatrices[MAX_HIDDEN_LAYER_COUNT + 1]; /*from before first hidden layer at index 0, to before output layer*/
     /*b_0, ..., b_l*/
     Matrix biasVectors[MAX_HIDDEN_LAYER_COUNT + 1]; /*from first hidden layer at index 0, to output layer*/
 
-    double learningRate; //this determines how fast the backpropagation strides towards the local minimum, in a gradient descent sense
+    /*================ gradient caches ================*/
+
+    Matrix weightMatrixGradientCaches[MAX_HIDDEN_LAYER_COUNT + 1]; /*from before first hidden layer at index 0, to before output layer*/
+    Matrix biasVectorGradientCaches[MAX_HIDDEN_LAYER_COUNT + 1]; /*from first hidden layer at index 0, to output layer*/
+
     ActivationFnID activationFnPerLayer[MAX_HIDDEN_LAYER_COUNT + 1];
     uint32_t hiddenLayerCount;
 } NeuralNetwork;
 
 
-NeuralNetwork* NNCreate(uint32_t* neuronsPerLayer, ActivationFnID* activationFnPerLayer, uint32_t hiddenLayerCount, uint32_t batchSize, double learningRate);
+NeuralNetwork* NNCreate(uint32_t* neuronsPerLayer, ActivationFnID* activationFnPerLayer, uint32_t hiddenLayerCount, uint32_t batchSize);
 void NNDelete(NeuralNetwork* network);
 
 size_t NNGetParamCount(const NeuralNetwork* network);
@@ -51,11 +55,12 @@ void NNCopyParameters(NeuralNetwork* dest, const NeuralNetwork* src);
 // void NNLoadFromFile(NeuralNetwork* network, const char* fileName);
 
 void NNSetLastLayer(NeuralNetwork* network, Matrix Y); /*can be used to set cost gradient with respects to last layer*/
-void NNBackPropagation(NeuralNetwork* network);
+void NNBackwardPass(NeuralNetwork* network); /*performs backward pass, adding the gradients to gradient cache matrices. These are then used with NNGradientDescent*/
+void NNGradientDescent(NeuralNetwork* network, double learningRate); /*performs gradient descent, using stored gradients from NNBackwardPass runs*/
 Matrix NNPredict(NeuralNetwork* network, Matrix X); /*expects X to be shape inputDim x batchSize*/
 Matrix NNPredictNoCopy(NeuralNetwork* network); /*assumes input of NN is already set*/
-Matrix NNPredictSingleDataPoint(NeuralNetwork* network, uint32_t i, Matrix X); /*still expects X to be shape inputDim x batchSize*/
-double NNTrain(NeuralNetwork* network, Matrix x, Matrix y); /*just for batch size 1*/
+Matrix NNPredictSingleDataPoint(NeuralNetwork* network, uint32_t i, Matrix x);
+double NNTrain(NeuralNetwork* network, Matrix x, Matrix y, double learningRate); /*just for batch size 1*/
 
 static inline uint32_t NNGetOutputDimension(const NeuralNetwork* network) { return (network->layerVectors[(network->hiddenLayerCount) + 1].rowCount); };
 static inline uint32_t NNGetBatchSize(const NeuralNetwork* network) { return (network->layerVectors[0].columnCount); };

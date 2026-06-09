@@ -7,17 +7,27 @@
 #include <cstdint>
 
 
-AttentionMechanism* SAMCreate(uint32_t tokenCount, uint32_t inputDim, uint32_t outputDim, double learningRate)
+AttentionMechanism* AMCreate(uint32_t tokenCount, uint32_t inputDim, uint32_t outputDim)
 {
     size_t allocSize = sizeof(AttentionMechanism);
     /*Parameter matrix sizes*/
     allocSize += (GetMatrixAllocSize(outputDim, inputDim) * 3);
 
-    /*cache vector sizes*/
-    allocSize += (GetMatrixAllocSize(outputDim, 1) * 4);
-    allocSize += GetMatrixAllocSize(inputDim, 1);
-    allocSize += GetMatrixAllocSize(tokenCount, tokenCount);
-    allocSize += GetMatrixAllocSize(tokenCount, 1);
+    /*=== cache sizes ===*/
+    allocSize += (GetMatrixAllocSize(outputDim, inputDim) * 3);
+    allocSize += GetMatrixAllocSize(inputDim, tokenCount); /*XA*/
+    allocSize += GetMatrixAllocSize(tokenCount, tokenCount); /*AGradientCache*/
+    allocSize += GetMatrixAllocSize(tokenCount, tokenCount); /*SGradientCache*/
+    allocSize += (GetMatrixAllocSize(outputDim, tokenCount) * 2); /*QGradientCache, KGradientCache*/
+    allocSize += GetMatrixAllocSize(inputDim, tokenCount); /*XGradientCache*/
+
+    /*=== gradient accum matrix sizes ===*/
+    allocSize += (GetMatrixAllocSize(outputDim, inputDim) * 3);
+
+    allocSize += GetMatrixAllocSize(inputDim, tokenCount); /*X*/
+    allocSize += (GetMatrixAllocSize(outputDim, tokenCount) * 3); /*Q, K, V*/
+    allocSize += GetMatrixAllocSize(tokenCount, tokenCount); /*A*/
+    allocSize += GetMatrixAllocSize(outputDim, tokenCount); /*O*/
 
     MemArena arena = CreateMemArena(allocSize);
     AttentionMechanism* ret = (AttentionMechanism*)MemArenaAlloc(&arena, sizeof(AttentionMechanism));
@@ -30,80 +40,152 @@ AttentionMechanism* SAMCreate(uint32_t tokenCount, uint32_t inputDim, uint32_t o
 
     /*=== caches ===*/
 
-    ret->inputTokenCache = CreateMatrix(&arena, inputDim, 1, NULL);
+    ret->queryWeightsGradientCache = CreateMatrix(&arena, outputDim, inputDim, NULL);
+    ret->keyWeightsGradientCache = CreateMatrix(&arena, outputDim, inputDim, NULL);
+    ret->valueWeightsGradientCache = CreateMatrix(&arena, outputDim, inputDim, NULL);
+    ret->XA = CreateMatrix(&arena, inputDim, tokenCount, NULL);
+    ret->AGradientCache = CreateMatrix(&arena, tokenCount, tokenCount, NULL);
+    ret->SGradientCache = CreateMatrix(&arena, tokenCount, tokenCount, NULL);
+    ret->QGradientCache = CreateMatrix(&arena, outputDim, tokenCount, NULL);
+    ret->KGradientCache = CreateMatrix(&arena, outputDim, tokenCount, NULL);
+    ret->XGradientCache = CreateMatrix(&arena, inputDim, tokenCount, NULL);
 
-    ret->queryVectorCache = CreateMatrix(&arena, outputDim, 1, NULL);
-    ret->keyVectorCache = CreateMatrix(&arena, outputDim, 1, NULL);
-    ret->valueVectorCache = CreateMatrix(&arena, outputDim, 1, NULL);
+    /*=== gradient accum matrices ===*/
+    ret->queryWeightsGradientAccum = CreateMatrixAllVal(&arena, outputDim, inputDim, 0.0);
+    ret->keyWeightsGradientAccum = CreateMatrixAllVal(&arena, outputDim, inputDim, 0.0);
+    ret->valueWeightsGradientAccum = CreateMatrixAllVal(&arena, outputDim, inputDim, 0.0);
 
-    ret->attentionMatrixCache = CreateMatrix(&arena, tokenCount, tokenCount, NULL);
-    ret->attentionSingleColumnCache = CreateMatrix(&arena, tokenCount, 1, NULL);
-    ret->outputVectorCache = CreateMatrix(&arena, outputDim, 1, NULL);
+
+    ret->X = CreateMatrix(&arena, inputDim, tokenCount, NULL);
+
+    ret->Q = CreateMatrix(&arena, outputDim, tokenCount, NULL);
+    ret->K = CreateMatrix(&arena, outputDim, tokenCount, NULL);
+    ret->V = CreateMatrix(&arena, outputDim, tokenCount, NULL);
+
+    ret->A = CreateMatrix(&arena, tokenCount, tokenCount, NULL);
+    ret->O = CreateMatrix(&arena, outputDim, tokenCount, NULL);
 
     ret->arena = arena;
-    ret->learningRate = learningRate;
 
     return ret;
 }
 
-void SAMDelete(AttentionMechanism* a)
+void AMDelete(AttentionMechanism* a)
 {
     DeleteMemArena(&(a->arena));
 }
 
-size_t SAMGetParamCount(const AttentionMechanism* a)
+size_t AMGetParamCount(const AttentionMechanism* a)
 {
     return (GetMatrixSize((a->queryWeights)) + GetMatrixSize((a->keyWeights)) + GetMatrixSize((a->valueWeights)));
 }
 
-void SAMCopyParameters(AttentionMechanism* dest, const AttentionMechanism* src)
+void AMCopyParameters(AttentionMechanism* dest, const AttentionMechanism* src)
 {
     CopyMatrixData((dest->queryWeights), (src->queryWeights));
     CopyMatrixData((dest->keyWeights), (src->keyWeights));
     CopyMatrixData((dest->valueWeights), (src->valueWeights));
 }
 
-Matrix GetMaskedAttentionColumn(AttentionMechanism* a, uint32_t i, Matrix X)
+Matrix AMGetMaskedAttentionWeightColumn(AttentionMechanism* a, uint32_t j, Matrix X)
 {
-    double attDimSqrt = sqrt((double)SAMGetOutputDimension(a));
+    double attDimSqrt = sqrt((double)AMGetOutputDimension(a));
 
-    for(uint32_t j = (i + 1); j < SAMGetTokenCount(a); j++)
-        SetValueMatrix((a->attentionSingleColumnCache), -INFINITY, j, 0); /*mask*/
+    for(uint32_t i = (j + 1); i < AMGetTokenCount(a); i++)
+        SetValueMatrix((a->A), -INFINITY, i, j); /*mask*/
 
-    MatrixMultiply(&(a->queryVectorCache), (a->queryWeights), GetColumnVectorMatrix(X, i));
-    for(uint32_t j = 0; j <= i; j++) /*because of mask we only have to calculate attention to tokens before and including i*/
+    /*TODO: optimize, we dont have to calculate all K_i again if we have already done a previous column run*/
+    MatrixMultiply(GetColumnVectorMatrix((a->Q), j), (a->queryWeights), GetColumnVectorMatrix(X, j));
+    for(uint32_t i = 0; i <= j; i++) /*because of mask we only have to calculate attention to tokens before and including i*/
     {
-        MatrixMultiply(&(a->keyVectorCache), (a->keyWeights), GetColumnVectorMatrix(X, j));
+        MatrixMultiply(GetColumnVectorMatrix((a->K), i), (a->keyWeights), GetColumnVectorMatrix(X, i));
 
-        double attention = Dot((a->queryVectorCache), (a->keyVectorCache));
-        SetValueMatrix((a->attentionSingleColumnCache), (attention / attDimSqrt), j, 0);
+        double score = Dot(GetColumnVectorMatrix((a->Q), j), GetColumnVectorMatrix((a->K), i));
+        SetValueMatrix((a->A), (score / attDimSqrt), i, j);
     }
-    Softmax((a->attentionSingleColumnCache), 0);
+    Softmax((a->A), j);
 
-    return (a->attentionSingleColumnCache);
+    return GetColumnVectorMatrix((a->A), j);
 }
 
-Matrix GetMaskedAttentionMatrix(AttentionMechanism* a, Matrix X)
+Matrix AMGetMaskedAttentionWeightMatrix(AttentionMechanism* a, Matrix X)
 {
-    for(uint32_t i = 0; i < SAMGetTokenCount(a); i++)
-        SetColumnVectorMatrix((a->attentionMatrixCache), GetMaskedAttentionColumn(a, i, X), i);
+    for(uint32_t i = 0; i < AMGetTokenCount(a); i++)
+        AMGetMaskedAttentionWeightColumn(a, i, X);
 
-    return (a->attentionMatrixCache);
+    return (a->A);
 }
 
-Matrix GetMaskedSelfAttention(AttentionMechanism* a, uint32_t i, Matrix X)
+Matrix AMGetSingleMaskedAttention(AttentionMechanism* a, uint32_t j, Matrix X)
 {
-    Matrix attentionColumn = GetMaskedAttentionColumn(a, i, X);
+    Matrix attentionColumn = AMGetMaskedAttentionWeightColumn(a, j, X);
+    /*TODO: optimize, we dont have to calculate V every time*/
+    MatrixMultiply((a->V), (a->valueWeights), X);
+    MatrixMultiply(GetColumnVectorMatrix((a->O), j), (a->V), attentionColumn);
 
-    SetMatrix((a->outputVectorCache), 0.0);
-    for(uint32_t j = 0; j <= i; j++)
+    return GetColumnVectorMatrix((a->O), j);
+}
+
+Matrix AMGetMaskedAttention(AttentionMechanism* a, Matrix X)
+{
+    Matrix A = AMGetMaskedAttentionWeightMatrix(a, X);
+    MatrixMultiply((a->V), (a->valueWeights), X);
+    MatrixMultiply((a->O), (a->V), A);
+
+    return (a->O);
+}
+
+void AMBackwardPass(AttentionMechanism* a)
+{
+    /*Gradient to W_V*/
+    MatrixMultiply((a->XA), (a->X), (a->A));
+    MatrixMultiplyTransposedB((a->valueWeightsGradientCache), (a->O), (a->XA));
+    MatrixAddSelf((a->valueWeightsGradientAccum), (a->valueWeightsGradientCache));
+
+    /*Gradient to S*/
+    MatrixMultiplyTransposedA((a->AGradientCache), (a->V), (a->O));
+    for(uint32_t j = 0; j < AMGetTokenCount(a); j++)
     {
-        /*calculates how relevant value vector of token j is to token i*/
-        MatrixMultiply(&(a->valueVectorCache), (a->valueWeights), GetColumnVectorMatrix(X, j));
-        MatrixScaleSelf((a->valueVectorCache), GetValueMatrix(attentionColumn, j, 0));
-        
-        MatrixAddSelf((a->outputVectorCache), (a->valueVectorCache));
+        double dot = Dot(GetColumnVectorMatrix((a->AGradientCache), j), GetColumnVectorMatrix((a->A), j));
+        for(uint32_t i = 0; i < AMGetTokenCount(a); i++)
+            SetValueMatrix((a->SGradientCache), (GetValueMatrix((a->A), i, j) * (GetValueMatrix((a->AGradientCache), i, j) - dot)), i, j);
     }
+    double attDimSqrt = sqrt((double)AMGetOutputDimension(a));
+    MatrixScaleSelf((a->SGradientCache), (1.0 / attDimSqrt));
 
-    return (a->outputVectorCache);
+    /*Gradient to W_Q*/
+    MatrixMultiply((a->QGradientCache), (a->K), (a->SGradientCache));
+    MatrixMultiplyTransposedB((a->queryWeightsGradientCache), (a->QGradientCache), (a->X));
+    MatrixAddSelf((a->queryWeightsGradientAccum), (a->queryWeightsGradientCache));
+
+    /*Gradient to W_K*/
+    MatrixMultiplyTransposedB((a->KGradientCache), (a->Q), (a->SGradientCache));
+    MatrixMultiplyTransposedB((a->keyWeightsGradientCache), (a->KGradientCache), (a->X));
+    MatrixAddSelf((a->keyWeightsGradientAccum), (a->keyWeightsGradientCache));
+
+    /*Gradient to X*/
+    MatrixMultiplyTransposedA((a->XGradientCache), (a->valueWeights), (a->O));
+    MatrixMultiplyTransposedB((a->X), (a->XGradientCache), (a->A));
+
+    MatrixMultiplyTransposedA((a->XGradientCache), (a->queryWeights), (a->QGradientCache));
+    MatrixAddSelf((a->X), (a->XGradientCache));
+
+    MatrixMultiplyTransposedA((a->XGradientCache), (a->keyWeights), (a->KGradientCache));
+    MatrixAddSelf((a->X), (a->XGradientCache));
+}
+
+void AMGradientDescent(AttentionMechanism* a, double learningRate)
+{
+    MatrixScaleSelf((a->queryWeightsGradientAccum), learningRate);
+    MatrixScaleSelf((a->keyWeightsGradientAccum), learningRate);
+    MatrixScaleSelf((a->valueWeightsGradientAccum), learningRate);
+
+    MatrixSubSelf((a->queryWeights), (a->queryWeightsGradientAccum));
+    MatrixSubSelf((a->keyWeights), (a->keyWeightsGradientAccum));
+    MatrixSubSelf((a->valueWeights), (a->valueWeightsGradientAccum));
+
+    /*reset for next runs*/
+    SetMatrix((a->queryWeightsGradientAccum), 0.0);
+    SetMatrix((a->keyWeightsGradientAccum), 0.0);
+    SetMatrix((a->valueWeightsGradientAccum), 0.0);
 }

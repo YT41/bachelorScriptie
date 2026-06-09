@@ -91,8 +91,8 @@ SRN* SRNCreateSignallingCascade(uint32_t M)
     Species cascadeSpecies[M];
     for(uint32_t i = 0; i < M; i++)
     {
-        cascadeSpecies[i].initialCount = 5; /*TODO: should be 0 eventually*/
-        cascadeSpecies[i].maxCount = 10;
+        cascadeSpecies[i].initialCount = 5; /*set back to 0 eventually*/
+        cascadeSpecies[i].maxCount = 20;
         snprintf(cascadeSpecies[i].name, 32, "X%d", (i + 1));
     }
 
