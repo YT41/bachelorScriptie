@@ -77,7 +77,9 @@ void MatrixMultiply(Matrix dest, Matrix A, Matrix B); /*dest = AB*/
 void MatrixMultiplyTransposedB(Matrix dest, Matrix A, Matrix B); /*dest = AB^T*/
 void MatrixMultiplyTransposedA(Matrix dest, Matrix A, Matrix B); /*dest = A^TB*/
 void MatrixAffineTransform(Matrix dest, Matrix A, Matrix B, Matrix C); /*dest = AB + C*/
-void MatrixAffineTransformColumnWiseC(Matrix* dest, Matrix A, Matrix B, Matrix C);
+void MatrixAffineTransformWithDropout(Matrix dest, Matrix A, Matrix B, Matrix C, double p);
+void MatrixAffineTransformColumnWiseC(Matrix dest, Matrix A, Matrix B, Matrix C);
+void MatrixAffineTransformColumnWiseCWithDropout(Matrix dest, Matrix A, Matrix B, Matrix C, double p);
 void MatrixAdd(Matrix* dest, Matrix A, Matrix B); /*dest = A + B*/
 void MatrixSub(Matrix* dest, Matrix A, Matrix B); /*dest = A - B*/
 void MatrixScale(Matrix* dest, Matrix A, double lambda); /*dest = lambda A*/

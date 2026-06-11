@@ -57,9 +57,9 @@ void NNCopyParameters(NeuralNetwork* dest, const NeuralNetwork* src);
 void NNSetLastLayer(NeuralNetwork* network, Matrix Y); /*can be used to set cost gradient with respects to last layer*/
 void NNBackwardPass(NeuralNetwork* network); /*performs backward pass, adding the gradients to gradient cache matrices. These are then used with NNGradientDescent*/
 void NNGradientDescent(NeuralNetwork* network, double learningRate); /*performs gradient descent, using stored gradients from NNBackwardPass runs*/
-Matrix NNPredict(NeuralNetwork* network, Matrix X); /*expects X to be shape inputDim x batchSize*/
-Matrix NNPredictNoCopy(NeuralNetwork* network); /*assumes input of NN is already set*/
-Matrix NNPredictSingleDataPoint(NeuralNetwork* network, uint32_t i, Matrix x);
+Matrix NNPredict(NeuralNetwork* network, Matrix X, double dropoutProbability); /*expects X to be shape inputDim x batchSize*/
+Matrix NNPredictNoCopy(NeuralNetwork* network, double dropoutProbability); /*assumes input of NN is already set*/
+Matrix NNPredictSingleDataPoint(NeuralNetwork* network, uint32_t i, Matrix x, double dropoutProbability);
 double NNTrain(NeuralNetwork* network, Matrix x, Matrix y, double learningRate); /*just for batch size 1*/
 
 static inline uint32_t NNGetOutputDimension(const NeuralNetwork* network) { return (network->layerVectors[(network->hiddenLayerCount) + 1].rowCount); };

@@ -34,11 +34,11 @@ TCM* TCMCopy(const TCM* m);
 void TCMCopyParameters(TCM* dest, const TCM* src);
 
 /*returns the probability of getting that sample, the sample is returned in s, the gradient of KL-loss with respects to last layer is incremented in desiredNudgesMLPOutput*/
-double TCMTakeSample(TCM* m, IntMatrix s, double t, Matrix desiredNudgesMLPOutput);
-double TCMTakeSampleNoGradient(TCM* m, IntMatrix s, double t);
-double TCMPredict(TCM* m, IntMatrix n, double t); /*directly gives P(n, t), so this is NOT a full-grid evaluation*/
+double TCMTakeSample(TCM* m, IntMatrix s, double t, Matrix desiredNudgesMLPOutput, double dropoutProbability);
+double TCMTakeSampleNoGradient(TCM* m, IntMatrix s, double t, double dropoutProbability);
+double TCMPredict(TCM* m, IntMatrix n, double t, double dropoutProbability); /*directly gives P(n, t), so assumes n is known*/
 void TCMGetFullProbabilityDistribution(TCM* m, Tensor probabilities, double t);
-void TCMTrain(TCM* m, double T, double deltaT, double p, uint32_t B, uint32_t Q, uint64_t epochs, double learningRate, const char* logFile); /*every Q epochs parameters of target are updated*/
+void TCMTrain(TCM* m, double T, double deltaT, double p, uint32_t B, uint32_t Q, uint64_t epochs, double learningRate, double dropoutProbability, const char* logFile); /*every Q epochs parameters of target are updated*/
 
 
 /*==================== statistics ====================*/

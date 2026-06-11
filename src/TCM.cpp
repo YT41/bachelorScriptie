@@ -30,9 +30,9 @@ static inline double GetTargetProbability(TCM* m, IntMatrix sample, IntMatrix pr
         double possiblePreviousStatePropensity = GetPreviousConnectedState((m->srn), sample, previousState, k);
 
         if(possiblePreviousStatePropensity != 0.0)
-            enteringSampleStateProbability += (possiblePreviousStatePropensity * TCMPredict(m, previousState, t));
+            enteringSampleStateProbability += (possiblePreviousStatePropensity * TCMPredict(m, previousState, t, 0.0));
     }
-    double tSampleProbability = TCMPredict(m, sample, t);
+    double tSampleProbability = TCMPredict(m, sample, t, 0.0);
     /*note that this is just one step of explicit euler with the approximation of CME*/
     return (tSampleProbability + (deltaT * (enteringSampleStateProbability - (GetEscapeRate((m->srn), sample) * tSampleProbability))));
 }
@@ -120,56 +120,56 @@ void TCMCopyParameters(TCM* dest, const TCM* src)
     NNCopyParameters((dest->timeEmbedding), (src->timeEmbedding));
 }
 
-static inline Matrix GetAttentionToMLPOutSingleToken(TCM* m, uint32_t i)
+static inline Matrix GetAttentionToMLPOutSingleToken(TCM* m, uint32_t i, double dropoutProbability)
 {
     if(AttentionEnabled(m))
     { 
         Matrix attOut = AMGetSingleMaskedAttention((m->a), i, (m->batchCache));
-        return NNPredictSingleDataPoint((m->MLP), i, attOut);
+        return NNPredictSingleDataPoint((m->MLP), i, attOut, dropoutProbability);
     }
     else
-        return NNPredictSingleDataPoint((m->MLP), i, GetColumnVectorMatrix((m->batchCache), i));
+        return NNPredictSingleDataPoint((m->MLP), i, GetColumnVectorMatrix((m->batchCache), i), dropoutProbability);
 }
 
-static inline Matrix GetAttentionToMLPOut(TCM* m)
+static inline Matrix GetAttentionToMLPOut(TCM* m, double dropoutProbability)
 {
     if(AttentionEnabled(m))
     { 
         Matrix attOut = AMGetMaskedAttention((m->a), (m->batchCache));
-        return NNPredict((m->MLP), attOut);
+        return NNPredict((m->MLP), attOut, dropoutProbability);
     }
     else
-        return NNPredict((m->MLP), (m->batchCache));
+        return NNPredict((m->MLP), (m->batchCache), dropoutProbability);
 
 }
 
-double TCMTakeSample(TCM* m, IntMatrix s, double t, Matrix desiredNudgesMLPOutput)
+double TCMTakeSample(TCM* m, IntMatrix s, double t, Matrix gradient, double dropoutProbability)
 {
-    double probability = TCMTakeSampleNoGradient(m, s, t);
+    double probability = TCMTakeSampleNoGradient(m, s, t, dropoutProbability);
     Matrix out = NNGetLastLayer((m->MLP));
 
-    SetMatrix(desiredNudgesMLPOutput, 0.0);
-    MatrixSubSelf(desiredNudgesMLPOutput, out);
+    SetMatrix(gradient, 0.0);
+    MatrixSubSelf(gradient, out);
     for(uint32_t i = 0; i < SRNGetSpeciesCount((m->srn)); i++)
-        MatrixAddValue(desiredNudgesMLPOutput, 1.0, GetValueIntMatrix(s, i, 0), i);
+        MatrixAddValue(gradient, 1.0, GetValueIntMatrix(s, i, 0), i);
 
     return probability;
 }
 
 /*doing it this way, it takes a sample and returns the probability of having taken this sample at the same time*/
-double TCMTakeSampleNoGradient(TCM* m, IntMatrix s, double t)
+double TCMTakeSampleNoGradient(TCM* m, IntMatrix s, double t, double dropoutProbability)
 {
     if(t == 0.0)
         return GetInitialConditionSample((m->srn), s);
 
-    Matrix embeddedTime = GetEmbeddedTime((m->timeEmbedding), t);
+    Matrix embeddedTime = GetEmbeddedTime((m->timeEmbedding), t, dropoutProbability);
 
     uint32_t M = SRNGetSpeciesCount((m->srn));
     double conditionalProbabilityProduct = 1.0;
     for(uint32_t i = 0; i < M; i++)
     {
         GetSingleInputToken((m->srn), (m->batchCache), i, s, embeddedTime);
-        Matrix out = GetAttentionToMLPOutSingleToken(m, i);
+        Matrix out = GetAttentionToMLPOutSingleToken(m, i, dropoutProbability);
 
         /*simulate a count for species i using generated conditional probabilities*/
         uint32_t sim = PickUintWithChances(out.data, out.rowCount);
@@ -182,15 +182,15 @@ double TCMTakeSampleNoGradient(TCM* m, IntMatrix s, double t)
 }
 
 /*assumes n is already known*/
-double TCMPredict(TCM* m, IntMatrix n, double t)
+double TCMPredict(TCM* m, IntMatrix n, double t, double dropoutProbability)
 {
     /*in this case we know the probabilities exactly*/
     if(t == 0.0)
         return GetInitialConditionProbability((m->srn), n);
 
-    Matrix embeddedTime = GetEmbeddedTime((m->timeEmbedding), t);
+    Matrix embeddedTime = GetEmbeddedTime((m->timeEmbedding), t, dropoutProbability);
     GetInputTokens((m->srn), (m->batchCache), n, embeddedTime);
-    Matrix out = GetAttentionToMLPOut(m);
+    Matrix out = GetAttentionToMLPOut(m, dropoutProbability);
 
     /*TODO: make general function for calculating conditionalProbabilityProduct*/
     uint32_t M = SRNGetSpeciesCount((m->srn));
@@ -212,7 +212,7 @@ void TCMGetFullProbabilityDistribution(TCM* m, Tensor probabilities, double t)
     SetIntMatrix(n, 0);
     do
     {
-        SetValueTensor(probabilities, TCMPredict(m, n, t), n);
+        SetValueTensor(probabilities, TCMPredict(m, n, t, 0.0), n);
         IncrementTensorIndex(probabilities, n);
     }
     while(!IntMatrixIsZero(n));
@@ -262,10 +262,10 @@ static inline double GenerateTrainTime(uint64_t epoch, uint64_t totalEpochs, dou
     //return (StandardClosedUniformSim() * Lerp(((T - deltaT) / 4.0), (T - deltaT), ((double)epoch / (double)totalEpochs)));
 
     /*This version picks t uniformly from a linearly growing interval with max size (T - deltaT)*/
-    //return (StandardClosedUniformSim() * Lerp(0.0, (T - deltaT), ((double)epoch / (double)totalEpochs)));
+    return (StandardClosedUniformSim() * Lerp(0.0, (T - deltaT), ((double)(epoch + 1) / (double)totalEpochs)));
 
     /*This version picks t uniformly from a linearly growing interval with max size (T - deltaT) reached after completing half of all epochs*/
-    return (StandardClosedUniformSim() * MIN(((2.0 * (double)epoch) / (double)totalEpochs) * (T - deltaT), (T - deltaT)));
+    //return (StandardClosedUniformSim() * MIN(((2.0 * (double)epoch) / (double)totalEpochs) * (T - deltaT), (T - deltaT)));
 
     /*this version makes it more likely to generate smaller t*/
     // const double eps = 1e-10;
@@ -318,7 +318,7 @@ static inline void TCMGradientDescent(TCM* m, double learningRate)
     NNGradientDescent((m->timeEmbedding), learningRate);
 }
 
-void TCMTrain(TCM* m, double T, double deltaT, double p, uint32_t B, uint32_t Q, uint64_t epochs, double learningRate, const char* logFile)
+void TCMTrain(TCM* m, double T, double deltaT, double p, uint32_t B, uint32_t Q, uint64_t epochs, double learningRate, double dropoutProbability, const char* logFile)
 {
     FILE* lossFile = fopen(logFile, "w");
 
@@ -348,7 +348,7 @@ void TCMTrain(TCM* m, double T, double deltaT, double p, uint32_t B, uint32_t Q,
         double loss = 0.0; /*KL-divergence a.k.a. cross-entropy*/
         for(uint32_t b = 0; b < B; b++)
         {
-            double sampleProbability = TCMTakeSample(m, sample, (t + deltaT), desiredNudgesMLPOutput);
+            double sampleProbability = TCMTakeSample(m, sample, (t + deltaT), desiredNudgesMLPOutput, dropoutProbability);
             double targetProbability = GetTargetProbability(targetModelCopy, sample, previousState, t, deltaT);
 
             ClampTargetProbability(&targetProbability); /*prevents NaN value for loss, it is a sign that deltaT is too big*/
@@ -372,7 +372,7 @@ void TCMTrain(TCM* m, double T, double deltaT, double p, uint32_t B, uint32_t Q,
             if(AttentionEnabled(m)) { printf("\n"); PrintMatrix(AMGetA((m->a))); printf("\n"); }
             printf("loss of epoch %lu: %f\n", e, loss); 
         }
-        if(((e % 10) == 0) && isfinite(loss)) { fprintf(lossFile, "%lu %f\n", e, loss); }
+        if((e % 10) == 0) { fprintf(lossFile, "%lu %f\n", e, loss); }
     }
 
     TCMDelete(targetModelCopy);
@@ -390,7 +390,7 @@ static inline void PrintStateProbability(TCM* m, IntMatrix n, double t)
     printf("P(");
     for(uint32_t i = 0; i < (M - 1); i++)
         printf("n_%u = %d, ", i, GetValueIntMatrix(n, i, 0));
-    printf("n_%u = %d | t = %.3f) = %f\n", (M - 1), GetValueIntMatrix(n, (M - 1), 0), t, TCMPredict(m, n, t));
+    printf("n_%u = %d | t = %.3f) = %f\n", (M - 1), GetValueIntMatrix(n, (M - 1), 0), t, TCMPredict(m, n, t, 0.0));
 }
 
 void TCMGetPerSpeciesMean(TCM* m, Matrix mean, double t, size_t sampleCount)
@@ -405,7 +405,7 @@ void TCMGetPerSpeciesMean(TCM* m, Matrix mean, double t, size_t sampleCount)
 
     for(uint32_t n = 0; n < sampleCount; n++)
     {
-        TCMTakeSampleNoGradient(m, sample, t);
+        TCMTakeSampleNoGradient(m, sample, t, 0.0);
         IntMatrixAddSelf(sampleSum, sample);
     }
 
@@ -429,7 +429,7 @@ void TCMGetPerSpeciesStandardDeviation(TCM* m, Matrix std, double t, size_t samp
     SetMatrix(std, 0.0);
     for(uint32_t n = 0; n < sampleCount; n++)
     {
-        TCMTakeSampleNoGradient(m, sample, t);
+        TCMTakeSampleNoGradient(m, sample, t, 0.0);
 
         for(uint32_t i = 0; i < M; i++)
             MatrixAddValue(std, pow((double)GetValueIntMatrix(sample, i, 0) - GetValueMatrix(mean, i, 0), 2.0), i, 0);
@@ -503,7 +503,7 @@ void TCMGetFullProbabilityDistribution(TCM* m, double t, Tensor dest)
     SetIntMatrix(n, 0);
     do
     {
-        SetValueTensor(dest, TCMPredict(m, n, t), n);
+        SetValueTensor(dest, TCMPredict(m, n, t, 0.0), n);
         IncrementStateInStateSpace((m->srn), n);
     }
     while(!IntMatrixIsZero(n));
@@ -630,7 +630,7 @@ void TCMSingleTimeStepExperiment(void)
         (SRNGetStateSpaceTensorAllocSize(srn) * 2)
     );
 
-    TCMTrain(m, T, T, 1.0, 500, 1, 50000, 0.5, "res/BTCMSingleTimeStepExperiment/Loss.data");
+    TCMTrain(m, T, T, 1.0, 1500, 1, 50000, 0.5, 0.0, "res/BTCMSingleTimeStepExperiment/Loss.data");
 
     TCMPrintFullProbabilityDistribution(m, T);
 
@@ -689,12 +689,12 @@ void TCMGlobalTimeExperiment(void)
     PrintIntMatrix((srn->stoichiometricMatrix));
     printf("Param count: %lu\n", TCMGetParamCount(m));
 
-    TCMTrain(m, T, deltaT, 0.1, 1000, 1, 500000, 1.0, "res/BTCMGlobalTimeExperiment/Loss.data");
+    TCMTrain(m, T, deltaT, 0.01, 1000, 1, 500000, 1.0, 0.0, "res/BTCMGlobalTimeExperiment/Loss.data");
 
     double testTimes[] = { 0.001, 0.01, 0.1, 1.0, 5.0, 10.0 };
     for(uint32_t i = 0; i < 6; i++)
     {
-        PrintMatrix(GetEmbeddedTime((m->timeEmbedding), testTimes[i]));
+        PrintMatrix(GetEmbeddedTime((m->timeEmbedding), testTimes[i], 0.0));
         printf("\n");
     }
 
@@ -718,13 +718,13 @@ void TCMGeneExpressionExperiment(void)
 
     double deltaT = 0.1;
     double T = 3600.0;
-    uint32_t hiddenLayerNeuronCount[] = { 32 };
-    TCM* m = TCMCreate(srn, hiddenLayerNeuronCount, (sizeof(hiddenLayerNeuronCount) / sizeof(uint32_t)), 32, 64);
+    uint32_t hiddenLayerNeuronCount[] = { 64 };
+    TCM* m = TCMCreate(srn, hiddenLayerNeuronCount, (sizeof(hiddenLayerNeuronCount) / sizeof(uint32_t)), 32, 46);
 
     PrintIntMatrix((srn->stoichiometricMatrix));
     printf("Param count: %lu\n", TCMGetParamCount(m));
 
-    TCMTrain(m, T, deltaT, 0.1, 1000, 1, 300000, 0.002, "res/BTCMGeneExpressionModelExperiment/Loss.data");
+    TCMTrain(m, T, deltaT, 0.01, 1000, 1, 300000, 0.002, 0.0, "res/BTCMGeneExpressionModelExperiment/Loss.data");
 
     size_t sampleCount = 10000;
     double sampleStep = (deltaT * 100.0);
@@ -757,12 +757,12 @@ void TCMSignallingCascadeExperiment(uint32_t M)
     PrintIntMatrix((srn->stoichiometricMatrix));
     printf("Param count: %lu\n", TCMGetParamCount(m));
 
-    TCMTrain(m, T, deltaT, 0.1, 1000, 1, 300000, 0.01, "res/BTCMSignallingCascadeExperiment/Loss.data");
+    TCMTrain(m, T, deltaT, 0.01, 1500, 1, 300000, 0.01, 0.0, "res/BTCMSignallingCascadeExperiment/Loss.data");
 
     double testTimes[] = { 0.001, 0.01, 0.1, 1.0, 5.0, 10.0 };
     for(uint32_t i = 0; i < 6; i++)
     {
-        PrintMatrix(GetEmbeddedTime((m->timeEmbedding), testTimes[i]));
+        PrintMatrix(GetEmbeddedTime((m->timeEmbedding), testTimes[i], 0.0));
         printf("\n");
     }
 

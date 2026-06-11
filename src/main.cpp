@@ -14,8 +14,8 @@ int main(int argc, char** argv)
 {
     //TCMSingleTimeStepExperiment();
     //TCMGlobalTimeExperiment();
-    //TCMGeneExpressionExperiment();
-    TCMSignallingCascadeExperiment(2);
+    TCMGeneExpressionExperiment();
+    //TCMSignallingCascadeExperiment(3);
 
     // SetSeedRandU48(time(NULL));
 

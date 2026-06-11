@@ -8,4 +8,4 @@
 void GetSingleInputToken(SRN* srn, Matrix X, uint32_t i, IntMatrix n, Matrix embeddedTime);
 void GetInputTokens(SRN* srn, Matrix X, IntMatrix n, Matrix embeddedTime);
 
-Matrix GetEmbeddedTime(NeuralNetwork* timeEmbedding, double t);
+Matrix GetEmbeddedTime(NeuralNetwork* timeEmbedding, double t, double dropoutProbability);

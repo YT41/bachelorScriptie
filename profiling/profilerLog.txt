@@ -1,0 +1,899 @@
+Flat profile:
+
+Each sample counts as 0.01 seconds.
+  %   cumulative   self              self     total           
+ time   seconds   seconds    calls  Ks/call  Ks/call  name    
+ 22.04    458.76   458.76 3520914152     0.00     0.00  MatrixAffineTransformColumnWiseC(Matrix, Matrix, Matrix, Matrix)
+ 19.28    860.21   401.45 2025457073     0.00     0.00  Softmax(Matrix, unsigned int)
+ 11.47   1098.90   238.69 1000000000     0.00     0.00  NNBackwardPass(NeuralNetwork*)
+  9.62   1299.26   200.36 1495457073     0.00     0.00  MatrixAffineTransformColumnWiseCWithDropout(Matrix, Matrix, Matrix, Matrix, double)
+  7.70   1459.48   160.22 530000000     0.00     0.00  MatrixAffineTransform(Matrix, Matrix, Matrix, Matrix)
+  5.95   1583.30   123.82 17412040401     0.00     0.00  SetValueMatrix(Matrix, double, unsigned long, unsigned long)
+  3.25   1650.97    67.67 530000000     0.00     0.00  MatrixAffineTransformWithDropout(Matrix, Matrix, Matrix, Matrix, double)
+  2.97   1712.81    61.84 4050914146     0.00     0.00  MatrixColumnTransform(Matrix*, Matrix, unsigned long, double (*)(double))
+  2.58   1766.47    53.66 3520914146     0.00     0.00  GetSingleInputToken(SRN*, Matrix, unsigned int, IntMatrix, Matrix)
+  2.33   1815.07    48.60 2342542096     0.00     0.00  DTanhDx(double)
+  1.31   1842.31    27.24                             _init
+  1.20   1867.37    25.06 7527000560     0.00     0.00  RandU48()
+  1.18   1891.99    24.62 3520914152     0.00     0.00  NNPredictNoCopy(NeuralNetwork*, double)
+  0.95   1911.77    19.78        1     0.02     2.01  TCMTrain(TCM*, double, double, double, unsigned int, unsigned int, unsigned long, double, double, char const*) [clone .constprop.0]
+  0.94   1931.27    19.50 503000000     0.00     0.00  MatrixSub(Matrix*, Matrix, Matrix)
+  0.79   1947.72    16.45 1003004004     0.00     0.00  MatrixScale(Matrix*, Matrix, double)
+  0.65   1961.19    13.47 16447863273     0.00     0.00  GetValueIntMatrix(IntMatrix, unsigned long, unsigned long)
+  0.62   1974.16    12.97 1003004004     0.00     0.00  SetMatrix(Matrix, double)
+  0.58   1986.29    12.13 530000000     0.00     0.00  NNPredictSingleDataPoint(NeuralNetwork*, unsigned int, Matrix, double)
+  0.58   1998.30    12.01 1496927184     0.00     0.00  TCMPredict(TCM*, IntMatrix, double, double)
+  0.57   2010.08    11.78 1000000000     0.00     0.00  GetPreviousConnectedState(SRN const*, IntMatrix, IntMatrix, unsigned int)
+  0.54   2021.38    11.30 530030000     0.00     0.00  TCMTakeSampleNoGradient(TCM*, IntMatrix, double, double) [clone .constprop.0]
+  0.36   2028.80     7.42 3520914146     0.00     0.00  SetColumnMatrix(Matrix, double, unsigned long)
+  0.34   2035.90     7.10 3710000000     0.00     0.00  GetColumnVectorMatrix(Matrix, unsigned long)
+  0.29   2041.90     6.00 500000000     0.00     0.00  GetEscapeRate(SRN const*, IntMatrix)
+  0.25   2047.10     5.20 2025457073     0.00     0.00  TanhElementWise(Matrix, unsigned int)
+  0.23   2051.98     4.88 2025457079     0.00     0.00  GetEmbeddedTime(NeuralNetwork*, double, double)
+  0.23   2056.67     4.69 1495457073     0.00     0.00  GetInputTokens(SRN*, Matrix, IntMatrix, Matrix)
+  0.21   2061.06     4.39 1495457073     0.00     0.00  NNPredict(NeuralNetwork*, Matrix, double)
+  0.21   2065.39     4.33 500000000     0.00     0.00  TCMTakeSample(TCM*, IntMatrix, double, Matrix, double) [clone .constprop.0]
+  0.14   2068.23     2.84     1001     0.00     0.00  GillespieSRNTrajectorySimGetFullDistribution(SRN const*, Tensor, double, unsigned long)
+  0.11   2070.44     2.21 2025457073     0.00     0.00  TanhDerivative(Matrix, Matrix, unsigned int)
+  0.10   2072.52     2.08 500000000     0.00     0.00  MatrixAdd(Matrix*, Matrix, Matrix)
+  0.09   2074.30     1.78 179245063     0.00     0.00  GetReactionPropensities(SRN const*, IntMatrix, double*)
+  0.06   2075.61     1.31 2528457079     0.00     0.00  CopyMatrixData(Matrix, Matrix)
+  0.06   2076.77     1.16 2025457079     0.00     0.00  Identity(Matrix, unsigned int)
+  0.05   2077.91     1.14 1540081003     0.00     0.00  SetValueIntMatrix(IntMatrix, int, unsigned long, unsigned long)
+  0.05   2078.93     1.02 2025457079     0.00     0.00  SetMatrixData(Matrix, double const*)
+  0.04   2079.68     0.75 500000000     0.00     0.00  NNSetLastLayer(NeuralNetwork*, Matrix)
+  0.03   2080.23     0.55 178530565     0.00     0.00  IsValidState(SRN const*, IntMatrix)
+  0.02   2080.66     0.43 199265063     0.00     0.00  IntMatrixAdd(IntMatrix*, IntMatrix, IntMatrix)
+  0.02   2081.01     0.35 500000000     0.00     0.00  GetSubColumnVectorMatrix(Matrix, unsigned long, unsigned long, unsigned long)
+  0.02   2081.34     0.33 540040000     0.00     0.00  MatrixAddValue(Matrix, double, unsigned long, unsigned long)
+  0.01   2081.46     0.12 179245063     0.00     0.00  GetColumnVectorIntMatrix(IntMatrix, IntMatrix, unsigned long)
+  0.00   2081.55     0.09 20020000     0.00     0.00  TensorAddValue(Tensor, double, IntMatrix)
+  0.00   2081.59     0.04     2002     0.00     0.00  TCMGetPerSpeciesMean(TCM*, Matrix, double, unsigned long) [clone .constprop.0]
+  0.00   2081.62     0.03 10050000     0.00     0.00  SetInitialState(SRN const*, IntMatrix)
+  0.00   2081.65     0.03  1000000     0.00     0.00  NNGradientDescent(NeuralNetwork*, double)
+  0.00   2081.68     0.03        1     0.00     0.00  GillespieSRNTrajectorySimLogPerSpeciesStandardDeviation(SRN const*, double, double, unsigned long, _IO_FILE*)
+  0.00   2081.70     0.02 10056006     0.00     0.00  SetIntMatrix(IntMatrix, int)
+  0.00   2081.71     0.01  1000002     0.00     0.00  NNCopyParameters(NeuralNetwork*, NeuralNetwork const*)
+  0.00   2081.72     0.01     1001     0.00     0.00  TCMGetPerSpeciesStandardDeviation(TCM*, Matrix, double, unsigned long) [clone .constprop.0]
+  0.00   2081.73     0.01        1     0.00     0.00  GillespieSRNTrajectorySimLogPerSpeciesMean(SRN const*, double, double, unsigned long, _IO_FILE*)
+  0.00   2081.73     0.00  1500141     0.00     0.00  GetInitialConditionProbability(SRN const*, IntMatrix)
+  0.00   2081.73     0.00   120120     0.00     0.00  IntMatrixIsZero(IntMatrix)
+  0.00   2081.73     0.00    90090     0.00     0.00  IncrementTensorIndex(Tensor, IntMatrix)
+  0.00   2081.73     0.00    60060     0.00     0.00  GetValueTensor(Tensor, IntMatrix)
+  0.00   2081.73     0.00    60060     0.00     0.00  SetValueTensor(Tensor, double, IntMatrix)
+  0.00   2081.73     0.00    31031     0.00     0.00  GetTensorSize(unsigned long*, unsigned long)
+  0.00   2081.73     0.00    30030     0.00     0.00  IncrementStateInStateSpace(SRN const*, IntMatrix)
+  0.00   2081.73     0.00    30000     0.00     0.00  GetInitialConditionSample(SRN const*, IntMatrix)
+  0.00   2081.73     0.00    29029     0.00     0.00  IntMatrixAddValue(IntMatrix, int, unsigned long, unsigned long)
+  0.00   2081.73     0.00    11024     0.00     0.00  CreateBlankIntMatrix(MemArena*, unsigned long, unsigned long)
+  0.00   2081.73     0.00     4009     0.00     0.00  CreateMatrix(MemArena*, unsigned long, unsigned long, double const*)
+  0.00   2081.73     0.00     4004     0.00     0.00  LogDataPoint(double, Matrix, _IO_FILE*)
+  0.00   2081.73     0.00     2002     0.00     0.00  MatrixTransform(Matrix*, Matrix, double (*)(double))
+  0.00   2081.73     0.00     2002     0.00     0.00  TensorScaleSelf(Tensor, double)
+  0.00   2081.73     0.00     2002     0.00     0.00  LogFullDistribution(Tensor, double, _IO_FILE*)
+  0.00   2081.73     0.00     2002     0.00     0.00  SetTensor(Tensor, double)
+  0.00   2081.73     0.00     1004     0.00     0.00  CreateTensor(MemArena*, unsigned long*, unsigned long, double const*)
+  0.00   2081.73     0.00     1004     0.00     0.00  SRNCreateStateSpaceTensor(MemArena*, SRN const*)
+  0.00   2081.73     0.00     1001     0.00     0.00  HellingerDistance(Tensor, Tensor)
+  0.00   2081.73     0.00     1001     0.00     0.00  TCMGetFullProbabilityDistribution(TCM*, double, Tensor)
+  0.00   2081.73     0.00       20     0.00     0.00  CreateRandomMatrix(MemArena*, unsigned long, unsigned long)
+  0.00   2081.73     0.00       12     0.00     0.00  CreateMatrixAllVal(MemArena*, unsigned long, unsigned long, double)
+  0.00   2081.73     0.00       12     0.00     0.00  CreateRandomVariancePreservingMatrix(MemArena*, unsigned long, unsigned long)
+  0.00   2081.73     0.00        6     0.00     0.00  PrintMatrix(Matrix)
+  0.00   2081.73     0.00        4     0.00     0.00  SetColumnIntMatrix(IntMatrix, int const*, unsigned long)
+  0.00   2081.73     0.00        4     0.00     0.00  NNCreate(unsigned int*, ActivationFnID*, unsigned int, unsigned int)
+  0.00   2081.73     0.00        4     0.00     0.00  NNDelete(NeuralNetwork*)
+  0.00   2081.73     0.00        3     0.00     0.00  GetTensorAllocSize(unsigned long*, unsigned long)
+  0.00   2081.73     0.00        3     0.00     0.00  SRNGetStateSpaceTensorAllocSize(SRN const*)
+  0.00   2081.73     0.00        2     0.00     0.00  CreateReaction(double, unsigned int, int*, int*)
+  0.00   2081.73     0.00        2     0.00     0.00  DeleteReaction(Reaction*)
+  0.00   2081.73     0.00        2     0.00     0.00  NNGetParamCount(NeuralNetwork const*)
+  0.00   2081.73     0.00        2     0.00     0.00  SRNGetMaxSpeciesCount(SRN const*)
+  0.00   2081.73     0.00        1     0.00     0.00  PrintIntMatrix(IntMatrix)
+  0.00   2081.73     0.00        1     0.00     0.00  SetSeedRandU48(unsigned long)
+  0.00   2081.73     0.00        1     0.00     2.05  TCMGlobalTimeExperiment()
+  0.00   2081.73     0.00        1     0.00     0.00  GillespieSRNTrajectorySimLogFullDistribution(SRN const*, double, double, unsigned long, _IO_FILE*)
+  0.00   2081.73     0.00        1     0.00     0.00  TCMCopy(TCM const*)
+  0.00   2081.73     0.00        1     0.00     0.00  ParseSRN(char const*)
+  0.00   2081.73     0.00        1     0.00     0.00  CreateSRN(unsigned int, Reaction**, Species*)
+  0.00   2081.73     0.00        1     0.00     0.00  DeleteSRN(SRN*)
+  0.00   2081.73     0.00        1     0.00     0.00  TCMCreate(SRN*, unsigned int*, unsigned int, unsigned int, unsigned int)
+  0.00   2081.73     0.00        1     0.00     0.00  TCMCreate(SRN*, unsigned int*, unsigned int, unsigned int, unsigned int) [clone .constprop.0]
+  0.00   2081.73     0.00        1     0.00     0.02  TCMLogStdComparisonOverTime(TCM*, double, double, unsigned long, char const*) [clone .constprop.0]
+  0.00   2081.73     0.00        1     0.00     0.01  TCMLogMeanComparisonOverTime(TCM*, double, double, unsigned long, char const*) [clone .constprop.0]
+
+ %         the percentage of the total running time of the
+time       program used by this function.
+
+cumulative a running sum of the number of seconds accounted
+ seconds   for by this function and those listed above it.
+
+ self      the number of seconds accounted for by this
+seconds    function alone.  This is the major sort for this
+           listing.
+
+calls      the number of times this function was invoked, if
+           this function is profiled, else blank.
+
+ self      the average number of milliseconds spent in this
+ms/call    function per call, if this function is profiled,
+	   else blank.
+
+ total     the average number of milliseconds spent in this
+ms/call    function and its descendents per call, if this
+	   function is profiled, else blank.
+
+name       the name of the function.  This is the minor sort
+           for this listing. The index shows the location of
+	   the function in the gprof listing. If the index is
+	   in parenthesis it shows where it would appear in
+	   the gprof listing if it were to be printed.
+
+Copyright (C) 2012-2026 Free Software Foundation, Inc.
+
+Copying and distribution of this file, with or without modification,
+are permitted in any medium without royalty provided the copyright
+notice and this notice are preserved.
+
+		     Call graph (explanation follows)
+
+
+granularity: each sample hit covers 4 byte(s) for 0.00% of 2081.73 seconds
+
+index % time    self  children    called     name
+                                                 <spontaneous>
+[1]     98.7    0.00 2054.49                 main [1]
+                0.00 2054.49       1/1           TCMGlobalTimeExperiment() [2]
+                0.00    0.00       1/1           DeleteSRN(SRN*) [105]
+-----------------------------------------------
+                0.00 2054.49       1/1           main [1]
+[2]     98.7    0.00 2054.49       1         TCMGlobalTimeExperiment() [2]
+               19.78 1992.48       1/1           TCMTrain(TCM*, double, double, double, unsigned int, unsigned int, unsigned long, double, double, char const*) [clone .constprop.0] [3]
+                0.00   22.96       1/1           TCMLogStdComparisonOverTime(TCM*, double, double, unsigned long, char const*) [clone .constprop.0] [26]
+                0.00   11.48       1/1           TCMLogMeanComparisonOverTime(TCM*, double, double, unsigned long, char const*) [clone .constprop.0] [34]
+                2.84    4.85    1001/1001        GillespieSRNTrajectorySimGetFullDistribution(SRN const*, Tensor, double, unsigned long) [35]
+                0.00    0.05       1/1           GillespieSRNTrajectorySimLogFullDistribution(SRN const*, double, double, unsigned long, _IO_FILE*) [54]
+                0.00    0.02    1001/1001        TCMGetFullProbabilityDistribution(TCM*, double, Tensor) [57]
+                0.00    0.01   30030/1495457073     NNPredict(NeuralNetwork*, Matrix, double) [9]
+                0.00    0.01   30036/2025457079     GetEmbeddedTime(NeuralNetwork*, double, double) [6]
+                0.00    0.00   30030/1495457073     GetInputTokens(SRN*, Matrix, IntMatrix, Matrix) [16]
+                0.00    0.00    1001/2002        LogFullDistribution(Tensor, double, _IO_FILE*) [61]
+                0.00    0.00   30030/16447863273     GetValueIntMatrix(IntMatrix, unsigned long, unsigned long) [32]
+                0.00    0.00       1/1           TCMCreate(SRN*, unsigned int*, unsigned int, unsigned int, unsigned int) [clone .constprop.0] [68]
+                0.00    0.00    1001/10056006     SetIntMatrix(IntMatrix, int) [58]
+                0.00    0.00       1/1           ParseSRN(char const*) [70]
+                0.00    0.00   30030/60060       SetValueTensor(Tensor, double, IntMatrix) [81]
+                0.00    0.00   30030/90090       IncrementTensorIndex(Tensor, IntMatrix) [79]
+                0.00    0.00   30030/120120      IntMatrixIsZero(IntMatrix) [78]
+                0.00    0.00    1001/11024       CreateBlankIntMatrix(MemArena*, unsigned long, unsigned long) [84]
+                0.00    0.00    1001/1001        HellingerDistance(Tensor, Tensor) [92]
+                0.00    0.00       6/6           PrintMatrix(Matrix) [94]
+                0.00    0.00       3/1004        SRNCreateStateSpaceTensor(MemArena*, SRN const*) [91]
+                0.00    0.00       2/2           NNGetParamCount(NeuralNetwork const*) [101]
+                0.00    0.00       2/3           SRNGetStateSpaceTensorAllocSize(SRN const*) [98]
+                0.00    0.00       2/4           NNDelete(NeuralNetwork*) [96]
+                0.00    0.00       1/1           SetSeedRandU48(unsigned long) [104]
+                0.00    0.00       1/1           PrintIntMatrix(IntMatrix) [103]
+-----------------------------------------------
+               19.78 1992.48       1/1           TCMGlobalTimeExperiment() [2]
+[3]     96.7   19.78 1992.48       1         TCMTrain(TCM*, double, double, double, unsigned int, unsigned int, unsigned long, double, double, char const*) [clone .constprop.0] [3]
+               12.01 1090.76 1496897154/1496927184     TCMPredict(TCM*, IntMatrix, double, double) [4]
+                4.33  596.71 500000000/500000000     TCMTakeSample(TCM*, IntMatrix, double, Matrix, double) [clone .constprop.0] [8]
+              238.69    0.00 1000000000/1000000000     NNBackwardPass(NeuralNetwork*) [13]
+               16.40    0.00 1000000000/1003004004     MatrixScale(Matrix*, Matrix, double) [30]
+               11.78    4.42 1000000000/1000000000     GetPreviousConnectedState(SRN const*, IntMatrix, IntMatrix, unsigned int) [31]
+                6.00    1.23 500000000/500000000     GetEscapeRate(SRN const*, IntMatrix) [37]
+                6.47    0.00 500000000/1003004004     SetMatrix(Matrix, double) [33]
+                2.08    0.00 500000000/500000000     MatrixAdd(Matrix*, Matrix, Matrix) [40]
+                0.75    0.26 500000000/500000000     NNSetLastLayer(NeuralNetwork*, Matrix) [45]
+                0.35    0.00 500000000/500000000     GetSubColumnVectorMatrix(Matrix, unsigned long, unsigned long, unsigned long) [48]
+                0.03    0.20 1000000/1000000     NNGradientDescent(NeuralNetwork*, double) [50]
+                0.01    0.00 1000000/1000002     NNCopyParameters(NeuralNetwork*, NeuralNetwork const*) [59]
+                0.00    0.00  999500/7527000560     RandU48() [25]
+                0.00    0.00 1500111/1500141     GetInitialConditionProbability(SRN const*, IntMatrix) [60]
+                0.00    0.00       1/1           TCMCopy(TCM const*) [66]
+                0.00    0.00       2/11024       CreateBlankIntMatrix(MemArena*, unsigned long, unsigned long) [84]
+                0.00    0.00       2/4           NNDelete(NeuralNetwork*) [96]
+                0.00    0.00       1/4009        CreateMatrix(MemArena*, unsigned long, unsigned long, double const*) [85]
+-----------------------------------------------
+                0.00    0.02   30030/1496927184     TCMGetFullProbabilityDistribution(TCM*, double, Tensor) [57]
+               12.01 1090.76 1496897154/1496927184     TCMTrain(TCM*, double, double, double, unsigned int, unsigned int, unsigned long, double, double, char const*) [clone .constprop.0] [3]
+[4]     53.0   12.01 1090.78 1496927184         TCMPredict(TCM*, IntMatrix, double, double) [4]
+                4.39  459.40 1495427043/1495457073     NNPredict(NeuralNetwork*, Matrix, double) [9]
+                3.60  459.38 1495427043/2025457079     GetEmbeddedTime(NeuralNetwork*, double, double) [6]
+                4.69  158.10 1495427043/1495457073     GetInputTokens(SRN*, Matrix, IntMatrix, Matrix) [16]
+                1.22    0.00 1495427043/16447863273     GetValueIntMatrix(IntMatrix, unsigned long, unsigned long) [32]
+-----------------------------------------------
+               10.46  448.18 1495457073/3520914152     NNPredict(NeuralNetwork*, Matrix, double) [9]
+               14.16  607.01 2025457079/3520914152     GetEmbeddedTime(NeuralNetwork*, double, double) [6]
+[5]     51.9   24.62 1055.19 3520914152         NNPredictNoCopy(NeuralNetwork*, double) [5]
+              458.76    0.00 3520914152/3520914152     MatrixAffineTransformColumnWiseC(Matrix, Matrix, Matrix, Matrix) [10]
+              296.40    3.33 1495457073/2025457073     Softmax(Matrix, unsigned int) [11]
+              200.36    8.17 1495457073/1495457073     MatrixAffineTransformColumnWiseCWithDropout(Matrix, Matrix, Matrix, Matrix, double) [14]
+                3.84   40.77 1495457073/2025457073     TanhElementWise(Matrix, unsigned int) [21]
+                1.63   40.77 1495457073/2025457073     TanhDerivative(Matrix, Matrix, unsigned int) [22]
+                1.16    0.00 2025457079/2025457079     Identity(Matrix, unsigned int) [42]
+-----------------------------------------------
+                0.00    0.01   30036/2025457079     TCMGlobalTimeExperiment() [2]
+                1.28  162.81 530000000/2025457079     TCMTakeSampleNoGradient(TCM*, IntMatrix, double, double) [clone .constprop.0] [7]
+                3.60  459.38 1495427043/2025457079     TCMPredict(TCM*, IntMatrix, double, double) [4]
+[6]     30.1    4.88  622.20 2025457079         GetEmbeddedTime(NeuralNetwork*, double, double) [6]
+               14.16  607.01 2025457079/3520914152     NNPredictNoCopy(NeuralNetwork*, double) [5]
+                1.02    0.00 2025457079/2025457079     SetMatrixData(Matrix, double const*) [44]
+-----------------------------------------------
+                0.21   11.20 10010000/530030000     TCMGetPerSpeciesStandardDeviation(TCM*, Matrix, double, unsigned long) [clone .constprop.0] [28]
+                0.43   22.40 20020000/530030000     TCMGetPerSpeciesMean(TCM*, Matrix, double, unsigned long) [clone .constprop.0] [27]
+               10.66  559.48 500000000/530030000     TCMTakeSample(TCM*, IntMatrix, double, Matrix, double) [clone .constprop.0] [8]
+[7]     29.0   11.30  593.09 530030000         TCMTakeSampleNoGradient(TCM*, IntMatrix, double, double) [clone .constprop.0] [7]
+               12.13  385.25 530000000/530000000     NNPredictSingleDataPoint(NeuralNetwork*, unsigned int, Matrix, double) [12]
+                1.28  162.81 530000000/2025457079     GetEmbeddedTime(NeuralNetwork*, double, double) [6]
+                8.08   19.94 530000000/3520914146     GetSingleInputToken(SRN*, Matrix, unsigned int, IntMatrix, Matrix) [15]
+                1.76    0.00 530000000/7527000560     RandU48() [25]
+                1.01    0.00 530000000/3710000000     GetColumnVectorMatrix(Matrix, unsigned long) [38]
+                0.43    0.00 530000000/16447863273     GetValueIntMatrix(IntMatrix, unsigned long, unsigned long) [32]
+                0.39    0.00 530000000/1540081003     SetValueIntMatrix(IntMatrix, int, unsigned long, unsigned long) [43]
+-----------------------------------------------
+                4.33  596.71 500000000/500000000     TCMTrain(TCM*, double, double, double, unsigned int, unsigned int, unsigned long, double, double, char const*) [clone .constprop.0] [3]
+[8]     28.9    4.33  596.71 500000000         TCMTakeSample(TCM*, IntMatrix, double, Matrix, double) [clone .constprop.0] [8]
+               10.66  559.48 500000000/530030000     TCMTakeSampleNoGradient(TCM*, IntMatrix, double, double) [clone .constprop.0] [7]
+               19.38    0.00 500000000/503000000     MatrixSub(Matrix*, Matrix, Matrix) [29]
+                6.47    0.00 500000000/1003004004     SetMatrix(Matrix, double) [33]
+                0.41    0.00 500000000/16447863273     GetValueIntMatrix(IntMatrix, unsigned long, unsigned long) [32]
+                0.31    0.00 500000000/540040000     MatrixAddValue(Matrix, double, unsigned long, unsigned long) [49]
+-----------------------------------------------
+                0.00    0.01   30030/1495457073     TCMGlobalTimeExperiment() [2]
+                4.39  459.40 1495427043/1495457073     TCMPredict(TCM*, IntMatrix, double, double) [4]
+[9]     22.3    4.39  459.41 1495457073         NNPredict(NeuralNetwork*, Matrix, double) [9]
+               10.46  448.18 1495457073/3520914152     NNPredictNoCopy(NeuralNetwork*, double) [5]
+                0.77    0.00 1495457073/2528457079     CopyMatrixData(Matrix, Matrix) [41]
+-----------------------------------------------
+              458.76    0.00 3520914152/3520914152     NNPredictNoCopy(NeuralNetwork*, double) [5]
+[10]    22.0  458.76    0.00 3520914152         MatrixAffineTransformColumnWiseC(Matrix, Matrix, Matrix, Matrix) [10]
+-----------------------------------------------
+              105.05    1.18 530000000/2025457073     NNPredictSingleDataPoint(NeuralNetwork*, unsigned int, Matrix, double) [12]
+              296.40    3.33 1495457073/2025457073     NNPredictNoCopy(NeuralNetwork*, double) [5]
+[11]    19.5  401.45    4.51 2025457073         Softmax(Matrix, unsigned int) [11]
+                4.51    0.00 634170046/17412040401     SetValueMatrix(Matrix, double, unsigned long, unsigned long) [18]
+-----------------------------------------------
+               12.13  385.25 530000000/530000000     TCMTakeSampleNoGradient(TCM*, IntMatrix, double, double) [clone .constprop.0] [7]
+[12]    19.1   12.13  385.25 530000000         NNPredictSingleDataPoint(NeuralNetwork*, unsigned int, Matrix, double) [12]
+              160.22    0.00 530000000/530000000     MatrixAffineTransform(Matrix, Matrix, Matrix, Matrix) [17]
+              105.05    1.18 530000000/2025457073     Softmax(Matrix, unsigned int) [11]
+               67.67   13.93 530000000/530000000     MatrixAffineTransformWithDropout(Matrix, Matrix, Matrix, Matrix, double) [20]
+                1.36   14.45 530000000/2025457073     TanhElementWise(Matrix, unsigned int) [21]
+                0.58   14.45 530000000/2025457073     TanhDerivative(Matrix, Matrix, unsigned int) [22]
+                6.09    0.00 3180000000/3710000000     GetColumnVectorMatrix(Matrix, unsigned long) [38]
+                0.27    0.00 530000000/2528457079     CopyMatrixData(Matrix, Matrix) [41]
+-----------------------------------------------
+              238.69    0.00 1000000000/1000000000     TCMTrain(TCM*, double, double, double, unsigned int, unsigned int, unsigned long, double, double, char const*) [clone .constprop.0] [3]
+[13]    11.5  238.69    0.00 1000000000         NNBackwardPass(NeuralNetwork*) [13]
+-----------------------------------------------
+              200.36    8.17 1495457073/1495457073     NNPredictNoCopy(NeuralNetwork*, double) [5]
+[14]    10.0  200.36    8.17 1495457073         MatrixAffineTransformColumnWiseCWithDropout(Matrix, Matrix, Matrix, Matrix, double) [14]
+                8.17    0.00 2452476688/7527000560     RandU48() [25]
+-----------------------------------------------
+                8.08   19.94 530000000/3520914146     TCMTakeSampleNoGradient(TCM*, IntMatrix, double, double) [clone .constprop.0] [7]
+               45.58  112.52 2990914146/3520914146     GetInputTokens(SRN*, Matrix, IntMatrix, Matrix) [16]
+[15]     8.9   53.66  132.45 3520914146         GetSingleInputToken(SRN*, Matrix, unsigned int, IntMatrix, Matrix) [15]
+              119.31    0.00 16777868353/17412040401     SetValueMatrix(Matrix, double, unsigned long, unsigned long) [18]
+                7.42    0.00 3520914146/3520914146     SetColumnMatrix(Matrix, double, unsigned long) [36]
+                5.72    0.00 6989179065/16447863273     GetValueIntMatrix(IntMatrix, unsigned long, unsigned long) [32]
+-----------------------------------------------
+                0.00    0.00   30030/1495457073     TCMGlobalTimeExperiment() [2]
+                4.69  158.10 1495427043/1495457073     TCMPredict(TCM*, IntMatrix, double, double) [4]
+[16]     7.8    4.69  158.10 1495457073         GetInputTokens(SRN*, Matrix, IntMatrix, Matrix) [16]
+               45.58  112.52 2990914146/3520914146     GetSingleInputToken(SRN*, Matrix, unsigned int, IntMatrix, Matrix) [15]
+-----------------------------------------------
+              160.22    0.00 530000000/530000000     NNPredictSingleDataPoint(NeuralNetwork*, unsigned int, Matrix, double) [12]
+[17]     7.7  160.22    0.00 530000000         MatrixAffineTransform(Matrix, Matrix, Matrix, Matrix) [17]
+-----------------------------------------------
+                0.00    0.00    2002/17412040401     TCMGetPerSpeciesMean(TCM*, Matrix, double, unsigned long) [clone .constprop.0] [27]
+                4.51    0.00 634170046/17412040401     Softmax(Matrix, unsigned int) [11]
+              119.31    0.00 16777868353/17412040401     GetSingleInputToken(SRN*, Matrix, unsigned int, IntMatrix, Matrix) [15]
+[18]     5.9  123.82    0.00 17412040401         SetValueMatrix(Matrix, double, unsigned long, unsigned long) [18]
+-----------------------------------------------
+               30.92   24.30 2025457073/4050914146     TanhElementWise(Matrix, unsigned int) [21]
+               30.92   24.30 2025457073/4050914146     TanhDerivative(Matrix, Matrix, unsigned int) [22]
+[19]     5.3   61.84   48.60 4050914146         MatrixColumnTransform(Matrix*, Matrix, unsigned long, double (*)(double)) [19]
+               48.60    0.00 2342542096/2342542096     DTanhDx(double) [23]
+-----------------------------------------------
+               67.67   13.93 530000000/530000000     NNPredictSingleDataPoint(NeuralNetwork*, unsigned int, Matrix, double) [12]
+[20]     3.9   67.67   13.93 530000000         MatrixAffineTransformWithDropout(Matrix, Matrix, Matrix, Matrix, double) [20]
+               13.93    0.00 4185032704/7527000560     RandU48() [25]
+-----------------------------------------------
+                1.36   14.45 530000000/2025457073     NNPredictSingleDataPoint(NeuralNetwork*, unsigned int, Matrix, double) [12]
+                3.84   40.77 1495457073/2025457073     NNPredictNoCopy(NeuralNetwork*, double) [5]
+[21]     2.9    5.20   55.22 2025457073         TanhElementWise(Matrix, unsigned int) [21]
+               30.92   24.30 2025457073/4050914146     MatrixColumnTransform(Matrix*, Matrix, unsigned long, double (*)(double)) [19]
+-----------------------------------------------
+                0.58   14.45 530000000/2025457073     NNPredictSingleDataPoint(NeuralNetwork*, unsigned int, Matrix, double) [12]
+                1.63   40.77 1495457073/2025457073     NNPredictNoCopy(NeuralNetwork*, double) [5]
+[22]     2.8    2.21   55.22 2025457073         TanhDerivative(Matrix, Matrix, unsigned int) [22]
+               30.92   24.30 2025457073/4050914146     MatrixColumnTransform(Matrix*, Matrix, unsigned long, double (*)(double)) [19]
+-----------------------------------------------
+               48.60    0.00 2342542096/2342542096     MatrixColumnTransform(Matrix*, Matrix, unsigned long, double (*)(double)) [19]
+[23]     2.3   48.60    0.00 2342542096         DTanhDx(double) [23]
+-----------------------------------------------
+                                                 <spontaneous>
+[24]     1.3   27.24    0.00                 _init [24]
+-----------------------------------------------
+                0.00    0.00     228/7527000560     CreateRandomMatrix(MemArena*, unsigned long, unsigned long) [69]
+                0.00    0.00    1314/7527000560     CreateRandomVariancePreservingMatrix(MemArena*, unsigned long, unsigned long) [65]
+                0.00    0.00  356678/7527000560     GillespieSRNTrajectorySimLogFullDistribution(SRN const*, double, double, unsigned long, _IO_FILE*) [54]
+                0.00    0.00  357712/7527000560     GillespieSRNTrajectorySimLogPerSpeciesMean(SRN const*, double, double, unsigned long, _IO_FILE*) [56]
+                0.00    0.00  714606/7527000560     GillespieSRNTrajectorySimLogPerSpeciesStandardDeviation(SRN const*, double, double, unsigned long, _IO_FILE*) [53]
+                0.00    0.00  999500/7527000560     TCMTrain(TCM*, double, double, double, unsigned int, unsigned int, unsigned long, double, double, char const*) [clone .constprop.0] [3]
+                1.19    0.00 357061130/7527000560     GillespieSRNTrajectorySimGetFullDistribution(SRN const*, Tensor, double, unsigned long) [35]
+                1.76    0.00 530000000/7527000560     TCMTakeSampleNoGradient(TCM*, IntMatrix, double, double) [clone .constprop.0] [7]
+                8.17    0.00 2452476688/7527000560     MatrixAffineTransformColumnWiseCWithDropout(Matrix, Matrix, Matrix, Matrix, double) [14]
+               13.93    0.00 4185032704/7527000560     MatrixAffineTransformWithDropout(Matrix, Matrix, Matrix, Matrix, double) [20]
+[25]     1.2   25.06    0.00 7527000560         RandU48() [25]
+-----------------------------------------------
+                0.00   22.96       1/1           TCMGlobalTimeExperiment() [2]
+[26]     1.1    0.00   22.96       1         TCMLogStdComparisonOverTime(TCM*, double, double, unsigned long, char const*) [clone .constprop.0] [26]
+                0.01   22.88    1001/1001        TCMGetPerSpeciesStandardDeviation(TCM*, Matrix, double, unsigned long) [clone .constprop.0] [28]
+                0.03    0.04       1/1           GillespieSRNTrajectorySimLogPerSpeciesStandardDeviation(SRN const*, double, double, unsigned long, _IO_FILE*) [53]
+                0.00    0.00    1001/4004        LogDataPoint(double, Matrix, _IO_FILE*) [86]
+                0.00    0.00       1/4009        CreateMatrix(MemArena*, unsigned long, unsigned long, double const*) [85]
+-----------------------------------------------
+                0.02   11.44    1001/2002        TCMGetPerSpeciesStandardDeviation(TCM*, Matrix, double, unsigned long) [clone .constprop.0] [28]
+                0.02   11.44    1001/2002        TCMLogMeanComparisonOverTime(TCM*, double, double, unsigned long, char const*) [clone .constprop.0] [34]
+[27]     1.1    0.04   22.87    2002         TCMGetPerSpeciesMean(TCM*, Matrix, double, unsigned long) [clone .constprop.0] [27]
+                0.43   22.40 20020000/530030000     TCMTakeSampleNoGradient(TCM*, IntMatrix, double, double) [clone .constprop.0] [7]
+                0.04    0.00 20020000/199265063     IntMatrixAdd(IntMatrix*, IntMatrix, IntMatrix) [47]
+                0.00    0.00   20000/30000       GetInitialConditionSample(SRN const*, IntMatrix) [63]
+                0.00    0.00    2002/17412040401     SetValueMatrix(Matrix, double, unsigned long, unsigned long) [18]
+                0.00    0.00    2002/10056006     SetIntMatrix(IntMatrix, int) [58]
+                0.00    0.00    2002/16447863273     GetValueIntMatrix(IntMatrix, unsigned long, unsigned long) [32]
+                0.00    0.00    4004/11024       CreateBlankIntMatrix(MemArena*, unsigned long, unsigned long) [84]
+-----------------------------------------------
+                0.01   22.88    1001/1001        TCMLogStdComparisonOverTime(TCM*, double, double, unsigned long, char const*) [clone .constprop.0] [26]
+[28]     1.1    0.01   22.88    1001         TCMGetPerSpeciesStandardDeviation(TCM*, Matrix, double, unsigned long) [clone .constprop.0] [28]
+                0.02   11.44    1001/2002        TCMGetPerSpeciesMean(TCM*, Matrix, double, unsigned long) [clone .constprop.0] [27]
+                0.21   11.20 10010000/530030000     TCMTakeSampleNoGradient(TCM*, IntMatrix, double, double) [clone .constprop.0] [7]
+                0.01    0.00 10010000/16447863273     GetValueIntMatrix(IntMatrix, unsigned long, unsigned long) [32]
+                0.01    0.00 10010000/540040000     MatrixAddValue(Matrix, double, unsigned long, unsigned long) [49]
+                0.00    0.00    1001/1003004004     MatrixScale(Matrix*, Matrix, double) [30]
+                0.00    0.00    1001/1003004004     SetMatrix(Matrix, double) [33]
+                0.00    0.00   10000/30000       GetInitialConditionSample(SRN const*, IntMatrix) [63]
+                0.00    0.00    1001/4009        CreateMatrix(MemArena*, unsigned long, unsigned long, double const*) [85]
+                0.00    0.00    1001/11024       CreateBlankIntMatrix(MemArena*, unsigned long, unsigned long) [84]
+                0.00    0.00    1001/2002        MatrixTransform(Matrix*, Matrix, double (*)(double)) [87]
+-----------------------------------------------
+                0.12    0.00 3000000/503000000     NNGradientDescent(NeuralNetwork*, double) [50]
+               19.38    0.00 500000000/503000000     TCMTakeSample(TCM*, IntMatrix, double, Matrix, double) [clone .constprop.0] [8]
+[29]     0.9   19.50    0.00 503000000         MatrixSub(Matrix*, Matrix, Matrix) [29]
+-----------------------------------------------
+                0.00    0.00    1001/1003004004     TCMGetPerSpeciesStandardDeviation(TCM*, Matrix, double, unsigned long) [clone .constprop.0] [28]
+                0.00    0.00    1001/1003004004     GillespieSRNTrajectorySimLogPerSpeciesMean(SRN const*, double, double, unsigned long, _IO_FILE*) [56]
+                0.00    0.00    2002/1003004004     GillespieSRNTrajectorySimLogPerSpeciesStandardDeviation(SRN const*, double, double, unsigned long, _IO_FILE*) [53]
+                0.05    0.00 3000000/1003004004     NNGradientDescent(NeuralNetwork*, double) [50]
+               16.40    0.00 1000000000/1003004004     TCMTrain(TCM*, double, double, double, unsigned int, unsigned int, unsigned long, double, double, char const*) [clone .constprop.0] [3]
+[30]     0.8   16.45    0.00 1003004004         MatrixScale(Matrix*, Matrix, double) [30]
+-----------------------------------------------
+               11.78    4.42 1000000000/1000000000     TCMTrain(TCM*, double, double, double, unsigned int, unsigned int, unsigned long, double, double, char const*) [clone .constprop.0] [3]
+[31]     0.8   11.78    4.42 1000000000         GetPreviousConnectedState(SRN const*, IntMatrix, IntMatrix, unsigned int) [31]
+                3.68    0.00 4496798583/16447863273     GetValueIntMatrix(IntMatrix, unsigned long, unsigned long) [32]
+                0.74    0.00 1000000000/1540081003     SetValueIntMatrix(IntMatrix, int, unsigned long, unsigned long) [43]
+-----------------------------------------------
+                0.00    0.00    2002/16447863273     TCMGetPerSpeciesMean(TCM*, Matrix, double, unsigned long) [clone .constprop.0] [27]
+                0.00    0.00   30030/16447863273     IncrementStateInStateSpace(SRN const*, IntMatrix) [62]
+                0.00    0.00   30030/16447863273     TCMGlobalTimeExperiment() [2]
+                0.00    0.00   60060/16447863273     LogFullDistribution(Tensor, double, _IO_FILE*) [61]
+                0.00    0.00 1500141/16447863273     GetInitialConditionProbability(SRN const*, IntMatrix) [60]
+                0.01    0.00 10010000/16447863273     TCMGetPerSpeciesStandardDeviation(TCM*, Matrix, double, unsigned long) [clone .constprop.0] [28]
+                0.01    0.00 10010000/16447863273     GillespieSRNTrajectorySimLogPerSpeciesMean(SRN const*, double, double, unsigned long, _IO_FILE*) [56]
+                0.02    0.00 20020000/16447863273     GillespieSRNTrajectorySimLogPerSpeciesStandardDeviation(SRN const*, double, double, unsigned long, _IO_FILE*) [53]
+                0.29    0.00 357061130/16447863273     IsValidState(SRN const*, IntMatrix) [46]
+                0.41    0.00 500000000/16447863273     TCMTakeSample(TCM*, IntMatrix, double, Matrix, double) [clone .constprop.0] [8]
+                0.43    0.00 530000000/16447863273     TCMTakeSampleNoGradient(TCM*, IntMatrix, double, double) [clone .constprop.0] [7]
+                0.44    0.00 537735189/16447863273     GetReactionPropensities(SRN const*, IntMatrix, double*) [39]
+                1.22    0.00 1495427043/16447863273     TCMPredict(TCM*, IntMatrix, double, double) [4]
+                1.23    0.00 1500000000/16447863273     GetEscapeRate(SRN const*, IntMatrix) [37]
+                3.68    0.00 4496798583/16447863273     GetPreviousConnectedState(SRN const*, IntMatrix, IntMatrix, unsigned int) [31]
+                5.72    0.00 6989179065/16447863273     GetSingleInputToken(SRN*, Matrix, unsigned int, IntMatrix, Matrix) [15]
+[32]     0.6   13.47    0.00 16447863273         GetValueIntMatrix(IntMatrix, unsigned long, unsigned long) [32]
+-----------------------------------------------
+                0.00    0.00    1001/1003004004     TCMGetPerSpeciesStandardDeviation(TCM*, Matrix, double, unsigned long) [clone .constprop.0] [28]
+                0.00    0.00    1001/1003004004     GillespieSRNTrajectorySimLogPerSpeciesMean(SRN const*, double, double, unsigned long, _IO_FILE*) [56]
+                0.00    0.00    2002/1003004004     GillespieSRNTrajectorySimLogPerSpeciesStandardDeviation(SRN const*, double, double, unsigned long, _IO_FILE*) [53]
+                0.04    0.00 3000000/1003004004     NNGradientDescent(NeuralNetwork*, double) [50]
+                6.47    0.00 500000000/1003004004     TCMTakeSample(TCM*, IntMatrix, double, Matrix, double) [clone .constprop.0] [8]
+                6.47    0.00 500000000/1003004004     TCMTrain(TCM*, double, double, double, unsigned int, unsigned int, unsigned long, double, double, char const*) [clone .constprop.0] [3]
+[33]     0.6   12.97    0.00 1003004004         SetMatrix(Matrix, double) [33]
+-----------------------------------------------
+                0.00   11.48       1/1           TCMGlobalTimeExperiment() [2]
+[34]     0.6    0.00   11.48       1         TCMLogMeanComparisonOverTime(TCM*, double, double, unsigned long, char const*) [clone .constprop.0] [34]
+                0.02   11.44    1001/2002        TCMGetPerSpeciesMean(TCM*, Matrix, double, unsigned long) [clone .constprop.0] [27]
+                0.01    0.02       1/1           GillespieSRNTrajectorySimLogPerSpeciesMean(SRN const*, double, double, unsigned long, _IO_FILE*) [56]
+                0.00    0.00    1001/4004        LogDataPoint(double, Matrix, _IO_FILE*) [86]
+                0.00    0.00       1/4009        CreateMatrix(MemArena*, unsigned long, unsigned long, double const*) [85]
+-----------------------------------------------
+                2.84    4.85    1001/1001        TCMGlobalTimeExperiment() [2]
+[35]     0.4    2.84    4.85    1001         GillespieSRNTrajectorySimGetFullDistribution(SRN const*, Tensor, double, unsigned long) [35]
+                1.77    0.44 178530565/179245063     GetReactionPropensities(SRN const*, IntMatrix, double*) [39]
+                1.19    0.00 357061130/7527000560     RandU48() [25]
+                0.55    0.29 178530565/178530565     IsValidState(SRN const*, IntMatrix) [46]
+                0.39    0.00 178530565/199265063     IntMatrixAdd(IntMatrix*, IntMatrix, IntMatrix) [47]
+                0.12    0.00 178530565/179245063     GetColumnVectorIntMatrix(IntMatrix, IntMatrix, unsigned long) [51]
+                0.04    0.00 10010000/20020000     TensorAddValue(Tensor, double, IntMatrix) [52]
+                0.03    0.01 10010000/10050000     SetInitialState(SRN const*, IntMatrix) [55]
+                0.02    0.00 10010000/10056006     SetIntMatrix(IntMatrix, int) [58]
+                0.00    0.00    2002/11024       CreateBlankIntMatrix(MemArena*, unsigned long, unsigned long) [84]
+                0.00    0.00    1001/2002        SetTensor(Tensor, double) [89]
+                0.00    0.00    1001/2002        TensorScaleSelf(Tensor, double) [88]
+-----------------------------------------------
+                7.42    0.00 3520914146/3520914146     GetSingleInputToken(SRN*, Matrix, unsigned int, IntMatrix, Matrix) [15]
+[36]     0.4    7.42    0.00 3520914146         SetColumnMatrix(Matrix, double, unsigned long) [36]
+-----------------------------------------------
+                6.00    1.23 500000000/500000000     TCMTrain(TCM*, double, double, double, unsigned int, unsigned int, unsigned long, double, double, char const*) [clone .constprop.0] [3]
+[37]     0.3    6.00    1.23 500000000         GetEscapeRate(SRN const*, IntMatrix) [37]
+                1.23    0.00 1500000000/16447863273     GetValueIntMatrix(IntMatrix, unsigned long, unsigned long) [32]
+-----------------------------------------------
+                1.01    0.00 530000000/3710000000     TCMTakeSampleNoGradient(TCM*, IntMatrix, double, double) [clone .constprop.0] [7]
+                6.09    0.00 3180000000/3710000000     NNPredictSingleDataPoint(NeuralNetwork*, unsigned int, Matrix, double) [12]
+[38]     0.3    7.10    0.00 3710000000         GetColumnVectorMatrix(Matrix, unsigned long) [38]
+-----------------------------------------------
+                0.00    0.00  178339/179245063     GillespieSRNTrajectorySimLogFullDistribution(SRN const*, double, double, unsigned long, _IO_FILE*) [54]
+                0.00    0.00  178856/179245063     GillespieSRNTrajectorySimLogPerSpeciesMean(SRN const*, double, double, unsigned long, _IO_FILE*) [56]
+                0.00    0.00  357303/179245063     GillespieSRNTrajectorySimLogPerSpeciesStandardDeviation(SRN const*, double, double, unsigned long, _IO_FILE*) [53]
+                1.77    0.44 178530565/179245063     GillespieSRNTrajectorySimGetFullDistribution(SRN const*, Tensor, double, unsigned long) [35]
+[39]     0.1    1.78    0.44 179245063         GetReactionPropensities(SRN const*, IntMatrix, double*) [39]
+                0.44    0.00 537735189/16447863273     GetValueIntMatrix(IntMatrix, unsigned long, unsigned long) [32]
+-----------------------------------------------
+                2.08    0.00 500000000/500000000     TCMTrain(TCM*, double, double, double, unsigned int, unsigned int, unsigned long, double, double, char const*) [clone .constprop.0] [3]
+[40]     0.1    2.08    0.00 500000000         MatrixAdd(Matrix*, Matrix, Matrix) [40]
+-----------------------------------------------
+                0.00    0.00 3000006/2528457079     NNCopyParameters(NeuralNetwork*, NeuralNetwork const*) [59]
+                0.26    0.00 500000000/2528457079     NNSetLastLayer(NeuralNetwork*, Matrix) [45]
+                0.27    0.00 530000000/2528457079     NNPredictSingleDataPoint(NeuralNetwork*, unsigned int, Matrix, double) [12]
+                0.77    0.00 1495457073/2528457079     NNPredict(NeuralNetwork*, Matrix, double) [9]
+[41]     0.1    1.31    0.00 2528457079         CopyMatrixData(Matrix, Matrix) [41]
+-----------------------------------------------
+                1.16    0.00 2025457079/2025457079     NNPredictNoCopy(NeuralNetwork*, double) [5]
+[42]     0.1    1.16    0.00 2025457079         Identity(Matrix, unsigned int) [42]
+-----------------------------------------------
+                0.00    0.00       2/1540081003     CreateSRN(unsigned int, Reaction**, Species*) [71]
+                0.00    0.00    1001/1540081003     IncrementStateInStateSpace(SRN const*, IntMatrix) [62]
+                0.00    0.00   30000/1540081003     GetInitialConditionSample(SRN const*, IntMatrix) [63]
+                0.01    0.00 10050000/1540081003     SetInitialState(SRN const*, IntMatrix) [55]
+                0.39    0.00 530000000/1540081003     TCMTakeSampleNoGradient(TCM*, IntMatrix, double, double) [clone .constprop.0] [7]
+                0.74    0.00 1000000000/1540081003     GetPreviousConnectedState(SRN const*, IntMatrix, IntMatrix, unsigned int) [31]
+[43]     0.1    1.14    0.00 1540081003         SetValueIntMatrix(IntMatrix, int, unsigned long, unsigned long) [43]
+-----------------------------------------------
+                1.02    0.00 2025457079/2025457079     GetEmbeddedTime(NeuralNetwork*, double, double) [6]
+[44]     0.0    1.02    0.00 2025457079         SetMatrixData(Matrix, double const*) [44]
+-----------------------------------------------
+                0.75    0.26 500000000/500000000     TCMTrain(TCM*, double, double, double, unsigned int, unsigned int, unsigned long, double, double, char const*) [clone .constprop.0] [3]
+[45]     0.0    0.75    0.26 500000000         NNSetLastLayer(NeuralNetwork*, Matrix) [45]
+                0.26    0.00 500000000/2528457079     CopyMatrixData(Matrix, Matrix) [41]
+-----------------------------------------------
+                0.55    0.29 178530565/178530565     GillespieSRNTrajectorySimGetFullDistribution(SRN const*, Tensor, double, unsigned long) [35]
+[46]     0.0    0.55    0.29 178530565         IsValidState(SRN const*, IntMatrix) [46]
+                0.29    0.00 357061130/16447863273     GetValueIntMatrix(IntMatrix, unsigned long, unsigned long) [32]
+-----------------------------------------------
+                0.00    0.00  178339/199265063     GillespieSRNTrajectorySimLogFullDistribution(SRN const*, double, double, unsigned long, _IO_FILE*) [54]
+                0.00    0.00  178856/199265063     GillespieSRNTrajectorySimLogPerSpeciesMean(SRN const*, double, double, unsigned long, _IO_FILE*) [56]
+                0.00    0.00  357303/199265063     GillespieSRNTrajectorySimLogPerSpeciesStandardDeviation(SRN const*, double, double, unsigned long, _IO_FILE*) [53]
+                0.04    0.00 20020000/199265063     TCMGetPerSpeciesMean(TCM*, Matrix, double, unsigned long) [clone .constprop.0] [27]
+                0.39    0.00 178530565/199265063     GillespieSRNTrajectorySimGetFullDistribution(SRN const*, Tensor, double, unsigned long) [35]
+[47]     0.0    0.43    0.00 199265063         IntMatrixAdd(IntMatrix*, IntMatrix, IntMatrix) [47]
+-----------------------------------------------
+                0.35    0.00 500000000/500000000     TCMTrain(TCM*, double, double, double, unsigned int, unsigned int, unsigned long, double, double, char const*) [clone .constprop.0] [3]
+[48]     0.0    0.35    0.00 500000000         GetSubColumnVectorMatrix(Matrix, unsigned long, unsigned long, unsigned long) [48]
+-----------------------------------------------
+                0.01    0.00 10010000/540040000     TCMGetPerSpeciesStandardDeviation(TCM*, Matrix, double, unsigned long) [clone .constprop.0] [28]
+                0.01    0.00 10010000/540040000     GillespieSRNTrajectorySimLogPerSpeciesMean(SRN const*, double, double, unsigned long, _IO_FILE*) [56]
+                0.01    0.00 20020000/540040000     GillespieSRNTrajectorySimLogPerSpeciesStandardDeviation(SRN const*, double, double, unsigned long, _IO_FILE*) [53]
+                0.31    0.00 500000000/540040000     TCMTakeSample(TCM*, IntMatrix, double, Matrix, double) [clone .constprop.0] [8]
+[49]     0.0    0.33    0.00 540040000         MatrixAddValue(Matrix, double, unsigned long, unsigned long) [49]
+-----------------------------------------------
+                0.03    0.20 1000000/1000000     TCMTrain(TCM*, double, double, double, unsigned int, unsigned int, unsigned long, double, double, char const*) [clone .constprop.0] [3]
+[50]     0.0    0.03    0.20 1000000         NNGradientDescent(NeuralNetwork*, double) [50]
+                0.12    0.00 3000000/503000000     MatrixSub(Matrix*, Matrix, Matrix) [29]
+                0.05    0.00 3000000/1003004004     MatrixScale(Matrix*, Matrix, double) [30]
+                0.04    0.00 3000000/1003004004     SetMatrix(Matrix, double) [33]
+-----------------------------------------------
+                0.00    0.00  178339/179245063     GillespieSRNTrajectorySimLogFullDistribution(SRN const*, double, double, unsigned long, _IO_FILE*) [54]
+                0.00    0.00  178856/179245063     GillespieSRNTrajectorySimLogPerSpeciesMean(SRN const*, double, double, unsigned long, _IO_FILE*) [56]
+                0.00    0.00  357303/179245063     GillespieSRNTrajectorySimLogPerSpeciesStandardDeviation(SRN const*, double, double, unsigned long, _IO_FILE*) [53]
+                0.12    0.00 178530565/179245063     GillespieSRNTrajectorySimGetFullDistribution(SRN const*, Tensor, double, unsigned long) [35]
+[51]     0.0    0.12    0.00 179245063         GetColumnVectorIntMatrix(IntMatrix, IntMatrix, unsigned long) [51]
+-----------------------------------------------
+                0.04    0.00 10010000/20020000     GillespieSRNTrajectorySimGetFullDistribution(SRN const*, Tensor, double, unsigned long) [35]
+                0.04    0.00 10010000/20020000     GillespieSRNTrajectorySimLogFullDistribution(SRN const*, double, double, unsigned long, _IO_FILE*) [54]
+[52]     0.0    0.09    0.00 20020000         TensorAddValue(Tensor, double, IntMatrix) [52]
+-----------------------------------------------
+                0.03    0.04       1/1           TCMLogStdComparisonOverTime(TCM*, double, double, unsigned long, char const*) [clone .constprop.0] [26]
+[53]     0.0    0.03    0.04       1         GillespieSRNTrajectorySimLogPerSpeciesStandardDeviation(SRN const*, double, double, unsigned long, _IO_FILE*) [53]
+                0.02    0.00 20020000/16447863273     GetValueIntMatrix(IntMatrix, unsigned long, unsigned long) [32]
+                0.01    0.00 20020000/540040000     MatrixAddValue(Matrix, double, unsigned long, unsigned long) [49]
+                0.00    0.00  357303/179245063     GetReactionPropensities(SRN const*, IntMatrix, double*) [39]
+                0.00    0.00  714606/7527000560     RandU48() [25]
+                0.00    0.00  357303/199265063     IntMatrixAdd(IntMatrix*, IntMatrix, IntMatrix) [47]
+                0.00    0.00  357303/179245063     GetColumnVectorIntMatrix(IntMatrix, IntMatrix, unsigned long) [51]
+                0.00    0.00   20000/10050000     SetInitialState(SRN const*, IntMatrix) [55]
+                0.00    0.00   20000/10056006     SetIntMatrix(IntMatrix, int) [58]
+                0.00    0.00    2002/1003004004     MatrixScale(Matrix*, Matrix, double) [30]
+                0.00    0.00    2002/1003004004     SetMatrix(Matrix, double) [33]
+                0.00    0.00    2002/4009        CreateMatrix(MemArena*, unsigned long, unsigned long, double const*) [85]
+                0.00    0.00    1001/2002        MatrixTransform(Matrix*, Matrix, double (*)(double)) [87]
+                0.00    0.00    1001/4004        LogDataPoint(double, Matrix, _IO_FILE*) [86]
+                0.00    0.00       4/11024       CreateBlankIntMatrix(MemArena*, unsigned long, unsigned long) [84]
+-----------------------------------------------
+                0.00    0.05       1/1           TCMGlobalTimeExperiment() [2]
+[54]     0.0    0.00    0.05       1         GillespieSRNTrajectorySimLogFullDistribution(SRN const*, double, double, unsigned long, _IO_FILE*) [54]
+                0.04    0.00 10010000/20020000     TensorAddValue(Tensor, double, IntMatrix) [52]
+                0.00    0.00  178339/179245063     GetReactionPropensities(SRN const*, IntMatrix, double*) [39]
+                0.00    0.00  356678/7527000560     RandU48() [25]
+                0.00    0.00  178339/199265063     IntMatrixAdd(IntMatrix*, IntMatrix, IntMatrix) [47]
+                0.00    0.00  178339/179245063     GetColumnVectorIntMatrix(IntMatrix, IntMatrix, unsigned long) [51]
+                0.00    0.00   10000/10050000     SetInitialState(SRN const*, IntMatrix) [55]
+                0.00    0.00    1001/2002        LogFullDistribution(Tensor, double, _IO_FILE*) [61]
+                0.00    0.00   10000/10056006     SetIntMatrix(IntMatrix, int) [58]
+                0.00    0.00    1001/1004        SRNCreateStateSpaceTensor(MemArena*, SRN const*) [91]
+                0.00    0.00    1001/2002        SetTensor(Tensor, double) [89]
+                0.00    0.00    1001/2002        TensorScaleSelf(Tensor, double) [88]
+                0.00    0.00       2/11024       CreateBlankIntMatrix(MemArena*, unsigned long, unsigned long) [84]
+                0.00    0.00       1/3           SRNGetStateSpaceTensorAllocSize(SRN const*) [98]
+-----------------------------------------------
+                0.00    0.00   10000/10050000     GillespieSRNTrajectorySimLogFullDistribution(SRN const*, double, double, unsigned long, _IO_FILE*) [54]
+                0.00    0.00   10000/10050000     GillespieSRNTrajectorySimLogPerSpeciesMean(SRN const*, double, double, unsigned long, _IO_FILE*) [56]
+                0.00    0.00   20000/10050000     GillespieSRNTrajectorySimLogPerSpeciesStandardDeviation(SRN const*, double, double, unsigned long, _IO_FILE*) [53]
+                0.03    0.01 10010000/10050000     GillespieSRNTrajectorySimGetFullDistribution(SRN const*, Tensor, double, unsigned long) [35]
+[55]     0.0    0.03    0.01 10050000         SetInitialState(SRN const*, IntMatrix) [55]
+                0.01    0.00 10050000/1540081003     SetValueIntMatrix(IntMatrix, int, unsigned long, unsigned long) [43]
+-----------------------------------------------
+                0.01    0.02       1/1           TCMLogMeanComparisonOverTime(TCM*, double, double, unsigned long, char const*) [clone .constprop.0] [34]
+[56]     0.0    0.01    0.02       1         GillespieSRNTrajectorySimLogPerSpeciesMean(SRN const*, double, double, unsigned long, _IO_FILE*) [56]
+                0.01    0.00 10010000/16447863273     GetValueIntMatrix(IntMatrix, unsigned long, unsigned long) [32]
+                0.01    0.00 10010000/540040000     MatrixAddValue(Matrix, double, unsigned long, unsigned long) [49]
+                0.00    0.00  178856/179245063     GetReactionPropensities(SRN const*, IntMatrix, double*) [39]
+                0.00    0.00  357712/7527000560     RandU48() [25]
+                0.00    0.00  178856/199265063     IntMatrixAdd(IntMatrix*, IntMatrix, IntMatrix) [47]
+                0.00    0.00  178856/179245063     GetColumnVectorIntMatrix(IntMatrix, IntMatrix, unsigned long) [51]
+                0.00    0.00   10000/10050000     SetInitialState(SRN const*, IntMatrix) [55]
+                0.00    0.00   10000/10056006     SetIntMatrix(IntMatrix, int) [58]
+                0.00    0.00    1001/1003004004     MatrixScale(Matrix*, Matrix, double) [30]
+                0.00    0.00    1001/1003004004     SetMatrix(Matrix, double) [33]
+                0.00    0.00    1001/4009        CreateMatrix(MemArena*, unsigned long, unsigned long, double const*) [85]
+                0.00    0.00    1001/4004        LogDataPoint(double, Matrix, _IO_FILE*) [86]
+                0.00    0.00       2/11024       CreateBlankIntMatrix(MemArena*, unsigned long, unsigned long) [84]
+-----------------------------------------------
+                0.00    0.02    1001/1001        TCMGlobalTimeExperiment() [2]
+[57]     0.0    0.00    0.02    1001         TCMGetFullProbabilityDistribution(TCM*, double, Tensor) [57]
+                0.00    0.02   30030/1496927184     TCMPredict(TCM*, IntMatrix, double, double) [4]
+                0.00    0.00   30030/30030       IncrementStateInStateSpace(SRN const*, IntMatrix) [62]
+                0.00    0.00    1001/10056006     SetIntMatrix(IntMatrix, int) [58]
+                0.00    0.00      30/1500141     GetInitialConditionProbability(SRN const*, IntMatrix) [60]
+                0.00    0.00   30030/60060       SetValueTensor(Tensor, double, IntMatrix) [81]
+                0.00    0.00   30030/120120      IntMatrixIsZero(IntMatrix) [78]
+                0.00    0.00   29029/29029       IntMatrixAddValue(IntMatrix, int, unsigned long, unsigned long) [83]
+                0.00    0.00    1001/11024       CreateBlankIntMatrix(MemArena*, unsigned long, unsigned long) [84]
+-----------------------------------------------
+                0.00    0.00    1001/10056006     TCMGetFullProbabilityDistribution(TCM*, double, Tensor) [57]
+                0.00    0.00    1001/10056006     TCMGlobalTimeExperiment() [2]
+                0.00    0.00    2002/10056006     LogFullDistribution(Tensor, double, _IO_FILE*) [61]
+                0.00    0.00    2002/10056006     TCMGetPerSpeciesMean(TCM*, Matrix, double, unsigned long) [clone .constprop.0] [27]
+                0.00    0.00   10000/10056006     GillespieSRNTrajectorySimLogFullDistribution(SRN const*, double, double, unsigned long, _IO_FILE*) [54]
+                0.00    0.00   10000/10056006     GillespieSRNTrajectorySimLogPerSpeciesMean(SRN const*, double, double, unsigned long, _IO_FILE*) [56]
+                0.00    0.00   20000/10056006     GillespieSRNTrajectorySimLogPerSpeciesStandardDeviation(SRN const*, double, double, unsigned long, _IO_FILE*) [53]
+                0.02    0.00 10010000/10056006     GillespieSRNTrajectorySimGetFullDistribution(SRN const*, Tensor, double, unsigned long) [35]
+[58]     0.0    0.02    0.00 10056006         SetIntMatrix(IntMatrix, int) [58]
+-----------------------------------------------
+                0.00    0.00       2/1000002     TCMCopy(TCM const*) [66]
+                0.01    0.00 1000000/1000002     TCMTrain(TCM*, double, double, double, unsigned int, unsigned int, unsigned long, double, double, char const*) [clone .constprop.0] [3]
+[59]     0.0    0.01    0.00 1000002         NNCopyParameters(NeuralNetwork*, NeuralNetwork const*) [59]
+                0.00    0.00 3000006/2528457079     CopyMatrixData(Matrix, Matrix) [41]
+-----------------------------------------------
+                0.00    0.00      30/1500141     TCMGetFullProbabilityDistribution(TCM*, double, Tensor) [57]
+                0.00    0.00 1500111/1500141     TCMTrain(TCM*, double, double, double, unsigned int, unsigned int, unsigned long, double, double, char const*) [clone .constprop.0] [3]
+[60]     0.0    0.00    0.00 1500141         GetInitialConditionProbability(SRN const*, IntMatrix) [60]
+                0.00    0.00 1500141/16447863273     GetValueIntMatrix(IntMatrix, unsigned long, unsigned long) [32]
+-----------------------------------------------
+                0.00    0.00    1001/2002        TCMGlobalTimeExperiment() [2]
+                0.00    0.00    1001/2002        GillespieSRNTrajectorySimLogFullDistribution(SRN const*, double, double, unsigned long, _IO_FILE*) [54]
+[61]     0.0    0.00    0.00    2002         LogFullDistribution(Tensor, double, _IO_FILE*) [61]
+                0.00    0.00   60060/16447863273     GetValueIntMatrix(IntMatrix, unsigned long, unsigned long) [32]
+                0.00    0.00    2002/10056006     SetIntMatrix(IntMatrix, int) [58]
+                0.00    0.00   60060/60060       GetValueTensor(Tensor, IntMatrix) [80]
+                0.00    0.00   60060/90090       IncrementTensorIndex(Tensor, IntMatrix) [79]
+                0.00    0.00   60060/120120      IntMatrixIsZero(IntMatrix) [78]
+                0.00    0.00    2002/11024       CreateBlankIntMatrix(MemArena*, unsigned long, unsigned long) [84]
+-----------------------------------------------
+                0.00    0.00   30030/30030       TCMGetFullProbabilityDistribution(TCM*, double, Tensor) [57]
+[62]     0.0    0.00    0.00   30030         IncrementStateInStateSpace(SRN const*, IntMatrix) [62]
+                0.00    0.00   30030/16447863273     GetValueIntMatrix(IntMatrix, unsigned long, unsigned long) [32]
+                0.00    0.00    1001/1540081003     SetValueIntMatrix(IntMatrix, int, unsigned long, unsigned long) [43]
+-----------------------------------------------
+                0.00    0.00   10000/30000       TCMGetPerSpeciesStandardDeviation(TCM*, Matrix, double, unsigned long) [clone .constprop.0] [28]
+                0.00    0.00   20000/30000       TCMGetPerSpeciesMean(TCM*, Matrix, double, unsigned long) [clone .constprop.0] [27]
+[63]     0.0    0.00    0.00   30000         GetInitialConditionSample(SRN const*, IntMatrix) [63]
+                0.00    0.00   30000/1540081003     SetValueIntMatrix(IntMatrix, int, unsigned long, unsigned long) [43]
+-----------------------------------------------
+                0.00    0.00       2/4           TCMCreate(SRN*, unsigned int*, unsigned int, unsigned int, unsigned int) [clone .constprop.0] [68]
+                0.00    0.00       2/4           TCMCreate(SRN*, unsigned int*, unsigned int, unsigned int, unsigned int) [67]
+[64]     0.0    0.00    0.00       4         NNCreate(unsigned int*, ActivationFnID*, unsigned int, unsigned int) [64]
+                0.00    0.00      12/12          CreateRandomVariancePreservingMatrix(MemArena*, unsigned long, unsigned long) [65]
+                0.00    0.00      20/20          CreateRandomMatrix(MemArena*, unsigned long, unsigned long) [69]
+                0.00    0.00      12/12          CreateMatrixAllVal(MemArena*, unsigned long, unsigned long, double) [93]
+-----------------------------------------------
+                0.00    0.00      12/12          NNCreate(unsigned int*, ActivationFnID*, unsigned int, unsigned int) [64]
+[65]     0.0    0.00    0.00      12         CreateRandomVariancePreservingMatrix(MemArena*, unsigned long, unsigned long) [65]
+                0.00    0.00    1314/7527000560     RandU48() [25]
+-----------------------------------------------
+                0.00    0.00       1/1           TCMTrain(TCM*, double, double, double, unsigned int, unsigned int, unsigned long, double, double, char const*) [clone .constprop.0] [3]
+[66]     0.0    0.00    0.00       1         TCMCopy(TCM const*) [66]
+                0.00    0.00       1/1           TCMCreate(SRN*, unsigned int*, unsigned int, unsigned int, unsigned int) [67]
+                0.00    0.00       2/1000002     NNCopyParameters(NeuralNetwork*, NeuralNetwork const*) [59]
+-----------------------------------------------
+                0.00    0.00       1/1           TCMCopy(TCM const*) [66]
+[67]     0.0    0.00    0.00       1         TCMCreate(SRN*, unsigned int*, unsigned int, unsigned int, unsigned int) [67]
+                0.00    0.00       2/4           NNCreate(unsigned int*, ActivationFnID*, unsigned int, unsigned int) [64]
+                0.00    0.00       1/4009        CreateMatrix(MemArena*, unsigned long, unsigned long, double const*) [85]
+                0.00    0.00       1/2           SRNGetMaxSpeciesCount(SRN const*) [102]
+-----------------------------------------------
+                0.00    0.00       1/1           TCMGlobalTimeExperiment() [2]
+[68]     0.0    0.00    0.00       1         TCMCreate(SRN*, unsigned int*, unsigned int, unsigned int, unsigned int) [clone .constprop.0] [68]
+                0.00    0.00       2/4           NNCreate(unsigned int*, ActivationFnID*, unsigned int, unsigned int) [64]
+                0.00    0.00       1/4009        CreateMatrix(MemArena*, unsigned long, unsigned long, double const*) [85]
+                0.00    0.00       1/2           SRNGetMaxSpeciesCount(SRN const*) [102]
+-----------------------------------------------
+                0.00    0.00      20/20          NNCreate(unsigned int*, ActivationFnID*, unsigned int, unsigned int) [64]
+[69]     0.0    0.00    0.00      20         CreateRandomMatrix(MemArena*, unsigned long, unsigned long) [69]
+                0.00    0.00     228/7527000560     RandU48() [25]
+-----------------------------------------------
+                0.00    0.00       1/1           TCMGlobalTimeExperiment() [2]
+[70]     0.0    0.00    0.00       1         ParseSRN(char const*) [70]
+                0.00    0.00       1/1           CreateSRN(unsigned int, Reaction**, Species*) [71]
+                0.00    0.00       2/2           CreateReaction(double, unsigned int, int*, int*) [99]
+                0.00    0.00       2/2           DeleteReaction(Reaction*) [100]
+-----------------------------------------------
+                0.00    0.00       1/1           ParseSRN(char const*) [70]
+[71]     0.0    0.00    0.00       1         CreateSRN(unsigned int, Reaction**, Species*) [71]
+                0.00    0.00       2/1540081003     SetValueIntMatrix(IntMatrix, int, unsigned long, unsigned long) [43]
+                0.00    0.00       4/4           SetColumnIntMatrix(IntMatrix, int const*, unsigned long) [95]
+                0.00    0.00       3/11024       CreateBlankIntMatrix(MemArena*, unsigned long, unsigned long) [84]
+-----------------------------------------------
+                0.00    0.00   30030/120120      TCMGetFullProbabilityDistribution(TCM*, double, Tensor) [57]
+                0.00    0.00   30030/120120      TCMGlobalTimeExperiment() [2]
+                0.00    0.00   60060/120120      LogFullDistribution(Tensor, double, _IO_FILE*) [61]
+[78]     0.0    0.00    0.00  120120         IntMatrixIsZero(IntMatrix) [78]
+-----------------------------------------------
+                0.00    0.00   30030/90090       TCMGlobalTimeExperiment() [2]
+                0.00    0.00   60060/90090       LogFullDistribution(Tensor, double, _IO_FILE*) [61]
+[79]     0.0    0.00    0.00   90090         IncrementTensorIndex(Tensor, IntMatrix) [79]
+-----------------------------------------------
+                0.00    0.00   60060/60060       LogFullDistribution(Tensor, double, _IO_FILE*) [61]
+[80]     0.0    0.00    0.00   60060         GetValueTensor(Tensor, IntMatrix) [80]
+-----------------------------------------------
+                0.00    0.00   30030/60060       TCMGetFullProbabilityDistribution(TCM*, double, Tensor) [57]
+                0.00    0.00   30030/60060       TCMGlobalTimeExperiment() [2]
+[81]     0.0    0.00    0.00   60060         SetValueTensor(Tensor, double, IntMatrix) [81]
+-----------------------------------------------
+                0.00    0.00   31031/31031       HellingerDistance(Tensor, Tensor) [92]
+[82]     0.0    0.00    0.00   31031         GetTensorSize(unsigned long*, unsigned long) [82]
+-----------------------------------------------
+                0.00    0.00   29029/29029       TCMGetFullProbabilityDistribution(TCM*, double, Tensor) [57]
+[83]     0.0    0.00    0.00   29029         IntMatrixAddValue(IntMatrix, int, unsigned long, unsigned long) [83]
+-----------------------------------------------
+                0.00    0.00       2/11024       TCMTrain(TCM*, double, double, double, unsigned int, unsigned int, unsigned long, double, double, char const*) [clone .constprop.0] [3]
+                0.00    0.00       2/11024       GillespieSRNTrajectorySimLogFullDistribution(SRN const*, double, double, unsigned long, _IO_FILE*) [54]
+                0.00    0.00       2/11024       GillespieSRNTrajectorySimLogPerSpeciesMean(SRN const*, double, double, unsigned long, _IO_FILE*) [56]
+                0.00    0.00       3/11024       CreateSRN(unsigned int, Reaction**, Species*) [71]
+                0.00    0.00       4/11024       GillespieSRNTrajectorySimLogPerSpeciesStandardDeviation(SRN const*, double, double, unsigned long, _IO_FILE*) [53]
+                0.00    0.00    1001/11024       TCMGetPerSpeciesStandardDeviation(TCM*, Matrix, double, unsigned long) [clone .constprop.0] [28]
+                0.00    0.00    1001/11024       TCMGetFullProbabilityDistribution(TCM*, double, Tensor) [57]
+                0.00    0.00    1001/11024       TCMGlobalTimeExperiment() [2]
+                0.00    0.00    2002/11024       LogFullDistribution(Tensor, double, _IO_FILE*) [61]
+                0.00    0.00    2002/11024       GillespieSRNTrajectorySimGetFullDistribution(SRN const*, Tensor, double, unsigned long) [35]
+                0.00    0.00    4004/11024       TCMGetPerSpeciesMean(TCM*, Matrix, double, unsigned long) [clone .constprop.0] [27]
+[84]     0.0    0.00    0.00   11024         CreateBlankIntMatrix(MemArena*, unsigned long, unsigned long) [84]
+-----------------------------------------------
+                0.00    0.00       1/4009        TCMCreate(SRN*, unsigned int*, unsigned int, unsigned int, unsigned int) [clone .constprop.0] [68]
+                0.00    0.00       1/4009        TCMLogStdComparisonOverTime(TCM*, double, double, unsigned long, char const*) [clone .constprop.0] [26]
+                0.00    0.00       1/4009        TCMLogMeanComparisonOverTime(TCM*, double, double, unsigned long, char const*) [clone .constprop.0] [34]
+                0.00    0.00       1/4009        TCMCreate(SRN*, unsigned int*, unsigned int, unsigned int, unsigned int) [67]
+                0.00    0.00       1/4009        TCMTrain(TCM*, double, double, double, unsigned int, unsigned int, unsigned long, double, double, char const*) [clone .constprop.0] [3]
+                0.00    0.00    1001/4009        TCMGetPerSpeciesStandardDeviation(TCM*, Matrix, double, unsigned long) [clone .constprop.0] [28]
+                0.00    0.00    1001/4009        GillespieSRNTrajectorySimLogPerSpeciesMean(SRN const*, double, double, unsigned long, _IO_FILE*) [56]
+                0.00    0.00    2002/4009        GillespieSRNTrajectorySimLogPerSpeciesStandardDeviation(SRN const*, double, double, unsigned long, _IO_FILE*) [53]
+[85]     0.0    0.00    0.00    4009         CreateMatrix(MemArena*, unsigned long, unsigned long, double const*) [85]
+-----------------------------------------------
+                0.00    0.00    1001/4004        TCMLogStdComparisonOverTime(TCM*, double, double, unsigned long, char const*) [clone .constprop.0] [26]
+                0.00    0.00    1001/4004        TCMLogMeanComparisonOverTime(TCM*, double, double, unsigned long, char const*) [clone .constprop.0] [34]
+                0.00    0.00    1001/4004        GillespieSRNTrajectorySimLogPerSpeciesMean(SRN const*, double, double, unsigned long, _IO_FILE*) [56]
+                0.00    0.00    1001/4004        GillespieSRNTrajectorySimLogPerSpeciesStandardDeviation(SRN const*, double, double, unsigned long, _IO_FILE*) [53]
+[86]     0.0    0.00    0.00    4004         LogDataPoint(double, Matrix, _IO_FILE*) [86]
+-----------------------------------------------
+                0.00    0.00    1001/2002        TCMGetPerSpeciesStandardDeviation(TCM*, Matrix, double, unsigned long) [clone .constprop.0] [28]
+                0.00    0.00    1001/2002        GillespieSRNTrajectorySimLogPerSpeciesStandardDeviation(SRN const*, double, double, unsigned long, _IO_FILE*) [53]
+[87]     0.0    0.00    0.00    2002         MatrixTransform(Matrix*, Matrix, double (*)(double)) [87]
+-----------------------------------------------
+                0.00    0.00    1001/2002        GillespieSRNTrajectorySimGetFullDistribution(SRN const*, Tensor, double, unsigned long) [35]
+                0.00    0.00    1001/2002        GillespieSRNTrajectorySimLogFullDistribution(SRN const*, double, double, unsigned long, _IO_FILE*) [54]
+[88]     0.0    0.00    0.00    2002         TensorScaleSelf(Tensor, double) [88]
+-----------------------------------------------
+                0.00    0.00    1001/2002        GillespieSRNTrajectorySimGetFullDistribution(SRN const*, Tensor, double, unsigned long) [35]
+                0.00    0.00    1001/2002        GillespieSRNTrajectorySimLogFullDistribution(SRN const*, double, double, unsigned long, _IO_FILE*) [54]
+[89]     0.0    0.00    0.00    2002         SetTensor(Tensor, double) [89]
+-----------------------------------------------
+                0.00    0.00    1004/1004        SRNCreateStateSpaceTensor(MemArena*, SRN const*) [91]
+[90]     0.0    0.00    0.00    1004         CreateTensor(MemArena*, unsigned long*, unsigned long, double const*) [90]
+-----------------------------------------------
+                0.00    0.00       3/1004        TCMGlobalTimeExperiment() [2]
+                0.00    0.00    1001/1004        GillespieSRNTrajectorySimLogFullDistribution(SRN const*, double, double, unsigned long, _IO_FILE*) [54]
+[91]     0.0    0.00    0.00    1004         SRNCreateStateSpaceTensor(MemArena*, SRN const*) [91]
+                0.00    0.00    1004/1004        CreateTensor(MemArena*, unsigned long*, unsigned long, double const*) [90]
+-----------------------------------------------
+                0.00    0.00    1001/1001        TCMGlobalTimeExperiment() [2]
+[92]     0.0    0.00    0.00    1001         HellingerDistance(Tensor, Tensor) [92]
+                0.00    0.00   31031/31031       GetTensorSize(unsigned long*, unsigned long) [82]
+-----------------------------------------------
+                0.00    0.00      12/12          NNCreate(unsigned int*, ActivationFnID*, unsigned int, unsigned int) [64]
+[93]     0.0    0.00    0.00      12         CreateMatrixAllVal(MemArena*, unsigned long, unsigned long, double) [93]
+-----------------------------------------------
+                0.00    0.00       6/6           TCMGlobalTimeExperiment() [2]
+[94]     0.0    0.00    0.00       6         PrintMatrix(Matrix) [94]
+-----------------------------------------------
+                0.00    0.00       4/4           CreateSRN(unsigned int, Reaction**, Species*) [71]
+[95]     0.0    0.00    0.00       4         SetColumnIntMatrix(IntMatrix, int const*, unsigned long) [95]
+-----------------------------------------------
+                0.00    0.00       2/4           TCMTrain(TCM*, double, double, double, unsigned int, unsigned int, unsigned long, double, double, char const*) [clone .constprop.0] [3]
+                0.00    0.00       2/4           TCMGlobalTimeExperiment() [2]
+[96]     0.0    0.00    0.00       4         NNDelete(NeuralNetwork*) [96]
+-----------------------------------------------
+                0.00    0.00       3/3           SRNGetStateSpaceTensorAllocSize(SRN const*) [98]
+[97]     0.0    0.00    0.00       3         GetTensorAllocSize(unsigned long*, unsigned long) [97]
+-----------------------------------------------
+                0.00    0.00       1/3           GillespieSRNTrajectorySimLogFullDistribution(SRN const*, double, double, unsigned long, _IO_FILE*) [54]
+                0.00    0.00       2/3           TCMGlobalTimeExperiment() [2]
+[98]     0.0    0.00    0.00       3         SRNGetStateSpaceTensorAllocSize(SRN const*) [98]
+                0.00    0.00       3/3           GetTensorAllocSize(unsigned long*, unsigned long) [97]
+-----------------------------------------------
+                0.00    0.00       2/2           ParseSRN(char const*) [70]
+[99]     0.0    0.00    0.00       2         CreateReaction(double, unsigned int, int*, int*) [99]
+-----------------------------------------------
+                0.00    0.00       2/2           ParseSRN(char const*) [70]
+[100]    0.0    0.00    0.00       2         DeleteReaction(Reaction*) [100]
+-----------------------------------------------
+                0.00    0.00       2/2           TCMGlobalTimeExperiment() [2]
+[101]    0.0    0.00    0.00       2         NNGetParamCount(NeuralNetwork const*) [101]
+-----------------------------------------------
+                0.00    0.00       1/2           TCMCreate(SRN*, unsigned int*, unsigned int, unsigned int, unsigned int) [clone .constprop.0] [68]
+                0.00    0.00       1/2           TCMCreate(SRN*, unsigned int*, unsigned int, unsigned int, unsigned int) [67]
+[102]    0.0    0.00    0.00       2         SRNGetMaxSpeciesCount(SRN const*) [102]
+-----------------------------------------------
+                0.00    0.00       1/1           TCMGlobalTimeExperiment() [2]
+[103]    0.0    0.00    0.00       1         PrintIntMatrix(IntMatrix) [103]
+-----------------------------------------------
+                0.00    0.00       1/1           TCMGlobalTimeExperiment() [2]
+[104]    0.0    0.00    0.00       1         SetSeedRandU48(unsigned long) [104]
+-----------------------------------------------
+                0.00    0.00       1/1           main [1]
+[105]    0.0    0.00    0.00       1         DeleteSRN(SRN*) [105]
+-----------------------------------------------
+
+ This table describes the call tree of the program, and was sorted by
+ the total amount of time spent in each function and its children.
+
+ Each entry in this table consists of several lines.  The line with the
+ index number at the left hand margin lists the current function.
+ The lines above it list the functions that called this function,
+ and the lines below it list the functions this one called.
+ This line lists:
+     index	A unique number given to each element of the table.
+		Index numbers are sorted numerically.
+		The index number is printed next to every function name so
+		it is easier to look up where the function is in the table.
+
+     % time	This is the percentage of the `total' time that was spent
+		in this function and its children.  Note that due to
+		different viewpoints, functions excluded by options, etc,
+		these numbers will NOT add up to 100%.
+
+     self	This is the total amount of time spent in this function.
+
+     children	This is the total amount of time propagated into this
+		function by its children.
+
+     called	This is the number of times the function was called.
+		If the function called itself recursively, the number
+		only includes non-recursive calls, and is followed by
+		a `+' and the number of recursive calls.
+
+     name	The name of the current function.  The index number is
+		printed after it.  If the function is a member of a
+		cycle, the cycle number is printed between the
+		function's name and the index number.
+
+
+ For the function's parents, the fields have the following meanings:
+
+     self	This is the amount of time that was propagated directly
+		from the function into this parent.
+
+     children	This is the amount of time that was propagated from
+		the function's children into this parent.
+
+     called	This is the number of times this parent called the
+		function `/' the total number of times the function
+		was called.  Recursive calls to the function are not
+		included in the number after the `/'.
+
+     name	This is the name of the parent.  The parent's index
+		number is printed after it.  If the parent is a
+		member of a cycle, the cycle number is printed between
+		the name and the index number.
+
+ If the parents of the function cannot be determined, the word
+ `<spontaneous>' is printed in the `name' field, and all the other
+ fields are blank.
+
+ For the function's children, the fields have the following meanings:
+
+     self	This is the amount of time that was propagated directly
+		from the child into the function.
+
+     children	This is the amount of time that was propagated from the
+		child's children to the function.
+
+     called	This is the number of times the function called
+		this child `/' the total number of times the child
+		was called.  Recursive calls by the child are not
+		listed in the number after the `/'.
+
+     name	This is the name of the child.  The child's index
+		number is printed after it.  If the child is a
+		member of a cycle, the cycle number is printed
+		between the name and the index number.
+
+ If there are any cycles (circles) in the call graph, there is an
+ entry for the cycle-as-a-whole.  This entry shows who called the
+ cycle (as parents) and the members of the cycle (as children.)
+ The `+' recursive calls entry shows the number of function calls that
+ were internal to the cycle, and the calls entry for each member shows,
+ for that member, how many times it was called from other members of
+ the cycle.
+
+Copyright (C) 2012-2026 Free Software Foundation, Inc.
+
+Copying and distribution of this file, with or without modification,
+are permitted in any medium without royalty provided the copyright
+notice and this notice are preserved.
+
+Index by function name
+
+   [4] TCMPredict(TCM*, IntMatrix, double, double) [55] SetInitialState(SRN const*, IntMatrix) [98] SRNGetStateSpaceTensorAllocSize(SRN const*)
+  [30] MatrixScale(Matrix*, Matrix, double) [21] TanhElementWise(Matrix, unsigned int) [10] MatrixAffineTransformColumnWiseC(Matrix, Matrix, Matrix, Matrix)
+  [94] PrintMatrix(Matrix)    [88] TensorScaleSelf(Tensor, double) [20] MatrixAffineTransformWithDropout(Matrix, Matrix, Matrix, Matrix, double)
+  [85] CreateMatrix(MemArena*, unsigned long, unsigned long, double const*) [59] NNCopyParameters(NeuralNetwork*, NeuralNetwork const*) [57] TCMGetFullProbabilityDistribution(TCM*, double, Tensor)
+  [90] CreateTensor(MemArena*, unsigned long*, unsigned long, double const*) [32] GetValueIntMatrix(IntMatrix, unsigned long, unsigned long) [28] TCMGetPerSpeciesStandardDeviation(TCM*, Matrix, double, unsigned long) [clone .constprop.0]
+  [47] IntMatrixAdd(IntMatrix*, IntMatrix, IntMatrix) [92] HellingerDistance(Tensor, Tensor) [65] CreateRandomVariancePreservingMatrix(MemArena*, unsigned long, unsigned long)
+  [46] IsValidState(SRN const*, IntMatrix) [83] IntMatrixAddValue(IntMatrix, int, unsigned long, unsigned long) [56] GillespieSRNTrajectorySimLogPerSpeciesMean(SRN const*, double, double, unsigned long, _IO_FILE*)
+  [86] LogDataPoint(double, Matrix, _IO_FILE*) [50] NNGradientDescent(NeuralNetwork*, double) [14] MatrixAffineTransformColumnWiseCWithDropout(Matrix, Matrix, Matrix, Matrix, double)
+  [58] SetIntMatrix(IntMatrix, int) [43] SetValueIntMatrix(IntMatrix, int, unsigned long, unsigned long) [35] GillespieSRNTrajectorySimGetFullDistribution(SRN const*, Tensor, double, unsigned long)
+  [37] GetEscapeRate(SRN const*, IntMatrix) [93] CreateMatrixAllVal(MemArena*, unsigned long, unsigned long, double) [54] GillespieSRNTrajectorySimLogFullDistribution(SRN const*, double, double, unsigned long, _IO_FILE*)
+  [82] GetTensorSize(unsigned long*, unsigned long) [69] CreateRandomMatrix(MemArena*, unsigned long, unsigned long) [53] GillespieSRNTrajectorySimLogPerSpeciesStandardDeviation(SRN const*, double, double, unsigned long, _IO_FILE*)
+  [44] SetMatrixData(Matrix, double const*) [97] GetTensorAllocSize(unsigned long*, unsigned long) [23] DTanhDx(double)
+   [8] TCMTakeSample(TCM*, IntMatrix, double, Matrix, double) [clone .constprop.0] [95] SetColumnIntMatrix(IntMatrix, int const*, unsigned long) [25] RandU48()
+  [41] CopyMatrixData(Matrix, Matrix) [15] GetSingleInputToken(SRN*, Matrix, unsigned int, IntMatrix, Matrix) [11] Softmax(Matrix, unsigned int)
+  [99] CreateReaction(double, unsigned int, int*, int*) [61] LogFullDistribution(Tensor, double, _IO_FILE*) [66] TCMCopy(TCM const*)
+ [100] DeleteReaction(Reaction*) [84] CreateBlankIntMatrix(MemArena*, unsigned long, unsigned long) [42] Identity(Matrix, unsigned int)
+  [16] GetInputTokens(SRN*, Matrix, IntMatrix, Matrix) [79] IncrementTensorIndex(Tensor, IntMatrix) [64] NNCreate(unsigned int*, ActivationFnID*, unsigned int, unsigned int)
+  [80] GetValueTensor(Tensor, IntMatrix) [27] TCMGetPerSpeciesMean(TCM*, Matrix, double, unsigned long) [clone .constprop.0] [96] NNDelete(NeuralNetwork*)
+  [49] MatrixAddValue(Matrix, double, unsigned long, unsigned long) [38] GetColumnVectorMatrix(Matrix, unsigned long) [70] ParseSRN(char const*)
+  [13] NNBackwardPass(NeuralNetwork*) [17] MatrixAffineTransform(Matrix, Matrix, Matrix, Matrix) [3] TCMTrain(TCM*, double, double, double, unsigned int, unsigned int, unsigned long, double, double, char const*) [clone .constprop.0]
+  [45] NNSetLastLayer(NeuralNetwork*, Matrix) [19] MatrixColumnTransform(Matrix*, Matrix, unsigned long, double (*)(double)) [71] CreateSRN(unsigned int, Reaction**, Species*)
+ [103] PrintIntMatrix(IntMatrix) [102] SRNGetMaxSpeciesCount(SRN const*) [105] DeleteSRN(SRN*)
+ [104] SetSeedRandU48(unsigned long) [39] GetReactionPropensities(SRN const*, IntMatrix, double*) [40] MatrixAdd(Matrix*, Matrix, Matrix)
+  [18] SetValueMatrix(Matrix, double, unsigned long, unsigned long) [2] TCMGlobalTimeExperiment() [29] MatrixSub(Matrix*, Matrix, Matrix)
+  [81] SetValueTensor(Tensor, double, IntMatrix) [7] TCMTakeSampleNoGradient(TCM*, IntMatrix, double, double) [clone .constprop.0] [9] NNPredict(NeuralNetwork*, Matrix, double)
+  [22] TanhDerivative(Matrix, Matrix, unsigned int) [51] GetColumnVectorIntMatrix(IntMatrix, IntMatrix, unsigned long) [33] SetMatrix(Matrix, double)
+  [52] TensorAddValue(Tensor, double, IntMatrix) [48] GetSubColumnVectorMatrix(Matrix, unsigned long, unsigned long, unsigned long) [89] SetTensor(Tensor, double)
+   [6] GetEmbeddedTime(NeuralNetwork*, double, double) [12] NNPredictSingleDataPoint(NeuralNetwork*, unsigned int, Matrix, double) [67] TCMCreate(SRN*, unsigned int*, unsigned int, unsigned int, unsigned int)
+  [78] IntMatrixIsZero(IntMatrix) [63] GetInitialConditionSample(SRN const*, IntMatrix) [68] TCMCreate(SRN*, unsigned int*, unsigned int, unsigned int, unsigned int) [clone .constprop.0]
+  [87] MatrixTransform(Matrix*, Matrix, double (*)(double)) [31] GetPreviousConnectedState(SRN const*, IntMatrix, IntMatrix, unsigned int) [26] TCMLogStdComparisonOverTime(TCM*, double, double, unsigned long, char const*) [clone .constprop.0]
+ [101] NNGetParamCount(NeuralNetwork const*) [91] SRNCreateStateSpaceTensor(MemArena*, SRN const*) [34] TCMLogMeanComparisonOverTime(TCM*, double, double, unsigned long, char const*) [clone .constprop.0]
+   [5] NNPredictNoCopy(NeuralNetwork*, double) [62] IncrementStateInStateSpace(SRN const*, IntMatrix) [24] _init
+  [36] SetColumnMatrix(Matrix, double, unsigned long) [60] GetInitialConditionProbability(SRN const*, IntMatrix)

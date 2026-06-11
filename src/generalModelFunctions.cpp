@@ -44,7 +44,7 @@ void GetInputTokens(SRN* srn, Matrix X, IntMatrix n, Matrix embeddedTime)
         GetSingleInputToken(srn, X, i, n, embeddedTime);
 }
 
-Matrix GetEmbeddedTime(NeuralNetwork* timeEmbedding, double t)
+Matrix GetEmbeddedTime(NeuralNetwork* timeEmbedding, double t, double dropoutProbability)
 {
     /*sinusoidal time embedding (already experimented with)*/
     // for(uint32_t j = 1; j <= 16; j++)
@@ -53,5 +53,5 @@ Matrix GetEmbeddedTime(NeuralNetwork* timeEmbedding, double t)
     const double eps = 1e-3;
     double timeInput[2] = { t, log(t + eps) };
     SetMatrixData(NNGetFirstLayer(timeEmbedding), timeInput);
-    return NNPredictNoCopy(timeEmbedding);
+    return NNPredictNoCopy(timeEmbedding, dropoutProbability);
 }

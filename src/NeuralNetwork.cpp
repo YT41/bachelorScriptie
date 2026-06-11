@@ -52,7 +52,7 @@ static double SquaredDistanceLoss(Matrix output, Matrix y)
 
 
 /*b_l -= lr * a_{l+1} \circ (f')_l*/
-static inline void UpdateBiasVectorGradientDescent(NeuralNetwork* network, uint32_t l)
+static inline void UpdateBiasVectorGradientAccum(NeuralNetwork* network, uint32_t l)
 {
     uint32_t d = (network->biasVectors[l].rowCount);
     uint32_t batchSize = NNGetBatchSize(network);
@@ -69,7 +69,7 @@ static inline void UpdateBiasVectorGradientDescent(NeuralNetwork* network, uint3
 
 /*W_l -= lr * a_{l+1} (a_l)^T*/
 /*a_l = (f')_l (W_l)^T a_{l+1}*/
-static inline void UpdateWeightMatrixGradientDescent(NeuralNetwork* network, uint32_t l)
+static inline void UpdateWeightMatrixGradientAccum(NeuralNetwork* network, uint32_t l)
 {
     uint32_t m = (network->layerVectors[l].rowCount);
     uint32_t n = (network->layerVectors[l+1].rowCount);
@@ -210,8 +210,8 @@ void NNBackwardPass(NeuralNetwork* network)
     
     for(int32_t l = L; l >= 0; l--)
     {
-        UpdateBiasVectorGradientDescent(network, l);
-        UpdateWeightMatrixGradientDescent(network, l);
+        UpdateBiasVectorGradientAccum(network, l);
+        UpdateWeightMatrixGradientAccum(network, l);
     }
 }
 
@@ -232,19 +232,19 @@ void NNGradientDescent(NeuralNetwork* network, double learningRate)
     }
 }
 
-Matrix NNPredict(NeuralNetwork* network, Matrix X)
+Matrix NNPredict(NeuralNetwork* network, Matrix X, double dropoutProbability)
 {
     CopyMatrixData((network->layerVectors[0]), X);
-    return NNPredictNoCopy(network);
+    return NNPredictNoCopy(network, dropoutProbability);
 }
 
-Matrix NNPredictNoCopy(NeuralNetwork* network)
+Matrix NNPredictNoCopy(NeuralNetwork* network, double dropoutProbability)
 {
     uint32_t batchSize = NNGetBatchSize(network);
     uint32_t L = (network->hiddenLayerCount);
     for(uint32_t l = 0; l < L; l++)
     {
-        MatrixAffineTransformColumnWiseC(&(network->layerVectors[l+1]), (network->weightMatrices[l]), (network->layerVectors[l]), (network->biasVectors[l]));
+        MatrixAffineTransformColumnWiseCWithDropout((network->layerVectors[l+1]), (network->weightMatrices[l]), (network->layerVectors[l]), (network->biasVectors[l]), dropoutProbability);
 
         ActivationFnID activationFnID = (network->activationFnPerLayer[l]);
 
@@ -256,21 +256,21 @@ Matrix NNPredictNoCopy(NeuralNetwork* network)
         }
     }
     /*for last layer we do not cache derivatives, we just set the gradient to the right value in the last layer*/
-    MatrixAffineTransformColumnWiseC(&(network->layerVectors[L+1]), (network->weightMatrices[L]), (network->layerVectors[L]), (network->biasVectors[L]));
+    MatrixAffineTransformColumnWiseC((network->layerVectors[L+1]), (network->weightMatrices[L]), (network->layerVectors[L]), (network->biasVectors[L]));
     for(uint32_t j = 0; j < batchSize; j++)
         activationFnLUT[(network->activationFnPerLayer[L])]((network->layerVectors[L+1]), j);
 
     return (network->layerVectors[L+1]);
 }
 
-Matrix NNPredictSingleDataPoint(NeuralNetwork* network, uint32_t i, Matrix x)
+Matrix NNPredictSingleDataPoint(NeuralNetwork* network, uint32_t i, Matrix x, double dropoutProbability)
 {
     CopyMatrixData(GetColumnVectorMatrix(network->layerVectors[0], i), x);
 
     uint32_t L = (network->hiddenLayerCount);
     for(uint32_t l = 0; l < L; l++)
     {
-        MatrixAffineTransform(GetColumnVectorMatrix((network->layerVectors[l+1]), i), (network->weightMatrices[l]),  GetColumnVectorMatrix((network->layerVectors[l]), i), (network->biasVectors[l]));
+        MatrixAffineTransformWithDropout(GetColumnVectorMatrix((network->layerVectors[l+1]), i), (network->weightMatrices[l]),  GetColumnVectorMatrix((network->layerVectors[l]), i), (network->biasVectors[l]), dropoutProbability);
 
         ActivationFnID activationFnID = (network->activationFnPerLayer[l]);
 
@@ -289,7 +289,7 @@ Matrix NNPredictSingleDataPoint(NeuralNetwork* network, uint32_t i, Matrix x)
 /*TODO: make it work for general loss functions, right now this is squared error loss*/
 double NNTrain(NeuralNetwork* network, Matrix x, Matrix y, double learningRate)
 {
-    double loss = SquaredDistanceLoss(NNPredict(network, x), y);
+    double loss = SquaredDistanceLoss(NNPredict(network, x, 0.1), y);
 
     uint32_t L = (network->hiddenLayerCount);
     MatrixSubSelf((network->layerVectors[L+1]), y);
@@ -332,7 +332,7 @@ void TestSimpleSinNN(void)
     {
         SetValueMatrix(x, input, 0, 0);
 
-        Matrix output = NNPredict(nn, x);
+        Matrix output = NNPredict(nn, x, 0.0);
 
         fprintf(file2, "%f %f %f\n", input, sin(input), output.data[0]);
     }

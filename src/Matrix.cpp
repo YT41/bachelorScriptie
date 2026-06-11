@@ -269,7 +269,29 @@ void MatrixAffineTransform(Matrix dest, Matrix A, Matrix B, Matrix C)
     }
 }
 
-void MatrixAffineTransformColumnWiseC(Matrix* dest, Matrix A, Matrix B, Matrix C)
+void MatrixAffineTransformWithDropout(Matrix dest, Matrix A, Matrix B, Matrix C, double p)
+{
+    if(A.columnCount != B.rowCount) 
+        return;
+
+    for(uint32_t i = 0; i < A.rowCount; i++)
+    {
+        for(uint32_t j = 0; j < B.columnCount; j++)
+        {
+            if(BernoulliDistributionSim(p))
+                dest.data[GetIndex(i, j, (dest.rowCount))] = 0.0;
+            else
+            {
+                double val = 0.0;
+                for(uint32_t k = 0; k < A.columnCount; k++)
+                    val += (GetValueMatrix(A, i, k) * GetValueMatrix(B, k, j));
+                dest.data[GetIndex(i, j, (dest.rowCount))] = ((val + GetValueMatrix(C, i, j)) / (1.0 - p));
+            }
+        }
+    }
+}
+
+void MatrixAffineTransformColumnWiseC(Matrix dest, Matrix A, Matrix B, Matrix C)
 {
     if(A.columnCount != B.rowCount) 
         return;
@@ -281,7 +303,29 @@ void MatrixAffineTransformColumnWiseC(Matrix* dest, Matrix A, Matrix B, Matrix C
             double val = 0.0;
             for(uint32_t k = 0; k < A.columnCount; k++)
                 val += (GetValueMatrix(A, i, k) * GetValueMatrix(B, k, j));
-            dest->data[GetIndex(i, j, (dest->rowCount))] = val + GetValueMatrix(C, i, 0);
+            dest.data[GetIndex(i, j, (dest.rowCount))] = val + GetValueMatrix(C, i, 0);
+        }
+    }
+}
+
+void MatrixAffineTransformColumnWiseCWithDropout(Matrix dest, Matrix A, Matrix B, Matrix C, double p)
+{
+    if(A.columnCount != B.rowCount) 
+        return;
+
+    for(uint32_t i = 0; i < A.rowCount; i++)
+    {
+        for(uint32_t j = 0; j < B.columnCount; j++)
+        {
+            if(BernoulliDistributionSim(p))
+                dest.data[GetIndex(i, j, (dest.rowCount))] = 0.0;
+            else
+            {
+                double val = 0.0;
+                for(uint32_t k = 0; k < A.columnCount; k++)
+                    val += (GetValueMatrix(A, i, k) * GetValueMatrix(B, k, j));
+                dest.data[GetIndex(i, j, (dest.rowCount))] = ((val + GetValueMatrix(C, i, 0)) / (1.0 - p));
+            }
         }
     }
 }
