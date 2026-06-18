@@ -1,0 +1,38 @@
+
+Signalling cascade for different M:
+M = 1
+param count = 3956
+runtime in hours = 0.596226
+
+M = 2
+param count = 4404
+runtime in hours = 1.722068
+
+M = 3
+param count = 4852
+runtime in hours = 3.639247
+
+M = 4
+param count = 5300
+runtime in hours = 6.284449
+
+M = 5
+param count = 5748
+runtime in hours = 9.994702
+
+
+
+ALL OTHER PARAMS FOR ALL RUNS ARE SET TO:
+T=10
+deltaT=0.01
+p=0.01
+B=1000
+Q=1
+E=100000
+hidden layer = 64
+time embedding = 32
+att dim = 0
+lr = 0.01
+initial count = 0
+dropout probability = 0
+N = 20

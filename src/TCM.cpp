@@ -201,7 +201,7 @@ double TCMPredict(TCM* m, IntMatrix n, double t, double dropoutProbability)
     return conditionalProbabilityProduct;
 }
 
-/*TODO: naive way of calculating full distribution, change if it ever takes too long*/
+/*naive way of calculating full distribution, should be good enough for any application though*/
 void TCMGetFullProbabilityDistribution(TCM* m, Tensor probabilities, double t)
 {
     uint32_t M = SRNGetSpeciesCount((m->srn));
@@ -493,24 +493,6 @@ void TCMPrintFullProbabilityDistribution(TCM* m, double t)
     DeleteMemArena(&arena);
 }
 
-void TCMGetFullProbabilityDistribution(TCM* m, double t, Tensor dest)
-{
-    uint32_t M = SRNGetSpeciesCount((m->srn));
-
-    MemArena arena = CreateMemArena(GetIntMatrixAllocSize(M, 1));
-
-    IntMatrix n = CreateBlankIntMatrix(&arena, M, 1);
-    SetIntMatrix(n, 0);
-    do
-    {
-        SetValueTensor(dest, TCMPredict(m, n, t, 0.0), n);
-        IncrementStateInStateSpace((m->srn), n);
-    }
-    while(!IntMatrixIsZero(n));
-
-    DeleteMemArena(&arena);
-}
-
 // void BTCMGetProbabilityDistribution(BTCM* m, double t, uint32_t* speciesIndices, uint32_t speciesCount, Tensor dest)
 // {
 //     uint32_t M = SRNGetSpeciesCount((m->srn));
@@ -538,7 +520,7 @@ void TCMLogFullProbabilityDistribution(TCM* m, double T, double tStep, size_t sa
     Tensor stateSpaceProbabilities = SRNCreateStateSpaceTensor(&arena, (m->srn));
     for(size_t i = 0; i < segmentCount; i++)
     {
-        TCMGetFullProbabilityDistribution(m, ((double)i * tStep), stateSpaceProbabilities);
+        TCMGetFullProbabilityDistribution(m, stateSpaceProbabilities, ((double)i * tStep));
         LogFullDistribution(stateSpaceProbabilities, ((double)i * tStep), logFile);
     }
 
@@ -555,7 +537,7 @@ void TCMLogFullProbabilityDistribution(TCM* m, double T, double tStep, size_t sa
 //     Tensor stateSpaceProbabilities = SRNCreateStateSpaceTensor(&arena, (m->srn));
 //     for(size_t i = 0; i < segmentCount; i++)
 //     {
-//         BTCMGetFullProbabilityDistribution(m, ((double)i * tStep), stateSpaceProbabilities);
+//         TCMGetFullProbabilityDistribution(m, ((double)i * tStep), stateSpaceProbabilities);
 //         LogFullDistribution(stateSpaceProbabilities, ((double)i * tStep), logFile);
 //     }
 
@@ -596,13 +578,13 @@ static void TCMLogHellingerDistanceToGillespieOverTime(TCM* m, double T, double 
     MemArena arena = CreateMemArena((SRNGetStateSpaceTensorAllocSize((m->srn)) * 2));
 
     FILE* hellingerDistanceFile = fopen(fileName, "w");
-    Tensor BTCMProbabilityDistribution = SRNCreateStateSpaceTensor(&arena, (m->srn));
+    Tensor TCMProbabilityDistribution = SRNCreateStateSpaceTensor(&arena, (m->srn));
     Tensor GillespieSRNTrajectorySimDistribution = SRNCreateStateSpaceTensor(&arena, (m->srn));
     for(double t = 0.0; t <= T; t += sampleStep)
     {
-        TCMGetFullProbabilityDistribution(m, BTCMProbabilityDistribution, T);
+        TCMGetFullProbabilityDistribution(m, TCMProbabilityDistribution, T);
         GillespieSRNTrajectorySimGetFullDistribution((m->srn), GillespieSRNTrajectorySimDistribution, T, sampleCount);
-        fprintf(hellingerDistanceFile, "%f %f\n", t, HellingerDistance(BTCMProbabilityDistribution, GillespieSRNTrajectorySimDistribution));
+        fprintf(hellingerDistanceFile, "%f %f\n", t, HellingerDistance(TCMProbabilityDistribution, GillespieSRNTrajectorySimDistribution));
     }
     fclose(hellingerDistanceFile);
     DeleteMemArena(&arena);
@@ -630,7 +612,7 @@ void TCMSingleTimeStepExperiment(void)
         (SRNGetStateSpaceTensorAllocSize(srn) * 2)
     );
 
-    TCMTrain(m, T, T, 1.0, 1500, 1, 50000, 0.5, 0.0, "res/BTCMSingleTimeStepExperiment/Loss.data");
+    TCMTrain(m, T, T, 1.0, 1500, 1, 50000, 0.5, 0.0, "res/TCMSingleTimeStepExperiment/Loss.data");
 
     TCMPrintFullProbabilityDistribution(m, T);
 
@@ -641,9 +623,9 @@ void TCMSingleTimeStepExperiment(void)
     TCMGetPerSpeciesMean(m, mean, T, sampleCount);
     TCMGetPerSpeciesStandardDeviation(m, std, T, sampleCount);
 
-    printf("BTCM mean: ");
+    printf("TCM mean: ");
     PrintMatrix(mean);
-    printf("BTCM standard deviation: ");
+    printf("TCM standard deviation: ");
     PrintMatrix(std);
 
     GillespieSRNTrajectorySimGetPerSpeciesMean(srn, mean, T, sampleCount);
@@ -659,16 +641,16 @@ void TCMSingleTimeStepExperiment(void)
     TCMGetFullProbabilityDistribution(m, modelStateSpaceProbabilities, T);
     GillespieSRNTrajectorySimGetFullDistribution(srn, marginalStateSpaceProbabilities, T, sampleCount);
 
-    FILE* BTCMFullDistributionFile = fopen("res/BTCMSingleTimeStepExperiment/BTCMFullDistribution.data", "w");
-    FILE* TrajectorySimFullDistributionFile = fopen("res/BTCMSingleTimeStepExperiment/TrajectorySimFullDistribution.data", "w");
+    FILE* TCMFullDistributionFile = fopen("res/TCMSingleTimeStepExperiment/TCMFullDistribution.data", "w");
+    FILE* TrajectorySimFullDistributionFile = fopen("res/TCMSingleTimeStepExperiment/TrajectorySimFullDistribution.data", "w");
 
-    LogFullDistribution(modelStateSpaceProbabilities, T, BTCMFullDistributionFile);
+    LogFullDistribution(modelStateSpaceProbabilities, T, TCMFullDistributionFile);
     LogFullDistribution(marginalStateSpaceProbabilities, T, TrajectorySimFullDistributionFile);
 
     printf("Hellinger Distance at time %.2f: %f\n", T, HellingerDistance(modelStateSpaceProbabilities, marginalStateSpaceProbabilities));
 
     fclose(TrajectorySimFullDistributionFile);
-    fclose(BTCMFullDistributionFile);
+    fclose(TCMFullDistributionFile);
     DeleteMemArena(&arena);
     TCMDelete(m);
     DeleteSRN(srn);
@@ -689,7 +671,12 @@ void TCMGlobalTimeExperiment(void)
     PrintIntMatrix((srn->stoichiometricMatrix));
     printf("Param count: %lu\n", TCMGetParamCount(m));
 
-    TCMTrain(m, T, deltaT, 0.01, 1000, 1, 500000, 1.0, 0.0, "res/BTCMGlobalTimeExperiment/Loss.data");
+    clock_t startTime = clock();
+    TCMTrain(m, T, deltaT, 0.01, 1000, 1, 500000, 1.0, 0.0, "res/TCMGlobalTimeExperiment/Loss.data");
+    clock_t endTime = clock();
+
+    double trainTimeHours = ((double)(endTime - startTime) / (double)(CLOCKS_PER_SEC * 60 * 60));
+    printf("Training (CPU) time in hours: %f\n", trainTimeHours);
 
     double testTimes[] = { 0.001, 0.01, 0.1, 1.0, 5.0, 10.0 };
     for(uint32_t i = 0; i < 6; i++)
@@ -701,10 +688,10 @@ void TCMGlobalTimeExperiment(void)
     size_t sampleCount = 10000;
     double sampleStep = (deltaT * 10.0);
 
-    TCMLogMeanComparisonOverTime(m, T, sampleStep, sampleCount, "res/BTCMGlobalTimeExperiment/mean.data");
-    TCMLogStdComparisonOverTime(m, T, sampleStep, sampleCount, "res/BTCMGlobalTimeExperiment/std.data");
-    TCMLogFullDistributionComparisonOverTime(m, T, sampleStep, sampleCount, "res/BTCMGlobalTimeExperiment/fullDistribution.data");
-    TCMLogHellingerDistanceToGillespieOverTime(m, T, sampleStep, sampleCount, "res/BTCMGlobalTimeExperiment/hellingerDistance.data");
+    TCMLogMeanComparisonOverTime(m, T, sampleStep, sampleCount, "res/TCMGlobalTimeExperiment/mean.data");
+    TCMLogStdComparisonOverTime(m, T, sampleStep, sampleCount, "res/TCMGlobalTimeExperiment/std.data");
+    TCMLogFullDistributionComparisonOverTime(m, T, sampleStep, sampleCount, "res/TCMGlobalTimeExperiment/fullDistribution.data");
+    TCMLogHellingerDistanceToGillespieOverTime(m, T, sampleStep, sampleCount, "res/TCMGlobalTimeExperiment/hellingerDistance.data");
 
     TCMDelete(m);
     DeleteSRN(srn);
@@ -719,35 +706,35 @@ void TCMGeneExpressionExperiment(void)
     double deltaT = 0.1;
     double T = 3600.0;
     uint32_t hiddenLayerNeuronCount[] = { 64 };
-    TCM* m = TCMCreate(srn, hiddenLayerNeuronCount, (sizeof(hiddenLayerNeuronCount) / sizeof(uint32_t)), 32, 46);
+    TCM* m = TCMCreate(srn, hiddenLayerNeuronCount, (sizeof(hiddenLayerNeuronCount) / sizeof(uint32_t)), 32, 32);
 
     PrintIntMatrix((srn->stoichiometricMatrix));
     printf("Param count: %lu\n", TCMGetParamCount(m));
 
-    TCMTrain(m, T, deltaT, 0.01, 1000, 1, 300000, 0.002, 0.0, "res/BTCMGeneExpressionModelExperiment/Loss.data");
+    clock_t startTime = clock();
+    TCMTrain(m, T, deltaT, 0.01, 1000, 1, 300000, 0.002, 0.0, "res/TCMGeneExpressionModelExperiment/Loss.data");
+    clock_t endTime = clock();
+
+    double trainTimeHours = ((double)(endTime - startTime) / (double)(CLOCKS_PER_SEC * 60 * 60));
+    printf("Training (CPU) time in hours: %f\n", trainTimeHours);
 
     size_t sampleCount = 10000;
     double sampleStep = (deltaT * 100.0);
 
-    TCMLogMeanComparisonOverTime(m, T, sampleStep, sampleCount, "res/BTCMGeneExpressionModelExperiment/mean.data");
-    TCMLogStdComparisonOverTime(m, T, sampleStep, sampleCount, "res/BTCMGeneExpressionModelExperiment/std.data");
-    TCMLogHellingerDistanceToGillespieOverTime(m, T, sampleStep, sampleCount, "res/BTCMGeneExpressionModelExperiment/hellingerDistance.data");
-
-    // FILE* fullDistributionFile = fopen("res/BTCMGeneExpressionModelExperiment/fullDistribution.data", "w");
-    // GillespieSRNTrajectorySimLogFullDistribution((m->srn), 0.5, 0.1, sampleCount, fullDistributionFile);
-    // fputs("\n", fullDistributionFile);
-    // BTCMLogFullProbabilityDistribution(m, 0.5, 0.1, sampleCount, fullDistributionFile);
-    // fclose(fullDistributionFile);
+    TCMLogMeanComparisonOverTime(m, T, sampleStep, sampleCount, "res/TCMGeneExpressionModelExperiment/mean.data");
+    TCMLogStdComparisonOverTime(m, T, sampleStep, sampleCount, "res/TCMGeneExpressionModelExperiment/std.data");
+    TCMLogFullDistributionComparisonOverTime(m, T, sampleStep, sampleCount, "res/TCMGeneExpressionModelExperiment/fullDistribution.data");
+    TCMLogHellingerDistanceToGillespieOverTime(m, T, sampleStep, sampleCount, "res/TCMGeneExpressionModelExperiment/hellingerDistance.data");
 
     TCMDelete(m);
     DeleteSRN(srn);
 }
 
-void TCMSignallingCascadeExperiment(uint32_t M)
+void TCMSignalingCascadeExperiment(uint32_t M)
 {
     SetSeedRandU48(time(NULL));
 
-    SRN* srn = SRNCreateSignallingCascade(M);
+    SRN* srn = SRNCreateSignalingCascade(M, 20, 0);
 
     double deltaT = 0.01;
     double T = 10.0;
@@ -757,23 +744,57 @@ void TCMSignallingCascadeExperiment(uint32_t M)
     PrintIntMatrix((srn->stoichiometricMatrix));
     printf("Param count: %lu\n", TCMGetParamCount(m));
 
-    TCMTrain(m, T, deltaT, 0.01, 1500, 1, 300000, 0.01, 0.0, "res/BTCMSignallingCascadeExperiment/Loss.data");
+    clock_t startTime = clock();
+    TCMTrain(m, T, deltaT, 0.01, 1000, 1, 100000, 0.01, 0.0, "res/TCMSignalingCascadeExperiment/Loss.data");
+    clock_t endTime = clock();
 
-    double testTimes[] = { 0.001, 0.01, 0.1, 1.0, 5.0, 10.0 };
-    for(uint32_t i = 0; i < 6; i++)
-    {
-        PrintMatrix(GetEmbeddedTime((m->timeEmbedding), testTimes[i], 0.0));
-        printf("\n");
-    }
+    double trainTimeHours = ((double)(endTime - startTime) / (double)(CLOCKS_PER_SEC * 60 * 60));
+    printf("Training (CPU) time in hours: %f\n", trainTimeHours);
 
     size_t sampleCount = 10000;
     double sampleStep = (deltaT * 10.0);
 
-    TCMLogMeanComparisonOverTime(m, T, sampleStep, sampleCount, "res/BTCMSignallingCascadeExperiment/mean.data");
-    TCMLogStdComparisonOverTime(m, T, sampleStep, sampleCount, "res/BTCMSignallingCascadeExperiment/std.data");
+    TCMLogMeanComparisonOverTime(m, T, sampleStep, sampleCount, "res/TCMSignalingCascadeExperiment/mean.data");
+    TCMLogStdComparisonOverTime(m, T, sampleStep, sampleCount, "res/TCMSignalingCascadeExperiment/std.data");
 
     if(M <= 4) /*for larger M, getting the full distribution hellinger distance would become too computationally expensive*/
-        TCMLogHellingerDistanceToGillespieOverTime(m, T, sampleStep, sampleCount, "res/BTCMSignallingCascadeExperiment/hellingerDistance.data");
+    {
+        TCMLogFullDistributionComparisonOverTime(m, T, sampleStep, sampleCount, "res/TCMSignalingCascadeExperiment/fullDistribution.data");
+        TCMLogHellingerDistanceToGillespieOverTime(m, T, sampleStep, sampleCount, "res/TCMSignalingCascadeExperiment/hellingerDistance.data");
+    }
+
+    TCMDelete(m);
+    DeleteSRN(srn);
+}
+
+void TCMTimeEmbeddingExperiment()
+{
+    SetSeedRandU48(time(NULL));
+
+    SRN* srn = SRNCreateSignalingCascade(2, 15, 0);
+
+    double deltaT = 0.01;
+    double T = 1.0;
+    uint32_t hiddenLayerNeuronCount[] = { 32 };
+    TCM* m = TCMCreate(srn, hiddenLayerNeuronCount, (sizeof(hiddenLayerNeuronCount) / sizeof(uint32_t)), 32, 0);
+
+    PrintIntMatrix((srn->stoichiometricMatrix));
+    printf("Param count: %lu\n", TCMGetParamCount(m));
+
+    clock_t startTime = clock();
+    TCMTrain(m, T, deltaT, 0.01, 1000, 1, 100000, 0.01, 0.0, "res/TCMTimeEmbeddingExperiment/Loss.data");
+    clock_t endTime = clock();
+
+    double trainTimeHours = ((double)(endTime - startTime) / (double)(CLOCKS_PER_SEC * 60 * 60));
+    printf("Training (CPU) time in hours: %f\n", trainTimeHours);
+
+    size_t sampleCount = 10000;
+    double sampleStep = deltaT;
+
+    TCMLogMeanComparisonOverTime(m, T, sampleStep, sampleCount, "res/TCMTimeEmbeddingExperiment/mean.data");
+    TCMLogStdComparisonOverTime(m, T, sampleStep, sampleCount, "res/TCMTimeEmbeddingExperiment/std.data");
+    TCMLogFullDistributionComparisonOverTime(m, T, sampleStep, sampleCount, "res/TCMTimeEmbeddingExperiment/fullDistribution.data");
+    TCMLogHellingerDistanceToGillespieOverTime(m, T, sampleStep, sampleCount, "res/TCMTimeEmbeddingExperiment/hellingerDistance.data");
 
     TCMDelete(m);
     DeleteSRN(srn);

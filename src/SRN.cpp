@@ -84,15 +84,15 @@ void DeleteSRN(SRN* srn)
     DeleteMemArena(&(srn->arena));
 }
 
-SRN* SRNCreateSignallingCascade(uint32_t M)
+SRN* SRNCreateSignalingCascade(uint32_t M, uint32_t N, uint32_t initialCount)
 {
     if(M == 0) { return NULL; } /*impossible*/
 
     Species cascadeSpecies[M];
     for(uint32_t i = 0; i < M; i++)
     {
-        cascadeSpecies[i].initialCount = 5; /*set back to 0 eventually*/
-        cascadeSpecies[i].maxCount = 20;
+        cascadeSpecies[i].initialCount = initialCount;
+        cascadeSpecies[i].maxCount = N;
         snprintf(cascadeSpecies[i].name, 32, "X%d", (i + 1));
     }
 

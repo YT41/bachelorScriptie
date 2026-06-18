@@ -44,7 +44,7 @@ void DeleteReaction(Reaction* reaction);
 SRN* CreateSRN(uint32_t reactionCount, Reaction** reactions, Species* species);
 void DeleteSRN(SRN* srn);
 
-SRN* SRNCreateSignallingCascade(uint32_t M);
+SRN* SRNCreateSignalingCascade(uint32_t M, uint32_t N, uint32_t initialCount);
 
 static inline uint32_t SRNGetReactionCount(const SRN* srn) { return (srn->stoichiometricMatrix.columnCount); }
 static inline uint32_t SRNGetSpeciesCount(const SRN* srn) { return (srn->stoichiometricMatrix.rowCount); }

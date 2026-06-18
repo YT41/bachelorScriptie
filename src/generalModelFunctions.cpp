@@ -46,10 +46,19 @@ void GetInputTokens(SRN* srn, Matrix X, IntMatrix n, Matrix embeddedTime)
 
 Matrix GetEmbeddedTime(NeuralNetwork* timeEmbedding, double t, double dropoutProbability)
 {
-    /*sinusoidal time embedding (already experimented with)*/
+    /*sinusoidal time embedding*/
+    // Matrix X = NNGetLastLayer(timeEmbedding);
     // for(uint32_t j = 1; j <= 16; j++)
-    //     AppendValueVector(X, sin(2.0 * M_PI * (double)j * (t / T)), &tokenSize, i);
+    //     SetValueMatrix(X, sin(2.0 * M_PI * (double)j * t), (j - 1), 0);
+    // for(uint32_t j = 1; j <= 32; j++)
+    //     SetValueMatrix(X, sin(2.0 * M_PI * (double)j * t), (j - 1), 0);
+    // return X;
 
+    /*simple linear time embedding*/
+    // SetMatrixData(NNGetLastLayer(timeEmbedding), &t);
+    // return NNGetLastLayer(timeEmbedding);
+
+    /*learnable time embedding*/
     const double eps = 1e-3;
     double timeInput[2] = { t, log(t + eps) };
     SetMatrixData(NNGetFirstLayer(timeEmbedding), timeInput);

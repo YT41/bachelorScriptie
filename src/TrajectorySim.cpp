@@ -123,6 +123,8 @@ void GillespieSRNTrajectorySim(double time, uint32_t epochs, const SRN* srn, con
 
 static inline void GillespieSRNTrajectorySimTakeSample(const SRN* srn, IntMatrix n, IntMatrix stoichiometricColumn, double t)
 {
+    static bool warningGiven = false;
+
     SetInitialState(srn, n);
     SetIntMatrix(stoichiometricColumn, 0);
     double currentTime = 0.0;
@@ -132,8 +134,12 @@ static inline void GillespieSRNTrajectorySimTakeSample(const SRN* srn, IntMatrix
 
         if(!IsValidState(srn, n)) /*This should almost never happen*/
         {
-            printf("Invalid state detected; state has been clipped to closest valid state. Consider increasing N. The invalid state:\n");
-            PrintIntMatrix(n);
+            if(!warningGiven)
+            {
+                printf("Invalid state detected; state has been clipped to closest valid state. Consider increasing N. The invalid state:\n");
+                PrintIntMatrix(n);
+                warningGiven = true;
+            }
             ClipToValidState(srn, n);
         }
 
@@ -313,11 +319,12 @@ void GillespieSRNTrajectorySimLogFullDistribution(const SRN* srn, double T, doub
     Tensor* stateSpaceProbabilities = (Tensor*)MemArenaAlloc(&arena, (sizeof(Tensor) * segmentCount));
     for(size_t i = 0; i < segmentCount; i++)
         stateSpaceProbabilities[i] = SRNCreateStateSpaceTensor(&arena, srn);
-
-    GillespieSRNTrajectorySimGetProbabilityDistributions(srn, stateSpaceProbabilities, T, tStep, sampleCount);
-
+    
     for(size_t i = 0; i < segmentCount; i++)
+    {
+        GillespieSRNTrajectorySimGetFullDistribution(srn, stateSpaceProbabilities[i], ((double)i * tStep), sampleCount);
         LogFullDistribution(stateSpaceProbabilities[i], ((double)i * tStep), logFile);
+    }
 
     DeleteMemArena(&arena);
 }
