@@ -1,6 +1,9 @@
 # Prerequisites
 *.d
 
+# the data files that I generated in my experiments
+*.data
+
 # VSCode stuff
 *.json
 
