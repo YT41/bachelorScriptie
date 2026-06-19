@@ -1,6 +1,9 @@
 #include "Random.hpp"
 
+#include "MiscMath.hpp"
+
 #include <cmath>
+#include <cstdint>
 #include <math.h>
 
 
@@ -43,10 +46,26 @@ static uint64_t RecNChooseK(uint32_t n, uint32_t k)
     return memoisationLUT[n-2][k-1];
 }
 
+
+
 uint64_t NChooseK(uint32_t n, uint32_t k)
 {
-    if((k > n) || (n >= MEMOI_COUNT)) /*not defined or too big to fit in 64 bit unsigned int*/
+    if(k > n) /*not defined or too big to fit in 64 bit unsigned int*/
         return 0;
+    else if(n >= MEMOI_COUNT) /*use easy naive implementation without memoisation in this case, might overflow for too large k*/
+    {
+        k = MIN(k, (n - k)); /*use symmetry*/
+
+        uint64_t product1 = 1;
+        for(uint32_t i = 0; i < k; i++)
+            product1 *= (n - i);
+
+        uint64_t product2 = 1;
+        for(uint32_t i = 2; i <= k; i++)
+            product2 *= i;
+
+        return (product1 / product2);
+    }
     return RecNChooseK(n, k);
 }
 

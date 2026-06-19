@@ -1,5 +1,6 @@
 #include "SRN.hpp"
 #include "Matrix.hpp"
+#include "Random.hpp"
 
 #include <math.h>
 #include <cstddef>
@@ -246,7 +247,7 @@ double GetPropensity(const SRN* srn, IntMatrix n, uint32_t reactionIndex)
             if(countJ < reactantCount)
                 return 0.0;
             else
-                product *= pow((double)countJ, (double)reactantCount);
+                product *= NChooseK((uint32_t)countJ, (uint32_t)reactantCount);
         }
     }
     return (product * (srn->reactionRates[reactionIndex]));

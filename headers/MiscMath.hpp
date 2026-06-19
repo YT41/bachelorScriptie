@@ -9,10 +9,6 @@
 #define MIN(a, b)       (((a) < (b)) ? (a) : (b))
 
 
-/*TODO: implement if needed*/
-/*return log(\sum_{i=1}^d e^{terms_i})*/
-//static double LogSumExp(double* terms, uint32_t d);
-
 static inline float Lerp(const float a, const float b, const float t) { return a + (t * (b - a)); }
 
 /*====================== useful functions in machine learning ======================*/

@@ -2,11 +2,11 @@
 
 This repository contains all code that was used to perform the numerical experiments of my bachelor thesis, "Machine learning solutions to stochastic reaction networks". The thesis report can be found in the root directory of this repository. 
 
-Every numerical experiment can be replicated, it is also quite easy to set up your own experiments. All the code was made from scratch, no external libraries are needed. The only program that you will have to install if you want to view the plots is gnuplot (http://www.gnuplot.info/). 
+Every numerical experiment can be replicated, it is also quite easy to set up your own experiments. All the code was made from scratch, no external libraries are needed. The only program that you will have to install if you want to view the plots is gnuplot (http://www.gnuplot.info/).
 
 ## documentation
 
-Comments are provided for all the functions where it isn't immediately obvious what they do from the name, or are otherwise important to the core working of the project. The comments can be found in the header files (.hpp extension files), before the function declarations. Some comments have also been provided in function implementations where the code isn't obvious (can be found in .cpp extension files).
+Comments are provided for all the functions where it isn't immediately obvious what they do from the name, or are otherwise important to the core working of the project. The comments can be found in the header files (.hpp extension files), before the function declarations. Some comments have also been provided in function implementations where the code isn't obvious (can be found in .cpp extension files). Note that some "TODOs" are left as comments in the code, see these as possible extension suggestions.
 
 ## building the project
 

@@ -8,9 +8,6 @@
 
 #define MEMOI_COUNT     67 /*this will be the maximum for n and k, otherwise n choose n/2 wont fit in 64-bit uint*/
 
-#define MIN(a, b)       (((a) < (b)) ? (a) : (b))
-#define MAX(a, b)       (((a) > (b)) ? (a) : (b))
-
 
 /*======================= PRNG's =======================*/
 

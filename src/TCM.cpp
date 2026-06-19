@@ -192,7 +192,6 @@ double TCMPredict(TCM* m, IntMatrix n, double t, double dropoutProbability)
     GetInputTokens((m->srn), (m->batchCache), n, embeddedTime);
     Matrix out = GetAttentionToMLPOut(m, dropoutProbability);
 
-    /*TODO: make general function for calculating conditionalProbabilityProduct*/
     uint32_t M = SRNGetSpeciesCount((m->srn));
     double conditionalProbabilityProduct = 1.0;
     for(uint32_t i = 0; i < M; i++)
@@ -441,7 +440,7 @@ void TCMGetPerSpeciesStandardDeviation(TCM* m, Matrix std, double t, size_t samp
     DeleteMemArena(&arena);
 }
 
-void TCMLogPerSpeciesMean(TCM* m, double T, double tStep, size_t sampleCount, FILE* logFile)
+static inline void TCMLogPerSpeciesMean(TCM* m, double T, double tStep, size_t sampleCount, FILE* logFile)
 {
     uint32_t M = SRNGetSpeciesCount((m->srn));
 
@@ -458,7 +457,7 @@ void TCMLogPerSpeciesMean(TCM* m, double T, double tStep, size_t sampleCount, FI
     DeleteMemArena(&arena);
 }
 
-void TCMLogPerSpeciesStandardDeviation(TCM* m, double T, double tStep, size_t sampleCount, FILE* logFile)
+static inline void TCMLogPerSpeciesStandardDeviation(TCM* m, double T, double tStep, size_t sampleCount, FILE* logFile)
 {
     uint32_t M = SRNGetSpeciesCount((m->srn));
 
@@ -511,7 +510,7 @@ void TCMPrintFullProbabilityDistribution(TCM* m, double t)
 //     DeleteMemArena(&arena);
 // }
 
-void TCMLogFullProbabilityDistribution(TCM* m, double T, double tStep, size_t sampleCount, FILE* logFile)
+static inline void TCMLogFullProbabilityDistribution(TCM* m, double T, double tStep, size_t sampleCount, FILE* logFile)
 {
     size_t segmentCount = ((size_t)(T / tStep) + 1);
 
@@ -527,7 +526,7 @@ void TCMLogFullProbabilityDistribution(TCM* m, double T, double tStep, size_t sa
     DeleteMemArena(&arena);
 }
 
-/*get part of the Probability Distribution, only for the species in speciesIndices*/
+/*get part of the Probability Distribution, only for the species in speciesIndices (not finished! but might be handy for some future experiments)*/
 // void BTCMLogProbabilityDistribution(BTCM* m, double T, double tStep, size_t sampleCount, uint32_t* speciesIndices, uint32_t speciesCount, FILE* logFile)
 // {
 //     size_t segmentCount = ((size_t)(T / tStep) + 1);
@@ -546,7 +545,7 @@ void TCMLogFullProbabilityDistribution(TCM* m, double T, double tStep, size_t sa
 
 /*==================== experiment helper functions ====================*/
 
-static void TCMLogMeanComparisonOverTime(TCM* m, double T, double sampleStep, size_t sampleCount, const char* fileName)
+void TCMLogMeanComparisonOverTime(TCM* m, double T, double sampleStep, size_t sampleCount, const char* fileName)
 {
     FILE* meanFile = fopen(fileName, "w");
     GillespieSRNTrajectorySimLogPerSpeciesMean((m->srn), T, sampleStep, sampleCount, meanFile);
@@ -555,7 +554,7 @@ static void TCMLogMeanComparisonOverTime(TCM* m, double T, double sampleStep, si
     fclose(meanFile);
 }
 
-static void TCMLogStdComparisonOverTime(TCM* m, double T, double sampleStep, size_t sampleCount, const char* fileName)
+void TCMLogStdComparisonOverTime(TCM* m, double T, double sampleStep, size_t sampleCount, const char* fileName)
 {
     FILE* stdFile = fopen(fileName, "w");
     GillespieSRNTrajectorySimLogPerSpeciesStandardDeviation((m->srn), T, sampleStep, sampleCount, stdFile);
@@ -564,7 +563,7 @@ static void TCMLogStdComparisonOverTime(TCM* m, double T, double sampleStep, siz
     fclose(stdFile);
 }
 
-static void TCMLogFullDistributionComparisonOverTime(TCM* m, double T, double sampleStep, size_t sampleCount, const char* fileName)
+void TCMLogFullDistributionComparisonOverTime(TCM* m, double T, double sampleStep, size_t sampleCount, const char* fileName)
 {
     FILE* fullDistributionFile = fopen(fileName, "w");
     GillespieSRNTrajectorySimLogFullDistribution((m->srn), T, sampleStep, sampleCount, fullDistributionFile);
@@ -573,7 +572,7 @@ static void TCMLogFullDistributionComparisonOverTime(TCM* m, double T, double sa
     fclose(fullDistributionFile);
 }
 
-static void TCMLogHellingerDistanceToGillespieOverTime(TCM* m, double T, double sampleStep, size_t sampleCount, const char* fileName)
+void TCMLogHellingerDistanceToGillespieOverTime(TCM* m, double T, double sampleStep, size_t sampleCount, const char* fileName)
 {
     MemArena arena = CreateMemArena((SRNGetStateSpaceTensorAllocSize((m->srn)) * 2));
 

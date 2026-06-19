@@ -45,22 +45,31 @@ typedef struct NeuralNetwork
 } NeuralNetwork;
 
 
+/*Creates an instance of a neural network
+
+INPUTS:
+uint32_t* neuronsPerLayer: C-Style array specifying the amount of neurons to be in every layer in order from input to output layer
+ActivationFnID* activationFnPerLayer: C-Style array specifying the activation function to be between every layer in order from input to output layer
+uint32_t hiddenLayerCount: amount of hidden layers
+uint32_t batchSize: amount of input tokens to be in a single batch
+
+RETURNS:
+Heap-allocated pointer to NeuralNetwork structure, be sure to delete it with NNDelete whenever you're not using it anymore to prevent memory leaks.*/
 NeuralNetwork* NNCreate(uint32_t* neuronsPerLayer, ActivationFnID* activationFnPerLayer, uint32_t hiddenLayerCount, uint32_t batchSize);
 void NNDelete(NeuralNetwork* network);
 
 size_t NNGetParamCount(const NeuralNetwork* network);
 void NNCopyParameters(NeuralNetwork* dest, const NeuralNetwork* src);
 
-// void NNSaveToFile(const NeuralNetwork* network, const char* fileName);
-// void NNLoadFromFile(NeuralNetwork* network, const char* fileName);
-
 void NNSetLastLayer(NeuralNetwork* network, Matrix Y); /*can be used to set cost gradient with respects to last layer*/
+
 void NNBackwardPass(NeuralNetwork* network); /*performs backward pass, adding the gradients to gradient cache matrices. These are then used with NNGradientDescent*/
 void NNGradientDescent(NeuralNetwork* network, double learningRate); /*performs gradient descent, using stored gradients from NNBackwardPass runs*/
-Matrix NNPredict(NeuralNetwork* network, Matrix X, double dropoutProbability); /*expects X to be shape inputDim x batchSize*/
-Matrix NNPredictNoCopy(NeuralNetwork* network, double dropoutProbability); /*assumes input of NN is already set*/
-Matrix NNPredictSingleDataPoint(NeuralNetwork* network, uint32_t i, Matrix x, double dropoutProbability);
-double NNTrain(NeuralNetwork* network, Matrix x, Matrix y, double learningRate); /*just for batch size 1*/
+
+/*for these 3 functions dropout probability only applies to neurons within the MLP hidden layers (not that important, just set it to 0 if you dont know what this is)*/
+Matrix NNPredict(NeuralNetwork* network, Matrix X, double dropoutProbability); /*processes whole batch X through MLP, expects X to be shape inputDim x batchSize*/
+Matrix NNPredictNoCopy(NeuralNetwork* network, double dropoutProbability); /*like NNPredict, but assumes input of NN is already set to X instead*/
+Matrix NNPredictSingleDataPoint(NeuralNetwork* network, uint32_t i, Matrix x, double dropoutProbability); /*like NNPredict, but for single token x_i of batch, specified in x*/
 
 static inline uint32_t NNGetOutputDimension(const NeuralNetwork* network) { return (network->layerVectors[(network->hiddenLayerCount) + 1].rowCount); };
 static inline uint32_t NNGetBatchSize(const NeuralNetwork* network) { return (network->layerVectors[0].columnCount); };
@@ -70,5 +79,6 @@ static inline Matrix NNGetFirstLayer(const NeuralNetwork* network) { return (net
 
 /*========================== NN testing ==========================*/
 
+double NNTrain(NeuralNetwork* network, Matrix x, Matrix y, double learningRate); /*just for batch size 1, really only for testing*/
+
 void TestSimpleSinNN(void); /*handy for debugging*/
-void TestProbabilisticNN(void);

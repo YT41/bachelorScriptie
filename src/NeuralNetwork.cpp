@@ -133,7 +133,7 @@ NeuralNetwork* NNCreate(uint32_t* neuronsPerLayer, ActivationFnID* activationFnP
         ret->activationFunctionDerivativeCache[i] = CreateRandomMatrix(&arena, neuronsPerLayer[i], batchSize);
 
 
-    /*TODO: other initialization might be better for different layers based on activation function*/
+    /*TODO: other initialization than CreateRandomVariancePreservingMatrix might be better for different layers based on activation function*/
 
     /*weight matrix init (including gradient caches)*/
     for(uint32_t i = 0; i < (hiddenLayerCount + 1); i++)
@@ -182,22 +182,6 @@ size_t NNGetParamCount(const NeuralNetwork* network)
     return paramSum;
 }
 
-
-// void NNSaveToFile(const NeuralNetwork* network, const char* fileName)
-// {
-//     FILE* file = fopen(fileName, "wb");
-//     if(file != NULL)
-//         fwrite((void*)network, sizeof(NeuralNetwork), 1, file);
-//     fclose(file);
-// }
-
-// void NNLoadFromFile(NeuralNetwork* network, const char* fileName)
-// {
-//     FILE* file = fopen(fileName, "rb");
-//     if(file != NULL)
-//         fread((void*)network, sizeof(NeuralNetwork), 1, file);
-//     fclose(file);
-// }
 
 void NNSetLastLayer(NeuralNetwork* network, Matrix Y)
 {
@@ -286,7 +270,8 @@ Matrix NNPredictSingleDataPoint(NeuralNetwork* network, uint32_t i, Matrix x, do
 }
 
 
-/*TODO: make it work for general loss functions, right now this is squared error loss*/
+/*========================== NN testing ==========================*/
+
 double NNTrain(NeuralNetwork* network, Matrix x, Matrix y, double learningRate)
 {
     double loss = SquaredDistanceLoss(NNPredict(network, x, 0.1), y);
@@ -300,9 +285,6 @@ double NNTrain(NeuralNetwork* network, Matrix x, Matrix y, double learningRate)
 
     return loss;
 }
-
-
-/*========================== NN testing ==========================*/
 
 void TestSimpleSinNN(void)
 {
